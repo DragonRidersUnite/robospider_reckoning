@@ -20,12 +20,13 @@ module Sprite
   # annoying to track but useful for reloading with +i+ in debug mode; would be
   # nice to define a different way
   SPRITES = {
-    player: "sprites/player.png",
     bullet: "sprites/bullet.png",
+    enemy: "sprites/enemy.png",
+    player: "sprites/player.png",
   }
 
   class << self
-    def reset_all
+    def reset_all(args)
       SPRITES.each { |_, v| args.gtk.reset_sprite(v) }
     end
 
@@ -55,12 +56,36 @@ def tick(args)
     bullet_delay: BULLET_DELAY,
     direction: DIR_UP,
   }.merge(WHITE)
+  args.state.enemies ||= []
+
+  # spawn a new enemy every 5 seconds
+  if args.state.tick_count % FPS * 5 == 0
+    args.state.enemies << spawn_enemy(args)
+  end
 
   tick_player(args, args.state.player)
+  args.state.enemies.each { |e| tick_enemy(args, e)  }
+  collide(args, args.state.player.bullets, args.state.enemies, -> (args, bullet, enemy) do
+    bullet.dead = true
+    enemy.dead = true
+  end)
+  args.state.enemies.reject! { |e| e.dead }
 
-  args.outputs.sprites << [args.state.player, args.state.player.bullets]
+  args.outputs.sprites << [args.state.player, args.state.player.bullets, args.state.enemies]
 
   debug_tick(args)
+end
+
+def collide(args, col1, col2, callback)
+  col1.each do |i|
+    col2.each do |j|
+      if !i.dead && !j.dead
+        if i.intersect_rect?(j)
+          callback.call(args, i, j)
+        end
+      end
+    end
+  end
 end
 
 BULLET_DELAY = 10
@@ -133,6 +158,38 @@ def tick_player(args, player)
   debug_label(args, player.x, player.y - 28, "bullets: #{player.bullets.length}")
 end
 
+def spawn_enemy(args)
+  {
+    x: [args.grid.left + 10, args.grid.right - 10].sample,
+    y: [args.grid.top + 10, args.grid.bottom - 10].sample,
+    w: 24,
+    h: 24,
+    angle: 0,
+    path: Sprite.for(:enemy),
+    dead: false,
+    speed: 4,
+  }
+end
+
+def tick_enemy(args, enemy)
+  enemy.angle = args.geometry.angle_to(enemy, args.state.player)
+  enemy.x_vel, enemy.y_vel = vel_from_angle(enemy.angle, enemy.speed)
+
+  enemy.x += enemy.x_vel
+  enemy.y += enemy.y_vel
+
+  debug_label(args, enemy.x, enemy.y, "speed: #{enemy.speed}")
+end
+
+# +angle+ is expected to be in degrees with 0 being facing right
+def vel_from_angle(angle, speed)
+  [speed * Math.cos(deg_to_rad(angle)), speed * Math.sin(deg_to_rad(angle))]
+end
+
+def deg_to_rad(deg)
+  (deg * Math::PI / 180).round(4)
+end
+
 # Returns degrees
 def angle_for_dir(dir)
   case dir
@@ -187,7 +244,7 @@ def debug_tick(args)
   debug_label(args, args.grid.right - 24, args.grid.top, "#{args.gtk.current_framerate.round}")
 
   if args.inputs.keyboard.key_down.i
-    Sprite.reset_all
+    Sprite.reset_all(args)
     args.gtk.notify!("Sprites reloaded")
   end
 
