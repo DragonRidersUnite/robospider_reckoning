@@ -31,3 +31,4 @@ There following debug-only shortcuts can be used to help make developing easier:
 
 - <kbd>i</kbd> -- reload the sprites from disk
 - <kbd>r</kbd> -- reset the game
+- <kbd>0</kbd> -- render debug details
