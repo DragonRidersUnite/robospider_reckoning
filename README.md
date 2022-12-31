@@ -24,3 +24,10 @@ The engine files are not included in this source repository so that people can u
 2. Delete the `mygame` directory
 3. Clone the repository into the DRGTK engine folder with the folder name `mygame`: `git clone git@github.com:DragonRidersUnite/exquisite_corps.git mygame`
 4. Start DragonRuby, and make an awesome game!
+
+### Keyboard Shortcuts
+
+There following debug-only shortcuts can be used to help make developing easier:
+
+- <kbd>i</kbd> -- reload the sprites from disk
+- <kbd>r</kbd> -- reset the game
