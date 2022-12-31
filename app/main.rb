@@ -16,11 +16,24 @@ DIR_UP = :up
 DIR_LEFT = :left
 DIR_RIGHT = :right
 
-# Access in code with `SPATHS[:my_sprite]`
-# Replace with your sprites!
-SPATHS = {
-  my_sprite: "sprites/my_sprite.png",
-}
+module Sprite
+  # annoying to track but useful for reloading with +i+ in debug mode; would be
+  # nice to define a different way
+  SPRITES = {
+    player: "sprites/player.png",
+    bullet: "sprites/bullet.png",
+  }
+
+  class << self
+    def reset_all
+      SPRITES.each { |_, v| args.gtk.reset_sprite(v) }
+    end
+
+    def for(key)
+      SPRITES.fetch(key)
+    end
+  end
+end
 
 # Code that only gets run once on game start
 def init(args)
@@ -37,13 +50,15 @@ def tick(args)
     w: 32,
     h: 32,
     speed: 6,
+    path: Sprite.for(:player),
     bullets: [],
     bullet_delay: BULLET_DELAY,
+    direction: DIR_UP,
   }.merge(WHITE)
 
   tick_player(args, args.state.player)
 
-  args.outputs.solids << [args.state.player, args.state.player.bullets]
+  args.outputs.sprites << [args.state.player, args.state.player.bullets]
 
   debug_tick(args)
 end
@@ -77,6 +92,7 @@ def tick_player(args, player)
     end
   end
 
+  player.angle = angle_for_dir(player.direction)
   player.bullet_delay += 1
 
   if player.bullet_delay >= BULLET_DELAY && firing
@@ -87,7 +103,9 @@ def tick_player(args, player)
       h: BULLET_SIZE,
       speed: 12,
       direction: player.direction,
+      angle: player.angle,
       dead: false,
+      path: Sprite.for(:bullet),
     }.merge(WHITE)
     player.bullet_delay = 0
   end
@@ -110,8 +128,25 @@ def tick_player(args, player)
   end
 
   player.bullets.reject! { |b| b.dead }
-  debug_label(args, player.x, player.y, "bullets: #{player.bullets.length}")
-  debug_label(args, player.x, player.y - 14, "dir: #{player.direction}")
+  debug_label(args, player.x, player.y, "dir: #{player.direction}")
+  debug_label(args, player.x, player.y - 14, "angle: #{player.angle}")
+  debug_label(args, player.x, player.y - 28, "bullets: #{player.bullets.length}")
+end
+
+# Returns degrees
+def angle_for_dir(dir)
+  case dir
+  when DIR_RIGHT
+    0
+  when DIR_LEFT
+    180
+  when DIR_UP
+    90
+  when DIR_DOWN
+    270
+  else
+    error("invalid dir: #{dir}")
+  end
 end
 
 def out_of_bounds?(grid, rect)
@@ -119,6 +154,10 @@ def out_of_bounds?(grid, rect)
     rect.x + rect.w < grid.left ||
     rect.y > grid.top ||
     rect.y + rect.h < grid.bottom
+end
+
+def error(msg)
+  raise StandardError.new(msg)
 end
 
 PRIMARY_KEYS = [:j, :z]
@@ -148,7 +187,7 @@ def debug_tick(args)
   debug_label(args, args.grid.right - 24, args.grid.top, "#{args.gtk.current_framerate.round}")
 
   if args.inputs.keyboard.key_down.i
-    SPATHS.each { |_, v| args.gtk.reset_sprite(v) }
+    Sprite.reset_all
     args.gtk.notify!("Sprites reloaded")
   end
 
