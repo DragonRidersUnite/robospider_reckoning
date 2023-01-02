@@ -52,11 +52,13 @@ def tick(args)
   debug_tick(args)
 end
 
-def change_scene(args, scene)
-  case scene
-  when :gameplay
-    args.state.player = nil
-    args.state.enemies = nil
+def switch_scene(args, scene, reset: false)
+  if reset
+    case scene
+    when :gameplay
+      args.state.player = nil
+      args.state.enemies = nil
+    end
   end
 
   args.state.scene = scene
@@ -104,13 +106,30 @@ def tick_gameplay(args)
   args.state.enemies.reject! { |e| e.dead }
 
   if args.state.player.dead
-    args.state.scene = :game_over
+    return switch_scene(args, :game_over)
+  end
+
+  if pause_down?(args)
+    return switch_scene(args, :paused)
   end
 
   args.outputs.solids << { x: args.grid.left, y: args.grid.bottom, w: args.grid.w, h: args.grid.h }.merge(BLACK)
   args.outputs.sprites << [args.state.player, args.state.player.bullets, args.state.enemies]
   labels = []
   labels << label("#{TEXT.fetch(:health)}: #{args.state.player.health}", x: 40, y: args.grid.top - 40, size: SIZE_SM)
+  args.outputs.labels << labels
+end
+
+def tick_paused(args)
+  labels = []
+
+  labels << label(:paused, x: args.grid.w / 2, y: args.grid.top - 200, align: ALIGN_CENTER, size: SIZE_LG)
+  labels << label(:resume, x: args.grid.w / 2, y: args.grid.top - 420, align: ALIGN_CENTER, size: SIZE_SM).merge(a: args.state.tick_count % 155 + 100)
+
+  if primary_down?(args.inputs)
+    return switch_scene(args, :gameplay)
+  end
+
   args.outputs.labels << labels
 end
 
@@ -126,7 +145,7 @@ def tick_game_over(args)
   labels << label(:restart, x: args.grid.w / 2, y: args.grid.top - 420, align: ALIGN_CENTER, size: SIZE_SM).merge(a: args.state.tick_count % 155 + 100)
 
   if primary_down?(args.inputs)
-    return change_scene(args, :gameplay)
+    return switch_scene(args, :gameplay, reset: true)
   end
 
   args.outputs.labels << labels
@@ -151,7 +170,9 @@ end
 TEXT = {
   game_over: "Game Over",
   health: "Health",
+  paused: "Paused",
   restart: "Shoot to Restart",
+  resume: "Shoot to Resume",
 }
 
 def collide(args, col1, col2, callback)
@@ -308,6 +329,12 @@ def primary_down_or_held?(inputs)
     PRIMARY_KEYS.any? { |k| inputs.keyboard.key_held.send(k) } ||
     (inputs.controller_one.connected &&
      inputs.controller_one.key_held.a)
+end
+
+PAUSE_KEYS= [:escape, :p]
+def pause_down?(inputs)
+  PAUSE_KEYS.any? { |k| inputs.keyboard.key_down.send(k) } ||
+    inputs.controller_one.key_down&.start
 end
 
 # The version of your game defined in `metadata/game_metadata.txt`
