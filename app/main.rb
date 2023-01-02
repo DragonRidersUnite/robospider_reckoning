@@ -119,7 +119,7 @@ def tick_game_over(args)
   labels = []
 
   labels << label(:game_over, x: args.grid.w / 2, y: args.grid.top - 200, align: ALIGN_CENTER, size: SIZE_LG)
-  labels << label(:restart, x: args.grid.w / 2, y: args.grid.top - 420, align: ALIGN_CENTER, size: SIZE_SM)
+  labels << label(:restart, x: args.grid.w / 2, y: args.grid.top - 420, align: ALIGN_CENTER, size: SIZE_SM).merge(a: args.state.tick_count % 155 + 100)
 
   if primary_down?(args.inputs)
     return change_scene(args, :gameplay)
