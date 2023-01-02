@@ -9,6 +9,7 @@ BLEND_MODULO = 3
 BLEND_MULTIPLY = 4
 
 TRUE_BLACK = { r: 0, g: 0, b: 0 }
+BLACK = { r: 25, g: 25, b: 25 }
 WHITE = { r: 255, g: 255, b: 255 }
 
 DIR_DOWN = :down
@@ -71,6 +72,7 @@ def tick(args)
   end)
   args.state.enemies.reject! { |e| e.dead }
 
+  args.outputs.solids << { x: args.grid.left, y: args.grid.bottom, w: args.grid.w, h: args.grid.h }.merge(BLACK)
   args.outputs.sprites << [args.state.player, args.state.player.bullets, args.state.enemies]
 
   debug_tick(args)
