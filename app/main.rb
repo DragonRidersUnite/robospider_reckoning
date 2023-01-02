@@ -109,11 +109,15 @@ def tick_gameplay(args)
 
   args.outputs.solids << { x: args.grid.left, y: args.grid.bottom, w: args.grid.w, h: args.grid.h }.merge(BLACK)
   args.outputs.sprites << [args.state.player, args.state.player.bullets, args.state.enemies]
+  labels = []
+  labels << label("#{TEXT.fetch(:health)}: #{args.state.player.health}", x: 40, y: args.grid.top - 40, size: SIZE_SM)
+  args.outputs.labels << labels
 end
 
 SIZE_LG = 10
 SIZE_MD = 6
 SIZE_SM = 4
+SIZE_XS = 0
 
 def tick_game_over(args)
   labels = []
@@ -128,9 +132,15 @@ def tick_game_over(args)
   args.outputs.labels << labels
 end
 
-def label(key, x:, y:, align: ALIGN_LEFT, size: SIZE_MEDIUM, color: WHITE)
+def label(value_or_key, x:, y:, align: ALIGN_LEFT, size: SIZE_MD, color: WHITE)
+  text = if value_or_key.is_a?(Symbol)
+    TEXT.fetch(value_or_key)
+  else
+    value_or_key
+  end
+
   {
-    text: TEXT.fetch(key),
+    text: text,
     x: x,
     y: y,
     alignment_enum: align,
@@ -140,6 +150,7 @@ end
 
 TEXT = {
   game_over: "Game Over",
+  health: "Health",
   restart: "Shoot to Restart",
 }
 
@@ -226,7 +237,6 @@ def tick_player(args, player)
   debug_label(args, player.x, player.y, "dir: #{player.direction}")
   debug_label(args, player.x, player.y - 14, "angle: #{player.angle}")
   debug_label(args, player.x, player.y - 28, "bullets: #{player.bullets.length}")
-  debug_label(args, player.x, player.y - 42, "health: #{player.health}")
 end
 
 def spawn_enemy(args)
