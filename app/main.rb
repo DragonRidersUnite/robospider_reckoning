@@ -81,6 +81,7 @@ def tick_gameplay(args)
       exp: 0,
       path: Sprite.for(:player),
       bullets: [],
+      exp_chip_magnetic_dist: 50,
       bullet_delay: BULLET_DELAY,
       direction: DIR_UP,
     }.merge(WHITE)
@@ -113,6 +114,7 @@ def tick_gameplay(args)
 
   tick_player(args, args.state.player)
   args.state.enemies.each { |e| tick_enemy(args, e)  }
+  args.state.exp_chips.each { |c| tick_exp_chip(args, c)  }
   collide(args, args.state.player.bullets, args.state.enemies, -> (args, bullet, enemy) do
     bullet.dead = true
     destroy_enemy(args, enemy)
@@ -136,7 +138,7 @@ def tick_gameplay(args)
   end
 
   args.outputs.solids << { x: args.grid.left, y: args.grid.bottom, w: args.grid.w, h: args.grid.h }.merge(BLACK)
-  args.outputs.sprites << [args.state.player, args.state.player.bullets, args.state.enemies, args.state.player.familiar, args.state.exp_chips]
+  args.outputs.sprites << [args.state.exp_chips, args.state.player.bullets, args.state.player, args.state.enemies, args.state.player.familiar]
 
   labels = []
   labels << label("#{TEXT.fetch(:health)}: #{args.state.player.health}", x: 40, y: args.grid.top - 40, size: SIZE_SM)
@@ -152,6 +154,8 @@ def destroy_enemy(args, enemy)
     args.state.exp_chips << {
       x: enemy.x + enemy.w / 2 + (-5..5).to_a.sample + i * 5,
       y: enemy.y + enemy.h / 2 + (-5..5).to_a.sample + i * 5,
+      speed: 6,
+      angle: rand(360),
       w: 12,
       h: 12,
       dead: false,
@@ -344,6 +348,22 @@ def tick_enemy(args, enemy)
   enemy.y += enemy.y_vel
 
   debug_label(args, enemy.x, enemy.y, "speed: #{enemy.speed}")
+end
+
+def tick_exp_chip(args, exp_chip)
+  player = args.state.player
+  if args.geometry.distance(exp_chip, player) <= player.exp_chip_magnetic_dist
+    exp_chip.angle = args.geometry.angle_to(exp_chip, player)
+    exp_chip.speed = player.speed + 1
+  end
+
+  if exp_chip.speed >= 1
+    exp_chip.x_vel, exp_chip.y_vel = vel_from_angle(exp_chip.angle, exp_chip.speed)
+
+    exp_chip.x += exp_chip.x_vel
+    exp_chip.y += exp_chip.y_vel
+    exp_chip.speed -= 1
+  end
 end
 
 # +angle+ is expected to be in degrees with 0 being facing right
