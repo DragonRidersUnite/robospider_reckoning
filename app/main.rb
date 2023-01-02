@@ -45,6 +45,7 @@ def tick(args)
   init(args) if args.state.tick_count == 0
 
   args.outputs.background_color = TRUE_BLACK.values
+  args.state.has_focus ||= true
   args.state.scene ||= :gameplay
 
   send("tick_#{args.state.scene}", args)
@@ -88,6 +89,16 @@ def tick_gameplay(args)
 
   args.state.enemies ||= []
 
+  if !args.state.has_focus && args.inputs.keyboard.has_focus
+    args.state.has_focus = true
+  elsif args.state.has_focus && !args.inputs.keyboard.has_focus
+    args.state.has_focus = false
+  end
+
+  if !args.state.has_focus || pause_down?(args)
+    return switch_scene(args, :paused)
+  end
+
   # spawn a new enemy every 5 seconds
   if args.state.tick_count % FPS * 5 == 0
     args.state.enemies << spawn_enemy(args)
@@ -107,10 +118,6 @@ def tick_gameplay(args)
 
   if args.state.player.dead
     return switch_scene(args, :game_over)
-  end
-
-  if pause_down?(args)
-    return switch_scene(args, :paused)
   end
 
   args.outputs.solids << { x: args.grid.left, y: args.grid.bottom, w: args.grid.w, h: args.grid.h }.merge(BLACK)
