@@ -23,6 +23,7 @@ module Sprite
   SPRITES = {
     bullet: "sprites/bullet.png",
     enemy: "sprites/enemy.png",
+    familiar: "sprites/familiar.png",
     player: "sprites/player.png",
   }
 
@@ -74,7 +75,7 @@ def tick_gameplay(args)
       w: 32,
       h: 32,
       health: 6,
-      speed: 6,
+      speed: 5,
       path: Sprite.for(:player),
       bullets: [],
       bullet_delay: BULLET_DELAY,
@@ -110,12 +111,14 @@ def tick_gameplay(args)
   args.state.enemies.each { |e| tick_enemy(args, e)  }
   collide(args, args.state.player.bullets, args.state.enemies, -> (args, bullet, enemy) do
     bullet.dead = true
-    enemy.dead = true
-    args.state.enemies_destroyed += 1
+    destroy_enemy(args, enemy)
   end)
   collide(args, args.state.enemies, args.state.player, -> (args, enemy, player) do
     enemy.dead = true
     player.health -= 1
+  end)
+  collide(args, args.state.enemies, args.state.player.familiar, -> (args, enemy, familiar) do
+    destroy_enemy(args, enemy)
   end)
   args.state.enemies.reject! { |e| e.dead }
 
@@ -124,11 +127,17 @@ def tick_gameplay(args)
   end
 
   args.outputs.solids << { x: args.grid.left, y: args.grid.bottom, w: args.grid.w, h: args.grid.h }.merge(BLACK)
-  args.outputs.sprites << [args.state.player, args.state.player.bullets, args.state.enemies]
+  args.outputs.sprites << [args.state.player, args.state.player.bullets, args.state.enemies, args.state.player.familiar]
+
   labels = []
   labels << label("#{TEXT.fetch(:health)}: #{args.state.player.health}", x: 40, y: args.grid.top - 40, size: SIZE_SM)
   labels << label("#{TEXT.fetch(:enemies_destroyed)}: #{args.state.enemies_destroyed}", x: args.grid.right - 40, y: args.grid.top - 40, size: SIZE_SM, align: ALIGN_RIGHT)
   args.outputs.labels << labels
+end
+
+def destroy_enemy(args, enemy)
+  enemy.dead = true
+  args.state.enemies_destroyed += 1
 end
 
 def tick_paused(args)
@@ -268,9 +277,28 @@ def tick_player(args, player)
   end
 
   player.bullets.reject! { |b| b.dead }
+
+  tick_familiar(args, player)
+
   debug_label(args, player.x, player.y, "dir: #{player.direction}")
   debug_label(args, player.x, player.y - 14, "angle: #{player.angle}")
   debug_label(args, player.x, player.y - 28, "bullets: #{player.bullets.length}")
+end
+
+def tick_familiar(args, player)
+  player.familiar ||= {
+    x: player.x + 10,
+    y: player.y,
+    w: 18,
+    h: 18,
+    path: Sprite.for(:familiar),
+  }
+
+  rotator = args.state.tick_count / 18
+  fam_dist = 100
+  player.familiar.x = player.x + player.w / 2 + Math.sin(rotator) * fam_dist
+  player.familiar.y = player.y + player.h / 2 + Math.cos(rotator) * fam_dist
+  player.familiar.angle = args.geometry.angle_to(player, player.familiar)
 end
 
 def spawn_enemy(args)
@@ -282,7 +310,7 @@ def spawn_enemy(args)
     angle: 0,
     path: Sprite.for(:enemy),
     dead: false,
-    speed: 4,
+    speed: 3,
   }
 end
 
