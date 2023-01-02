@@ -45,18 +45,45 @@ def tick(args)
   init(args) if args.state.tick_count == 0
 
   args.outputs.background_color = TRUE_BLACK.values
+  args.state.scene ||= :gameplay
 
-  args.state.player ||= {
-    x: args.grid.w / 2,
-    y: args.grid.h / 2,
-    w: 32,
-    h: 32,
-    speed: 6,
-    path: Sprite.for(:player),
-    bullets: [],
-    bullet_delay: BULLET_DELAY,
-    direction: DIR_UP,
-  }.merge(WHITE)
+  send("tick_#{args.state.scene}", args)
+
+  debug_tick(args)
+end
+
+def change_scene(args, scene)
+  case scene
+  when :gameplay
+    args.state.player = nil
+    args.state.enemies = nil
+  end
+
+  args.state.scene = scene
+end
+
+def tick_gameplay(args)
+  args.state.player ||= begin
+    p = {
+      x: args.grid.w / 2,
+      y: args.grid.h / 2,
+      w: 32,
+      h: 32,
+      health: 6,
+      speed: 6,
+      path: Sprite.for(:player),
+      bullets: [],
+      bullet_delay: BULLET_DELAY,
+      direction: DIR_UP,
+    }.merge(WHITE)
+
+    p.define_singleton_method(:dead) do
+      health <= 0
+    end
+
+    p
+  end
+
   args.state.enemies ||= []
 
   # spawn a new enemy every 5 seconds
@@ -70,15 +97,56 @@ def tick(args)
     bullet.dead = true
     enemy.dead = true
   end)
+  collide(args, args.state.enemies, args.state.player, -> (args, enemy, player) do
+    enemy.dead = true
+    player.health -= 1
+  end)
   args.state.enemies.reject! { |e| e.dead }
+
+  if args.state.player.dead
+    args.state.scene = :game_over
+  end
 
   args.outputs.solids << { x: args.grid.left, y: args.grid.bottom, w: args.grid.w, h: args.grid.h }.merge(BLACK)
   args.outputs.sprites << [args.state.player, args.state.player.bullets, args.state.enemies]
-
-  debug_tick(args)
 end
 
+SIZE_LG = 10
+SIZE_MD = 6
+SIZE_SM = 4
+
+def tick_game_over(args)
+  labels = []
+
+  labels << label(:game_over, x: args.grid.w / 2, y: args.grid.top - 200, align: ALIGN_CENTER, size: SIZE_LG)
+  labels << label(:restart, x: args.grid.w / 2, y: args.grid.top - 420, align: ALIGN_CENTER, size: SIZE_SM)
+
+  if primary_down?(args.inputs)
+    return change_scene(args, :gameplay)
+  end
+
+  args.outputs.labels << labels
+end
+
+def label(key, x:, y:, align: ALIGN_LEFT, size: SIZE_MEDIUM, color: WHITE)
+  {
+    text: TEXT.fetch(key),
+    x: x,
+    y: y,
+    alignment_enum: align,
+    size_enum: size,
+  }.merge(color)
+end
+
+TEXT = {
+  game_over: "Game Over",
+  restart: "Shoot to Restart",
+}
+
 def collide(args, col1, col2, callback)
+  col1 = [col1] unless col1.is_a?(Array)
+  col2 = [col2] unless col2.is_a?(Array)
+
   col1.each do |i|
     col2.each do |j|
       if !i.dead && !j.dead
@@ -158,6 +226,7 @@ def tick_player(args, player)
   debug_label(args, player.x, player.y, "dir: #{player.direction}")
   debug_label(args, player.x, player.y - 14, "angle: #{player.angle}")
   debug_label(args, player.x, player.y - 28, "bullets: #{player.bullets.length}")
+  debug_label(args, player.x, player.y - 42, "health: #{player.health}")
 end
 
 def spawn_enemy(args)
