@@ -59,6 +59,7 @@ def switch_scene(args, scene, reset: false)
     when :gameplay
       args.state.player = nil
       args.state.enemies = nil
+      args.state.enemies_destroyed = 0
     end
   end
 
@@ -88,6 +89,7 @@ def tick_gameplay(args)
   end
 
   args.state.enemies ||= []
+  args.state.enemies_destroyed ||= 0
 
   if !args.state.has_focus && args.inputs.keyboard.has_focus
     args.state.has_focus = true
@@ -109,6 +111,7 @@ def tick_gameplay(args)
   collide(args, args.state.player.bullets, args.state.enemies, -> (args, bullet, enemy) do
     bullet.dead = true
     enemy.dead = true
+    args.state.enemies_destroyed += 1
   end)
   collide(args, args.state.enemies, args.state.player, -> (args, enemy, player) do
     enemy.dead = true
@@ -124,6 +127,7 @@ def tick_gameplay(args)
   args.outputs.sprites << [args.state.player, args.state.player.bullets, args.state.enemies]
   labels = []
   labels << label("#{TEXT.fetch(:health)}: #{args.state.player.health}", x: 40, y: args.grid.top - 40, size: SIZE_SM)
+  labels << label("#{TEXT.fetch(:enemies_destroyed)}: #{args.state.enemies_destroyed}", x: args.grid.right - 40, y: args.grid.top - 40, size: SIZE_SM, align: ALIGN_RIGHT)
   args.outputs.labels << labels
 end
 
@@ -150,6 +154,7 @@ def tick_game_over(args)
 
   labels << label(:game_over, x: args.grid.w / 2, y: args.grid.top - 200, align: ALIGN_CENTER, size: SIZE_LG)
   labels << label(:restart, x: args.grid.w / 2, y: args.grid.top - 420, align: ALIGN_CENTER, size: SIZE_SM).merge(a: args.state.tick_count % 155 + 100)
+  labels << label("#{TEXT.fetch(:enemies_destroyed)}: #{args.state.enemies_destroyed}", x: args.grid.w / 2, y: args.grid.top - 320, size: SIZE_SM, align: ALIGN_CENTER)
 
   if primary_down?(args.inputs)
     return switch_scene(args, :gameplay, reset: true)
@@ -175,6 +180,7 @@ def label(value_or_key, x:, y:, align: ALIGN_LEFT, size: SIZE_MD, color: WHITE)
 end
 
 TEXT = {
+  enemies_destroyed: "Enemies Destroyed",
   game_over: "Game Over",
   health: "Health",
   paused: "Paused",
