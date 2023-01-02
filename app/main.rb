@@ -23,6 +23,7 @@ module Sprite
   SPRITES = {
     bullet: "sprites/bullet.png",
     enemy: "sprites/enemy.png",
+    exp_chip: "sprites/exp_chip.png",
     familiar: "sprites/familiar.png",
     player: "sprites/player.png",
   }
@@ -60,7 +61,8 @@ def switch_scene(args, scene, reset: false)
     when :gameplay
       args.state.player = nil
       args.state.enemies = nil
-      args.state.enemies_destroyed = 0
+      args.state.enemies_destroyed = nil
+      args.state.exp_chips = nil
     end
   end
 
@@ -76,6 +78,7 @@ def tick_gameplay(args)
       h: 32,
       health: 6,
       speed: 5,
+      exp: 0,
       path: Sprite.for(:player),
       bullets: [],
       bullet_delay: BULLET_DELAY,
@@ -91,6 +94,7 @@ def tick_gameplay(args)
 
   args.state.enemies ||= []
   args.state.enemies_destroyed ||= 0
+  args.state.exp_chips ||= []
 
   if !args.state.has_focus && args.inputs.keyboard.has_focus
     args.state.has_focus = true
@@ -103,7 +107,7 @@ def tick_gameplay(args)
   end
 
   # spawn a new enemy every 5 seconds
-  if args.state.tick_count % FPS * 5 == 0
+  if args.state.tick_count % FPS * 10 == 0
     args.state.enemies << spawn_enemy(args)
   end
 
@@ -114,23 +118,29 @@ def tick_gameplay(args)
     destroy_enemy(args, enemy)
   end)
   collide(args, args.state.enemies, args.state.player, -> (args, enemy, player) do
-    enemy.dead = true
     player.health -= 1
+    destroy_enemy(args, enemy)
   end)
   collide(args, args.state.enemies, args.state.player.familiar, -> (args, enemy, familiar) do
     destroy_enemy(args, enemy)
   end)
+  collide(args, args.state.exp_chips, args.state.player, -> (args, exp_chip, player) do
+    exp_chip.dead = true
+    player.exp += exp_chip.exp_amount
+  end)
   args.state.enemies.reject! { |e| e.dead }
+  args.state.exp_chips.reject! { |e| e.dead }
 
   if args.state.player.dead
     return switch_scene(args, :game_over)
   end
 
   args.outputs.solids << { x: args.grid.left, y: args.grid.bottom, w: args.grid.w, h: args.grid.h }.merge(BLACK)
-  args.outputs.sprites << [args.state.player, args.state.player.bullets, args.state.enemies, args.state.player.familiar]
+  args.outputs.sprites << [args.state.player, args.state.player.bullets, args.state.enemies, args.state.player.familiar, args.state.exp_chips]
 
   labels = []
   labels << label("#{TEXT.fetch(:health)}: #{args.state.player.health}", x: 40, y: args.grid.top - 40, size: SIZE_SM)
+  labels << label("#{TEXT.fetch(:exp)}: #{args.state.player.exp}", x: 40, y: args.grid.top - 72, size: SIZE_SM)
   labels << label("#{TEXT.fetch(:enemies_destroyed)}: #{args.state.enemies_destroyed}", x: args.grid.right - 40, y: args.grid.top - 40, size: SIZE_SM, align: ALIGN_RIGHT)
   args.outputs.labels << labels
 end
@@ -138,6 +148,17 @@ end
 def destroy_enemy(args, enemy)
   enemy.dead = true
   args.state.enemies_destroyed += 1
+  rand(3).times do |i|
+    args.state.exp_chips << {
+      x: enemy.x + enemy.w / 2 + (-5..5).to_a.sample + i * 5,
+      y: enemy.y + enemy.h / 2 + (-5..5).to_a.sample + i * 5,
+      w: 12,
+      h: 12,
+      dead: false,
+      exp_amount: 1,
+      path: Sprite.for(:exp_chip)
+    }
+  end
 end
 
 def tick_paused(args)
@@ -190,6 +211,7 @@ end
 
 TEXT = {
   enemies_destroyed: "Enemies Destroyed",
+  exp: "Exp",
   game_over: "Game Over",
   health: "Health",
   paused: "Paused",
