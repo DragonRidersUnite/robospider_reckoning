@@ -91,6 +91,8 @@ def switch_scene(args, scene, reset: false)
       args.state.enemies = nil
       args.state.enemies_destroyed = nil
       args.state.exp_chips = nil
+    when :paused
+      args.state.paused = nil
     end
   end
 
@@ -132,7 +134,7 @@ def tick_scene_gameplay(args)
   end
 
   if !args.state.has_focus || pause_down?(args)
-    return switch_scene(args, :paused)
+    return switch_scene(args, :paused, reset: true)
   end
 
   # spawn a new enemy every 5 seconds
@@ -194,16 +196,27 @@ def destroy_enemy(args, enemy)
 end
 
 def tick_scene_paused(args)
-  labels = []
+  options = [
+    {
+      key: :resume,
+      on_select: -> (args) { switch_scene(args, :gameplay) }
+    },
+    {
+      key: :return_to_main_menu,
+      on_select: -> (args) { switch_scene(args, :main_menu) }
+    },
+  ]
 
-  labels << label(:paused, x: args.grid.w / 2, y: args.grid.top - 200, align: ALIGN_CENTER, size: SIZE_LG)
-  labels << label(:resume, x: args.grid.w / 2, y: args.grid.top - 420, align: ALIGN_CENTER, size: SIZE_SM).merge(a: args.state.tick_count % 155 + 100)
-
-  if primary_down?(args.inputs)
-    return switch_scene(args, :gameplay)
+  if args.gtk.platform?(:desktop)
+    options << {
+      key: :quit,
+      on_select: -> (args) { args.gtk.request_quit }
+    }
   end
 
-  args.outputs.labels << labels
+  tick_menu(args, :paused, options)
+
+  args.outputs.labels << label(:paused, x: args.grid.w / 2, y: args.grid.top - 200, align: ALIGN_CENTER, size: SIZE_LG)
 end
 
 def toggle_fullscreen(args)
@@ -260,12 +273,13 @@ TEXT = {
   fullscreen: "Fullscreen",
   game_over: "Game Over",
   health: "Health",
+  return_to_main_menu: "Return to Main Menu",
   off: "OFF",
   on: "ON",
   paused: "Paused",
   quit: "Quit",
   restart: "Shoot to Restart",
-  resume: "Shoot to Resume",
+  resume: "Resume",
   settings: "Settings",
   sfx: "Sound Effects",
   start: "Start",
