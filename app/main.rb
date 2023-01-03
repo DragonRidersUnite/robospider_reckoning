@@ -409,7 +409,7 @@ def tick_familiar(args, player)
   }
 
   rotator = args.state.tick_count / 18
-  fam_dist = 100
+  fam_dist = 66
   player.familiar.x = player.x + player.w / 2 + Math.sin(rotator) * fam_dist
   player.familiar.y = player.y + player.h / 2 + Math.cos(rotator) * fam_dist
   player.familiar.angle = args.geometry.angle_to(player, player.familiar)
