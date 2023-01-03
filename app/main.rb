@@ -48,11 +48,96 @@ def tick(args)
 
   args.outputs.background_color = TRUE_BLACK.values
   args.state.has_focus ||= true
-  args.state.scene ||= :gameplay
+  args.state.scene ||= :main_menu
 
   send("tick_#{args.state.scene}", args)
 
   debug_tick(args)
+end
+
+def tick_main_menu(args)
+  options = [
+    {
+      text: text(:start),
+      on_select: -> (args) { switch_scene(args, :gameplay) }
+    },
+    {
+      text: text(:settings),
+      on_select: -> (args) { switch_scene(args, :settings) }
+    },
+  ]
+
+  if args.gtk.platform?(:desktop)
+    options << {
+      text: text(:quit),
+      on_select: -> (args) { args.gtk.request_quit }
+    }
+  end
+
+  args.state.main_menu.current_option_i ||= 0
+  args.state.hold_delay ||= 0
+
+  labels = []
+
+  options.each.with_index do |option, i|
+    label = label(
+      option[:text],
+      x: args.grid.w / 2,
+      y: 360 + (options.length - i * 52),
+      align: ALIGN_CENTER,
+      size: SIZE_MD
+    )
+    label_size = args.gtk.calcstringbox(label.text, label.size_enum)
+    labels << label
+    if args.state.main_menu.current_option_i == i
+      args.outputs.solids << {
+        x: label.x - (label_size[0] / 1.4) - 24 + (Math.sin(args.state.tick_count / 8) * 4),
+        y: label.y - 22,
+        w: 16,
+        h: 16,
+      }.merge(WHITE)
+    end
+  end
+
+  labels << label(title,
+    x: args.grid.w / 2, y: args.grid.top - 100,
+    size: SIZE_LG, align: ALIGN_CENTER)
+
+  args.outputs.labels << labels
+
+  move = nil
+  if args.inputs.down
+    move = :down
+  elsif args.inputs.up
+    move = :up
+  else
+    args.state.hold_delay = 0
+  end
+
+  if move
+    args.state.hold_delay -= 1
+
+    if args.state.hold_delay <= 0
+      index = args.state.main_menu.current_option_i
+      if move == :up
+        index -= 1
+      else
+        index += 1
+      end
+
+      if index < 0
+        index = options.length - 1
+      elsif index > options.length - 1
+        index = 0
+      end
+      args.state.main_menu.current_option_i = index
+      args.state.hold_delay = 10
+    end
+  end
+
+  if primary_down?(args.inputs)
+    options[args.state.main_menu.current_option_i][:on_select].call(args)
+  end
 end
 
 def switch_scene(args, scene, reset: false)
@@ -141,9 +226,9 @@ def tick_gameplay(args)
   args.outputs.sprites << [args.state.exp_chips, args.state.player.bullets, args.state.player, args.state.enemies, args.state.player.familiar]
 
   labels = []
-  labels << label("#{TEXT.fetch(:health)}: #{args.state.player.health}", x: 40, y: args.grid.top - 40, size: SIZE_SM)
-  labels << label("#{TEXT.fetch(:exp)}: #{args.state.player.exp}", x: 40, y: args.grid.top - 72, size: SIZE_SM)
-  labels << label("#{TEXT.fetch(:enemies_destroyed)}: #{args.state.enemies_destroyed}", x: args.grid.right - 40, y: args.grid.top - 40, size: SIZE_SM, align: ALIGN_RIGHT)
+  labels << label("#{text(:health)}: #{args.state.player.health}", x: 40, y: args.grid.top - 40, size: SIZE_SM)
+  labels << label("#{text(:exp)}: #{args.state.player.exp}", x: 40, y: args.grid.top - 72, size: SIZE_SM)
+  labels << label("#{text(:enemies_destroyed)}: #{args.state.enemies_destroyed}", x: args.grid.right - 40, y: args.grid.top - 40, size: SIZE_SM, align: ALIGN_RIGHT)
   args.outputs.labels << labels
 end
 
@@ -178,6 +263,19 @@ def tick_paused(args)
   args.outputs.labels << labels
 end
 
+def tick_settings(args)
+  labels = []
+
+  labels << label(:settings, x: args.grid.w / 2, y: args.grid.top - 200, align: ALIGN_CENTER, size: SIZE_LG)
+  labels << label(:back, x: args.grid.w / 2, y: args.grid.top - 420, align: ALIGN_CENTER, size: SIZE_SM).merge(a: args.state.tick_count % 155 + 100)
+
+  if primary_down?(args.inputs)
+    return switch_scene(args, :main_menu)
+  end
+
+  args.outputs.labels << labels
+end
+
 SIZE_LG = 10
 SIZE_MD = 6
 SIZE_SM = 4
@@ -188,7 +286,7 @@ def tick_game_over(args)
 
   labels << label(:game_over, x: args.grid.w / 2, y: args.grid.top - 200, align: ALIGN_CENTER, size: SIZE_LG)
   labels << label(:restart, x: args.grid.w / 2, y: args.grid.top - 420, align: ALIGN_CENTER, size: SIZE_SM).merge(a: args.state.tick_count % 155 + 100)
-  labels << label("#{TEXT.fetch(:enemies_destroyed)}: #{args.state.enemies_destroyed}", x: args.grid.w / 2, y: args.grid.top - 320, size: SIZE_SM, align: ALIGN_CENTER)
+  labels << label("#{text(:enemies_destroyed)}: #{args.state.enemies_destroyed}", x: args.grid.w / 2, y: args.grid.top - 320, size: SIZE_SM, align: ALIGN_CENTER)
 
   if primary_down?(args.inputs)
     return switch_scene(args, :gameplay, reset: true)
@@ -199,10 +297,10 @@ end
 
 def label(value_or_key, x:, y:, align: ALIGN_LEFT, size: SIZE_MD, color: WHITE)
   text = if value_or_key.is_a?(Symbol)
-    TEXT.fetch(value_or_key)
-  else
-    value_or_key
-  end
+           text(value_or_key)
+         else
+           value_or_key
+         end
 
   {
     text: text,
@@ -214,14 +312,22 @@ def label(value_or_key, x:, y:, align: ALIGN_LEFT, size: SIZE_MD, color: WHITE)
 end
 
 TEXT = {
+  back: "Shoot to go back",
   enemies_destroyed: "Enemies Destroyed",
   exp: "Exp",
   game_over: "Game Over",
   health: "Health",
   paused: "Paused",
+  quit: "Quit",
   restart: "Shoot to Restart",
   resume: "Shoot to Resume",
+  settings: "Settings",
+  start: "Start",
 }
+
+def text(key)
+  TEXT.fetch(key)
+end
 
 def collide(args, col1, col2, callback)
   col1 = [col1] unless col1.is_a?(Array)
@@ -423,6 +529,10 @@ end
 # The version of your game defined in `metadata/game_metadata.txt`
 def version
   $gtk.args.cvars['game_metadata.version'].value
+end
+
+def title
+  $gtk.args.cvars['game_metadata.gametitle'].value
 end
 
 def debug?
