@@ -41,6 +41,8 @@ end
 
 # Code that only gets run once on game start
 def init(args)
+  args.state.settings.sfx = true
+  args.state.settings.fullscreen = false
 end
 
 def tick(args)
@@ -58,18 +60,18 @@ end
 def tick_scene_main_menu(args)
   options = [
     {
-      text: text(:start),
+      key: :start,
       on_select: -> (args) { switch_scene(args, :gameplay) }
     },
     {
-      text: text(:settings),
+      key: :settings,
       on_select: -> (args) { switch_scene(args, :settings) }
     },
   ]
 
   if args.gtk.platform?(:desktop)
     options << {
-      text: text(:quit),
+      key: :quit,
       on_select: -> (args) { args.gtk.request_quit }
     }
   end
@@ -204,17 +206,37 @@ def tick_scene_paused(args)
   args.outputs.labels << labels
 end
 
+def toggle_fullscreen(args)
+  args.state.settings.fullscreen = !args.state.settings.fullscreen
+  args.gtk.set_window_fullscreen(args.state.settings.fullscreen)
+end
+
 def tick_scene_settings(args)
-  labels = []
+  options = [
+    {
+      key: :sfx,
+      kind: :toggle,
+      setting_val: args.state.settings.sfx,
+      on_select: -> (args) { args.state.settings.sfx = !args.state.settings.sfx }
+    },
+    {
+      key: :back,
+      on_select: -> (args) { switch_scene(args, :main_menu) }
+    },
+  ]
 
-  labels << label(:settings, x: args.grid.w / 2, y: args.grid.top - 200, align: ALIGN_CENTER, size: SIZE_LG)
-  labels << label(:back, x: args.grid.w / 2, y: args.grid.top - 420, align: ALIGN_CENTER, size: SIZE_SM).merge(a: args.state.tick_count % 155 + 100)
-
-  if primary_down?(args.inputs)
-    return switch_scene(args, :main_menu)
+  if args.gtk.platform?(:desktop)
+    options.insert(options.length - 1, {
+      key: :fullscreen,
+      kind: :toggle,
+      setting_val: args.state.settings.fullscreen,
+      on_select: -> (args) { toggle_fullscreen(args) }
+    })
   end
 
-  args.outputs.labels << labels
+  tick_menu(args, :settings, options)
+
+  args.outputs.labels << label(:settings, x: args.grid.w / 2, y: args.grid.top - 200, align: ALIGN_CENTER, size: SIZE_LG)
 end
 
 def tick_scene_game_over(args)
@@ -232,16 +254,20 @@ def tick_scene_game_over(args)
 end
 
 TEXT = {
-  back: "Shoot to go back",
+  back: "Back",
   enemies_destroyed: "Enemies Destroyed",
   exp: "Exp",
+  fullscreen: "Fullscreen",
   game_over: "Game Over",
   health: "Health",
+  off: "OFF",
+  on: "ON",
   paused: "Paused",
   quit: "Quit",
   restart: "Shoot to Restart",
   resume: "Shoot to Resume",
   settings: "Settings",
+  sfx: "Sound Effects",
   start: "Start",
 }
 
@@ -523,8 +549,14 @@ def tick_menu(args, state_key, options)
   labels = []
 
   options.each.with_index do |option, i|
+    text = case option.kind
+           when :toggle
+             "#{text(option[:key])}: #{text_for_setting_val(option[:setting_val])}"
+           else
+             text(option[:key])
+           end
     label = label(
-      option[:text],
+      text,
       x: args.grid.w / 2,
       y: 360 + (options.length - i * 52),
       align: ALIGN_CENTER,
@@ -576,5 +608,16 @@ def tick_menu(args, state_key, options)
 
   if primary_down?(args.inputs)
     options[menu_state.current_option_i][:on_select].call(args)
+  end
+end
+
+def text_for_setting_val(val)
+  case val
+  when true
+    text(:on)
+  when false
+    text(:off)
+  else
+    val
   end
 end
