@@ -50,12 +50,12 @@ def tick(args)
   args.state.has_focus ||= true
   args.state.scene ||= :main_menu
 
-  send("tick_#{args.state.scene}", args)
+  send("tick_scene_#{args.state.scene}", args)
 
   debug_tick(args)
 end
 
-def tick_main_menu(args)
+def tick_scene_main_menu(args)
   options = [
     {
       text: text(:start),
@@ -95,7 +95,7 @@ def switch_scene(args, scene, reset: false)
   args.state.scene = scene
 end
 
-def tick_gameplay(args)
+def tick_scene_gameplay(args)
   args.state.player ||= begin
     p = {
       x: args.grid.w / 2,
@@ -191,7 +191,7 @@ def destroy_enemy(args, enemy)
   end
 end
 
-def tick_paused(args)
+def tick_scene_paused(args)
   labels = []
 
   labels << label(:paused, x: args.grid.w / 2, y: args.grid.top - 200, align: ALIGN_CENTER, size: SIZE_LG)
@@ -204,7 +204,7 @@ def tick_paused(args)
   args.outputs.labels << labels
 end
 
-def tick_settings(args)
+def tick_scene_settings(args)
   labels = []
 
   labels << label(:settings, x: args.grid.w / 2, y: args.grid.top - 200, align: ALIGN_CENTER, size: SIZE_LG)
@@ -217,7 +217,7 @@ def tick_settings(args)
   args.outputs.labels << labels
 end
 
-def tick_game_over(args)
+def tick_scene_game_over(args)
   labels = []
 
   labels << label(:game_over, x: args.grid.w / 2, y: args.grid.top - 200, align: ALIGN_CENTER, size: SIZE_LG)
