@@ -276,11 +276,6 @@ def tick_settings(args)
   args.outputs.labels << labels
 end
 
-SIZE_LG = 10
-SIZE_MD = 6
-SIZE_SM = 4
-SIZE_XS = 0
-
 def tick_game_over(args)
   labels = []
 
@@ -293,22 +288,6 @@ def tick_game_over(args)
   end
 
   args.outputs.labels << labels
-end
-
-def label(value_or_key, x:, y:, align: ALIGN_LEFT, size: SIZE_MD, color: WHITE)
-  text = if value_or_key.is_a?(Symbol)
-           text(value_or_key)
-         else
-           value_or_key
-         end
-
-  {
-    text: text,
-    x: x,
-    y: y,
-    alignment_enum: align,
-    size_enum: size,
-  }.merge(color)
 end
 
 TEXT = {
@@ -325,8 +304,29 @@ TEXT = {
   start: "Start",
 }
 
+SIZE_XS = 0
+SIZE_SM = 4
+SIZE_MD = 6
+SIZE_LG = 10
+
 def text(key)
   TEXT.fetch(key)
+end
+
+def label(value_or_key, x:, y:, align: ALIGN_LEFT, size: SIZE_MD, color: WHITE)
+  text = if value_or_key.is_a?(Symbol)
+           text(value_or_key)
+         else
+           value_or_key
+         end
+
+  {
+    text: text,
+    x: x,
+    y: y,
+    alignment_enum: align,
+    size_enum: size,
+  }.merge(color)
 end
 
 def collide(args, col1, col2, callback)
