@@ -61,11 +61,11 @@ def tick_scene_main_menu(args)
   options = [
     {
       key: :start,
-      on_select: -> (args) { switch_scene(args, :gameplay) }
+      on_select: -> (args) { switch_scene(args, :gameplay, reset: true) }
     },
     {
       key: :settings,
-      on_select: -> (args) { switch_scene(args, :settings) }
+      on_select: -> (args) { switch_scene(args, :settings, reset: true) }
     },
   ]
 
@@ -91,8 +91,9 @@ def switch_scene(args, scene, reset: false)
       args.state.enemies = nil
       args.state.enemies_destroyed = nil
       args.state.exp_chips = nil
-    when :paused
-      args.state.paused = nil
+    else
+      args.state.send(scene)&.current_option_i = nil
+      args.state.send(scene)&.hold_delay = nil
     end
   end
 
