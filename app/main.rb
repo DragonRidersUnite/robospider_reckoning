@@ -121,7 +121,7 @@ def tick_scene_gameplay(args)
       w: 32,
       h: 32,
       health: 6,
-      speed: 5,
+      speed: 4,
       exp: 0,
       path: Sprite.for(:player),
       bullets: [],
@@ -443,7 +443,7 @@ def spawn_enemy(args)
     angle: 0,
     path: Sprite.for(:enemy),
     dead: false,
-    speed: 3,
+    speed: 2,
   }
 end
 
