@@ -170,7 +170,7 @@ def tick_scene_gameplay(args)
     play_sfx(args, :hurt)
   end)
   collide(args, args.state.enemies, args.state.player.familiar, -> (args, enemy, familiar) do
-    destroy_enemy(args, enemy)
+    destroy_enemy(args, enemy, sfx: :enemy_death_by_familiar)
   end)
   collide(args, args.state.exp_chips, args.state.player, -> (args, exp_chip, player) do
     exp_chip.dead = true
@@ -194,8 +194,8 @@ def tick_scene_gameplay(args)
   args.outputs.labels << labels
 end
 
-def destroy_enemy(args, enemy, sfx: true)
-  play_sfx(args, :enemy_death) if sfx
+def destroy_enemy(args, enemy, sfx: :enemy_death)
+  play_sfx(args, sfx) if sfx
   enemy.dead = true
   args.state.enemies_destroyed += 1
   rand(3).times do |i|
