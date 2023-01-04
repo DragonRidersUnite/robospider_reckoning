@@ -47,8 +47,7 @@ end
 
 # Code that only gets run once on game start
 def init(args)
-  args.state.settings.sfx = true
-  args.state.settings.fullscreen = false
+  load_settings(args)
   args.gtk.hide_cursor
 end
 
@@ -256,8 +255,53 @@ def tick_scene_paused(args)
 end
 
 def toggle_fullscreen(args)
-  args.state.settings.fullscreen = !args.state.settings.fullscreen
-  args.gtk.set_window_fullscreen(args.state.settings.fullscreen)
+  args.state.setting.fullscreen = !args.state.setting.fullscreen
+  args.gtk.set_window_fullscreen(args.state.setting.fullscreen)
+end
+
+def load_settings(args)
+  settings = args.gtk.read_file(settings_file)
+
+  if settings
+    settings.split(",").map { |s| s.split(":") }.to_h.each do |k, v|
+      if v == "true"
+        v = true
+      elsif v == "false"
+        v = false
+      end
+      args.state.setting[k.to_sym] = v
+    end
+  else
+    args.state.setting.sfx = true
+    args.state.setting.fullscreen = false
+  end
+
+  if args.state.setting.fullscreen
+    args.gtk.set_window_fullscreen(args.state.setting.fullscreen)
+  end
+end
+
+def save_settings(args)
+  args.gtk.write_file(
+    settings_file,
+    settings_for_save(open_entity_to_hash(args.state.setting))
+  )
+end
+
+def open_entity_to_hash(open_entity)
+  open_entity.as_hash.except(:entity_id, :entity_name, :entity_keys_by_ref, :__thrash_count__)
+end
+
+# returns a string of a hash of settings in the following format:
+# key1=val1,key2=val2
+def settings_for_save(settings)
+  settings.map do |k, v|
+    "#{k}:#{v}"
+  end.join(",")
+end
+
+def settings_file
+  "settings#{ debug? ? '-debug' : nil}.txt"
 end
 
 def tick_scene_settings(args)
@@ -265,8 +309,8 @@ def tick_scene_settings(args)
     {
       key: :sfx,
       kind: :toggle,
-      setting_val: args.state.settings.sfx,
-      on_select: -> (args) { args.state.settings.sfx = !args.state.settings.sfx }
+      setting_val: args.state.setting.sfx,
+      on_select: -> (args) { args.state.setting.sfx = !args.state.setting.sfx; save_settings(args) }
     },
     {
       key: :back,
@@ -278,8 +322,8 @@ def tick_scene_settings(args)
     options.insert(options.length - 1, {
       key: :fullscreen,
       kind: :toggle,
-      setting_val: args.state.settings.fullscreen,
-      on_select: -> (args) { toggle_fullscreen(args) }
+      setting_val: args.state.setting.fullscreen,
+      on_select: -> (args) { toggle_fullscreen(args); save_settings(args) }
     })
   end
 
@@ -769,7 +813,7 @@ def text_for_setting_val(val)
 end
 
 def play_sfx(args, key)
-  if args.state.settings.sfx
+  if args.state.setting.sfx
     args.outputs.sounds << "sounds/#{key}.wav"
   end
 end
