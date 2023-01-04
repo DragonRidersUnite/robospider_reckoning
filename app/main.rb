@@ -1,3 +1,8 @@
+# add your name to this array!
+CREDITS = [
+  "Brett Chalupa",
+].shuffle
+
 FPS = 60
 ALIGN_LEFT = 0
 ALIGN_CENTER = 1
@@ -78,9 +83,16 @@ def tick_scene_main_menu(args)
 
   tick_menu(args, :main_menu, options)
 
-  args.outputs.labels << label(
+  labels = []
+  labels << label(
     title, x: args.grid.w / 2, y: args.grid.top - 100,
     size: SIZE_LG, align: ALIGN_CENTER)
+  labels << label(
+    "#{text(:made_by)} #{CREDITS.join(', ')}",
+    x: args.grid.left + 24, y: 48,
+    size: SIZE_XS, align: ALIGN_LEFT)
+
+  args.outputs.labels << labels
 end
 
 def switch_scene(args, scene, reset: false)
@@ -278,13 +290,14 @@ TEXT = {
   fullscreen: "Fullscreen",
   game_over: "Game Over",
   health: "Health",
-  return_to_main_menu: "Return to Main Menu",
+  made_by: "A game by",
   off: "OFF",
   on: "ON",
   paused: "Paused",
   quit: "Quit",
   restart: "Shoot to Restart",
   resume: "Resume",
+  return_to_main_menu: "Return to Main Menu",
   settings: "Settings",
   sfx: "Sound Effects",
   start: "Start",
