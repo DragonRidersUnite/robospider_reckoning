@@ -129,7 +129,8 @@ def tick_scene_gameplay(args)
       bullets: [],
       familiars: [],
       exp_chip_magnetic_dist: 50,
-      bullet_delay: BULLET_DELAY,
+      bullet_delay: INIT_BULLET_DELAY,
+      bullet_delay_counter: INIT_BULLET_DELAY,
       direction: DIR_UP,
       invincible: false,
     }.merge(WHITE)
@@ -299,6 +300,7 @@ TEXT = {
   lu_familiar_speed_increased: "Familiar speed increased!",
   lu_player_speed_increased: "Player speed increased!",
   lu_player_exp_magnetism_increased: "Experience pick up distance increased!",
+  lu_player_fire_rate_increased: "Player fire rate increased!",
   made_by: "A game by",
   off: "OFF",
   on: "ON",
@@ -352,7 +354,7 @@ def collide(args, col1, col2, callback)
   end
 end
 
-BULLET_DELAY = 10
+INIT_BULLET_DELAY = 10
 BULLET_SIZE = 10
 def tick_player(args, player)
   firing = primary_down_or_held?(args.inputs)
@@ -382,9 +384,9 @@ def tick_player(args, player)
   end
 
   player.angle = angle_for_dir(player.direction)
-  player.bullet_delay += 1
+  player.bullet_delay_counter += 1
 
-  if player.bullet_delay >= BULLET_DELAY && firing
+  if player.bullet_delay_counter >= player.bullet_delay && firing
     play_sfx(args, :shoot)
     player.bullets << {
       x: player.x + player.w / 2 - BULLET_SIZE / 2,
@@ -397,7 +399,7 @@ def tick_player(args, player)
       dead: false,
       path: Sprite.for(:bullet),
     }.merge(WHITE)
-    player.bullet_delay = 0
+    player.bullet_delay_counter = 0
   end
 
   player.bullets.each do |b|
@@ -425,6 +427,7 @@ def tick_player(args, player)
   debug_label(args, player.x, player.y - 14, "angle: #{player.angle}")
   debug_label(args, player.x, player.y - 28, "bullets: #{player.bullets.length}")
   debug_label(args, player.x, player.y - 42, "exp 2 nxt lvl: #{player.exp_to_next_level}")
+  debug_label(args, player.x, player.y - 54, "bullet delay: #{player.bullet_delay}")
 end
 
 def spawn_familiar(player, dist_from_player:, speed: 18)
@@ -528,15 +531,18 @@ def level_up(args, player)
     player.exp_chip_magnetic_dist *= 2
     args.gtk.notify!(text(:lu_player_exp_magnetism_increased))
   when 6
-    # dual shot
+    player.bullet_delay -= 2
+    args.gtk.notify!(text(:lu_player_fire_rate_increased))
   when 7
-    # faster familiar
+    # dual shot
   when 8
     # tri shot
   when 9
-    # quad shot
-  when 10
     # second familiar
+  when 10
+    # quad shot
+  when 11
+    # faster familiars
   end
 end
 
