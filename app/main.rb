@@ -73,7 +73,7 @@ def tick_scene_main_menu(args)
     },
     {
       key: :settings,
-      on_select: -> (args) { switch_scene(args, :settings, reset: true) }
+      on_select: -> (args) { switch_scene(args, :settings, reset: true, return_to: :main_menu) }
     },
   ]
 
@@ -98,7 +98,14 @@ def tick_scene_main_menu(args)
   args.outputs.labels << labels
 end
 
-def switch_scene(args, scene, reset: false)
+def switch_scene(args, scene, reset: false, return_to: nil)
+  args.state.scene_to_return_to = return_to if return_to
+
+  if scene == :back && args.state.scene_to_return_to
+    scene = args.state.scene_to_return_to
+    args.state.scene_to_return_to = nil
+  end
+
   if reset
     case scene
     when :gameplay
@@ -227,6 +234,10 @@ def tick_scene_paused(args)
       on_select: -> (args) { switch_scene(args, :gameplay) }
     },
     {
+      key: :settings,
+      on_select: -> (args) { switch_scene(args, :settings, reset: true, return_to: :paused) }
+    },
+    {
       key: :return_to_main_menu,
       on_select: -> (args) { switch_scene(args, :main_menu) }
     },
@@ -259,7 +270,7 @@ def tick_scene_settings(args)
     },
     {
       key: :back,
-      on_select: -> (args) { switch_scene(args, :main_menu) }
+      on_select: -> (args) { switch_scene(args, :back) }
     },
   ]
 
