@@ -42,3 +42,13 @@ There following debug-only shortcuts can be used to help make developing easier:
 - <kbd>0</kbd> -- render debug details
 - <kbd>1</kbd> -- level up player
 - <kbd>2</kbd> -- toggle player invincibility
+
+### Tests
+
+Simpler methods are tests in `app/tests.rb`. Run the tests with from within your engine dir with:
+
+``` console
+./dragonruby mygame --eval mygame/app/tests.rb --no-tick
+```
+
+or just use `./run_tests`

@@ -1,0 +1,2 @@
+#!/usr/bin/env sh
+../dragonruby . --eval app/tests.rb --no-tick
