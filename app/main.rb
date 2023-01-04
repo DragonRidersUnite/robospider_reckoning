@@ -48,6 +48,7 @@ end
 def init(args)
   args.state.settings.sfx = true
   args.state.settings.fullscreen = false
+  args.gtk.hide_cursor
 end
 
 def tick(args)
