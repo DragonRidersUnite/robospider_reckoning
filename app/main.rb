@@ -186,6 +186,7 @@ def tick_scene_gameplay(args)
   args.state.exp_chips.reject! { |e| e.dead }
 
   if args.state.player.dead
+    play_sfx(args, :player_death)
     return switch_scene(args, :game_over)
   end
 
