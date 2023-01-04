@@ -614,16 +614,24 @@ def debug_tick(args)
   debug_label(args, args.grid.right - 24, args.grid.top, "#{args.gtk.current_framerate.round}")
 
   if args.inputs.keyboard.key_down.i
+    play_sfx(args, :select)
     Sprite.reset_all(args)
     args.gtk.notify!("Sprites reloaded")
   end
 
   if args.inputs.keyboard.key_down.r
+    play_sfx(args, :select)
     $gtk.reset
   end
 
   if args.inputs.keyboard.key_down.zero
+    play_sfx(args, :select)
     args.state.render_debug_details = !args.state.render_debug_details
+  end
+
+  if args.inputs.keyboard.key_down.one
+    play_sfx(args, :select)
+    level_up(args, args.state.player)
   end
 end
 
