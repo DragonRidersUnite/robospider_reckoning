@@ -135,6 +135,7 @@ def tick_scene_gameplay(args)
   end
 
   if !args.state.has_focus || pause_down?(args)
+    play_sfx(args, :select)
     return switch_scene(args, :paused, reset: true)
   end
 
@@ -152,7 +153,8 @@ def tick_scene_gameplay(args)
   end)
   collide(args, args.state.enemies, args.state.player, -> (args, enemy, player) do
     player.health -= 1
-    destroy_enemy(args, enemy)
+    destroy_enemy(args, enemy, sfx: false)
+    play_sfx(args, :hurt)
   end)
   collide(args, args.state.enemies, args.state.player.familiar, -> (args, enemy, familiar) do
     destroy_enemy(args, enemy)
@@ -160,6 +162,7 @@ def tick_scene_gameplay(args)
   collide(args, args.state.exp_chips, args.state.player, -> (args, exp_chip, player) do
     exp_chip.dead = true
     player.exp += exp_chip.exp_amount
+    play_sfx(args, :exp_chip)
   end)
   args.state.enemies.reject! { |e| e.dead }
   args.state.exp_chips.reject! { |e| e.dead }
@@ -178,7 +181,8 @@ def tick_scene_gameplay(args)
   args.outputs.labels << labels
 end
 
-def destroy_enemy(args, enemy)
+def destroy_enemy(args, enemy, sfx: true)
+  play_sfx(args, :enemy_death) if sfx
   enemy.dead = true
   args.state.enemies_destroyed += 1
   rand(3).times do |i|
@@ -359,6 +363,7 @@ def tick_player(args, player)
   player.bullet_delay += 1
 
   if player.bullet_delay >= BULLET_DELAY && firing
+    play_sfx(args, :shoot)
     player.bullets << {
       x: player.x + player.w / 2 - BULLET_SIZE / 2,
       y: player.y + player.h / 2 - BULLET_SIZE / 2,
@@ -604,6 +609,7 @@ def tick_menu(args, state_key, options)
     menu_state.hold_delay -= 1
 
     if menu_state.hold_delay <= 0
+      play_sfx(args, :menu)
       index = menu_state.current_option_i
       if move == :up
         index -= 1
@@ -622,6 +628,7 @@ def tick_menu(args, state_key, options)
   end
 
   if primary_down?(args.inputs)
+    play_sfx(args, :select)
     options[menu_state.current_option_i][:on_select].call(args)
   end
 end
@@ -634,5 +641,11 @@ def text_for_setting_val(val)
     text(:off)
   else
     val
+  end
+end
+
+def play_sfx(args, key)
+  if args.state.settings.sfx
+    args.outputs.sounds << "sounds/#{key}.wav"
   end
 end
