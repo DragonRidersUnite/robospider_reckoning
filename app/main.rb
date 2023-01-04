@@ -156,8 +156,8 @@ def tick_scene_gameplay(args)
     return switch_scene(args, :paused, reset: true)
   end
 
-  # spawn a new enemy every 12 seconds
-  if args.state.tick_count % FPS * 12 == 0
+  # spawns enemies faster when player level is higher; starts at every 12 seconds
+  if args.state.tick_count % FPS * (12 - (args.state.player.level / 3).to_i) == 0
     args.state.enemies << spawn_enemy(args)
   end
 
