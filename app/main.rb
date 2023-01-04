@@ -124,7 +124,6 @@ def tick_scene_gameplay(args)
       health: 6,
       speed: 4,
       level: 1,
-      exp: 0,
       path: Sprite.for(:player),
       exp_to_next_level: LEVEL_EXP_DIFF[2],
       bullets: [],
@@ -195,7 +194,6 @@ def tick_scene_gameplay(args)
   labels = []
   labels << label("#{text(:health)}: #{args.state.player.health}", x: 40, y: args.grid.top - 40, size: SIZE_SM)
   labels << label("#{text(:level)}: #{args.state.player.level}", x: 40, y: args.grid.top - 72, size: SIZE_SM)
-  labels << label("#{text(:exp)}: #{args.state.player.exp}", x: 40, y: args.grid.top - 105, size: SIZE_SM)
   labels << label("#{text(:enemies_destroyed)}: #{args.state.enemies_destroyed}", x: args.grid.right - 40, y: args.grid.top - 40, size: SIZE_SM, align: ALIGN_RIGHT)
   args.outputs.labels << labels
 end
@@ -293,7 +291,6 @@ end
 TEXT = {
   back: "Back",
   enemies_destroyed: "Enemies Destroyed",
-  exp: "Exp",
   fullscreen: "Fullscreen",
   game_over: "Game Over",
   health: "Health",
@@ -427,6 +424,7 @@ def tick_player(args, player)
   debug_label(args, player.x, player.y, "dir: #{player.direction}")
   debug_label(args, player.x, player.y - 14, "angle: #{player.angle}")
   debug_label(args, player.x, player.y - 28, "bullets: #{player.bullets.length}")
+  debug_label(args, player.x, player.y - 42, "exp 2 nxt lvl: #{player.exp_to_next_level}")
 end
 
 def spawn_familiar(player, dist_from_player:, speed: 18)
@@ -489,7 +487,6 @@ def tick_exp_chip(args, exp_chip)
 end
 
 def absorb_exp(args, player, exp_chip)
-  player.exp += exp_chip.exp_amount
   player.exp_to_next_level -= exp_chip.exp_amount
 
   # level up every 10 points
