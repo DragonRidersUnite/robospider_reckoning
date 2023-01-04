@@ -114,6 +114,17 @@ def switch_scene(args, scene, reset: false)
   args.state.scene = scene
 end
 
+LEVEL_EXP_DIFF = {
+  2 => 10,
+  3 => 15,
+  4 => 18,
+  5 => 25,
+  6 => 26,
+  7 => 30,
+  8 => 33,
+  9 => 35,
+}
+
 def tick_scene_gameplay(args)
   args.state.player ||= begin
     p = {
@@ -123,8 +134,10 @@ def tick_scene_gameplay(args)
       h: 32,
       health: 6,
       speed: 4,
+      level: 1,
       exp: 0,
       path: Sprite.for(:player),
+      exp_to_next_level: LEVEL_EXP_DIFF[2],
       bullets: [],
       exp_chip_magnetic_dist: 50,
       bullet_delay: BULLET_DELAY,
@@ -175,7 +188,7 @@ def tick_scene_gameplay(args)
   end)
   collide(args, args.state.exp_chips, args.state.player, -> (args, exp_chip, player) do
     exp_chip.dead = true
-    player.exp += exp_chip.exp_amount
+    absorb_exp(args, player, exp_chip)
     play_sfx(args, :exp_chip)
   end)
   args.state.enemies.reject! { |e| e.dead }
@@ -190,7 +203,8 @@ def tick_scene_gameplay(args)
 
   labels = []
   labels << label("#{text(:health)}: #{args.state.player.health}", x: 40, y: args.grid.top - 40, size: SIZE_SM)
-  labels << label("#{text(:exp)}: #{args.state.player.exp}", x: 40, y: args.grid.top - 72, size: SIZE_SM)
+  labels << label("#{text(:level)}: #{args.state.player.level}", x: 40, y: args.grid.top - 72, size: SIZE_SM)
+  labels << label("#{text(:exp)}: #{args.state.player.exp}", x: 40, y: args.grid.top - 105, size: SIZE_SM)
   labels << label("#{text(:enemies_destroyed)}: #{args.state.enemies_destroyed}", x: args.grid.right - 40, y: args.grid.top - 40, size: SIZE_SM, align: ALIGN_RIGHT)
   args.outputs.labels << labels
 end
@@ -292,6 +306,7 @@ TEXT = {
   fullscreen: "Fullscreen",
   game_over: "Game Over",
   health: "Health",
+  level: "Level",
   made_by: "A game by",
   off: "OFF",
   on: "ON",
@@ -474,6 +489,21 @@ def tick_exp_chip(args, exp_chip)
   end
 end
 
+def absorb_exp(args, player, exp_chip)
+  player.exp += exp_chip.exp_amount
+  player.exp_to_next_level -= exp_chip.exp_amount
+
+  # level up every 10 points
+  if (player.exp_to_next_level <= 0)
+    level_up(args, player)
+  end
+end
+
+def level_up(args, player)
+  player.level += 1
+  player.exp_to_next_level = LEVEL_EXP_DIFF[player.level] || 100 # 100 is just a fail-safe ceiling
+  play_sfx(args, :level_up)
+end
 # +angle+ is expected to be in degrees with 0 being facing right
 def vel_from_angle(angle, speed)
   [speed * Math.cos(deg_to_rad(angle)), speed * Math.sin(deg_to_rad(angle))]
