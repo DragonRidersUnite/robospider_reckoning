@@ -1,7 +1,7 @@
 devid=dragonridersunite
 devtitle=Dragon Riders Community
-gameid=the-last-dragon
-gametitle=The Last Dragon
+gameid=exquisite-corps
+gametitle=Exquisite Corps
 version=0.1
 icon=metadata/icon.png
 

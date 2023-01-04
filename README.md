@@ -23,7 +23,15 @@ The engine files are not included in this source repository so that people can u
 1. Unzip the DragonRuby Game Toolkit engine zip
 2. Delete the `mygame` directory
 3. Clone the repository into the DRGTK engine folder with the folder name `mygame`: `git clone git@github.com:DragonRidersUnite/exquisite_corps.git mygame`
-4. Start DragonRuby, and make an awesome game!
+4. Start DragonRuby, and make it awesome!
+
+### Where to Start
+
+When your week is beginning, add your name to the `CREDITS` array. It's a shuffled list of everyone who worked on the game.
+
+### On the Code Architecture
+
+The code is intentionally structured to make use of functions and `args.state` without any classes. A functional-ish approach. This follows in the spirit of DRGTK's docs.
 
 ### Keyboard Shortcuts
 
