@@ -114,17 +114,6 @@ def switch_scene(args, scene, reset: false)
   args.state.scene = scene
 end
 
-LEVEL_EXP_DIFF = {
-  2 => 10,
-  3 => 15,
-  4 => 18,
-  5 => 25,
-  6 => 26,
-  7 => 30,
-  8 => 33,
-  9 => 35,
-}
-
 def tick_scene_gameplay(args)
   args.state.player ||= begin
     p = {
@@ -139,6 +128,7 @@ def tick_scene_gameplay(args)
       path: Sprite.for(:player),
       exp_to_next_level: LEVEL_EXP_DIFF[2],
       bullets: [],
+      familiars: [],
       exp_chip_magnetic_dist: 50,
       bullet_delay: BULLET_DELAY,
       direction: DIR_UP,
@@ -183,7 +173,7 @@ def tick_scene_gameplay(args)
     destroy_enemy(args, enemy, sfx: false)
     play_sfx(args, :hurt)
   end)
-  collide(args, args.state.enemies, args.state.player.familiar, -> (args, enemy, familiar) do
+  collide(args, args.state.enemies, args.state.player.familiars, -> (args, enemy, familiar) do
     destroy_enemy(args, enemy, sfx: :enemy_death_by_familiar)
   end)
   collide(args, args.state.exp_chips, args.state.player, -> (args, exp_chip, player) do
@@ -199,7 +189,7 @@ def tick_scene_gameplay(args)
   end
 
   args.outputs.solids << { x: args.grid.left, y: args.grid.bottom, w: args.grid.w, h: args.grid.h }.merge(BLACK)
-  args.outputs.sprites << [args.state.exp_chips, args.state.player.bullets, args.state.player, args.state.enemies, args.state.player.familiar]
+  args.outputs.sprites << [args.state.exp_chips, args.state.player.bullets, args.state.player, args.state.enemies, args.state.player.familiars]
 
   labels = []
   labels << label("#{text(:health)}: #{args.state.player.health}", x: 40, y: args.grid.top - 40, size: SIZE_SM)
@@ -307,6 +297,10 @@ TEXT = {
   game_over: "Game Over",
   health: "Health",
   level: "Level",
+  lu_familiar_spawned: "Familiar spawned!",
+  lu_familiar_speed_increased: "Familiar speed increased!",
+  lu_player_speed_increased: "Player speed increased!",
+  lu_player_exp_magnetism_increased: "Experience pick up distance increased!",
   made_by: "A game by",
   off: "OFF",
   on: "ON",
@@ -427,27 +421,31 @@ def tick_player(args, player)
 
   player.bullets.reject! { |b| b.dead }
 
-  tick_familiar(args, player)
+  player.familiars.each { |f| tick_familiar(args, player, f) }
 
   debug_label(args, player.x, player.y, "dir: #{player.direction}")
   debug_label(args, player.x, player.y - 14, "angle: #{player.angle}")
   debug_label(args, player.x, player.y - 28, "bullets: #{player.bullets.length}")
 end
 
-def tick_familiar(args, player)
-  player.familiar ||= {
+def spawn_familiar(player, dist_from_player:, speed: 18)
+  player.familiars << {
     x: player.x + 10,
     y: player.y,
     w: 18,
     h: 18,
+    speed: speed,
+    dist_from_player: dist_from_player,
     path: Sprite.for(:familiar),
   }
+end
 
-  rotator = args.state.tick_count / 18
-  fam_dist = 66
-  player.familiar.x = player.x + player.w / 2 + Math.sin(rotator) * fam_dist
-  player.familiar.y = player.y + player.h / 2 + Math.cos(rotator) * fam_dist
-  player.familiar.angle = args.geometry.angle_to(player, player.familiar)
+def tick_familiar(args, player, familiar)
+  rotator = args.state.tick_count / familiar.speed
+  familiar.x = player.x + player.w / 2 + Math.sin(rotator) * familiar.dist_from_player
+  familiar.y = player.y + player.h / 2 + Math.cos(rotator) * familiar.dist_from_player
+  familiar.angle = args.geometry.angle_to(player, familiar)
+  familiar
 end
 
 def spawn_enemy(args)
@@ -499,11 +497,50 @@ def absorb_exp(args, player, exp_chip)
   end
 end
 
+LEVEL_EXP_DIFF = {
+  2 => 10,
+  3 => 15,
+  4 => 18,
+  5 => 25,
+  6 => 26,
+  7 => 30,
+  8 => 33,
+  9 => 35,
+}
+
 def level_up(args, player)
   player.level += 1
   player.exp_to_next_level = LEVEL_EXP_DIFF[player.level] || 100 # 100 is just a fail-safe ceiling
   play_sfx(args, :level_up)
+
+  case player.level
+  when 2
+    spawn_familiar(player, dist_from_player: 66)
+    args.gtk.notify!(text(:lu_familiar_spawned))
+  when 3
+    player.familiars.each do |f|
+      f.speed += 3
+    end
+    args.gtk.notify!(text(:lu_familiar_speed_increased))
+  when 4
+    player.speed += 2
+    args.gtk.notify!(text(:lu_player_speed_increased))
+  when 5
+    player.exp_chip_magnetic_dist *= 2
+    args.gtk.notify!(text(:lu_player_exp_magnetism_increased))
+  when 6
+    # dual shot
+  when 7
+    # faster familiar
+  when 8
+    # tri shot
+  when 9
+    # quad shot
+  when 10
+    # second familiar
+  end
 end
+
 # +angle+ is expected to be in degrees with 0 being facing right
 def vel_from_angle(angle, speed)
   [speed * Math.cos(deg_to_rad(angle)), speed * Math.sin(deg_to_rad(angle))]
