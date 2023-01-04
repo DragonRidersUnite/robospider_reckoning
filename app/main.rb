@@ -54,6 +54,7 @@ end
 def tick(args)
   init(args) if args.state.tick_count == 0
 
+  # this looks good on non 16:9 resolutions; game background is different
   args.outputs.background_color = TRUE_BLACK.values
   args.state.has_focus ||= true
   args.state.scene ||= :main_menu
@@ -152,8 +153,8 @@ def tick_scene_gameplay(args)
     return switch_scene(args, :paused, reset: true)
   end
 
-  # spawn a new enemy every 5 seconds
-  if args.state.tick_count % FPS * 10 == 0
+  # spawn a new enemy every 12 seconds
+  if args.state.tick_count % FPS * 12 == 0
     args.state.enemies << spawn_enemy(args)
   end
 
