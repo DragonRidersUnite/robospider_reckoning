@@ -132,6 +132,7 @@ def tick_scene_gameplay(args)
       exp_chip_magnetic_dist: 50,
       bullet_delay: BULLET_DELAY,
       direction: DIR_UP,
+      invincible: false,
     }.merge(WHITE)
 
     p.define_singleton_method(:dead) do
@@ -169,7 +170,7 @@ def tick_scene_gameplay(args)
     destroy_enemy(args, enemy)
   end)
   collide(args, args.state.enemies, args.state.player, -> (args, enemy, player) do
-    player.health -= 1
+    player.health -= 1 unless player.invincible
     destroy_enemy(args, enemy, sfx: false)
     play_sfx(args, :hurt)
   end)
@@ -629,9 +630,21 @@ def debug_tick(args)
     args.state.render_debug_details = !args.state.render_debug_details
   end
 
-  if args.inputs.keyboard.key_down.one
-    play_sfx(args, :select)
-    level_up(args, args.state.player)
+  player = args.state.player
+  if player
+    if args.inputs.keyboard.key_down.one
+      play_sfx(args, :select)
+      level_up(args, player)
+    end
+
+    if args.inputs.keyboard.key_down.two
+      play_sfx(args, :select)
+      player.invincible = !player.invincible
+      args.gtk.notify!("Player invincibility toggled")
+    end
+    if player.invincible && args.state.scene == :gameplay
+      args.outputs.labels << label("inv", x: player.x + player.w / 2, y: player.y + player.h + 16, align: ALIGN_CENTER, size: SIZE_XS)
+    end
   end
 end
 
