@@ -16,6 +16,7 @@ BLEND_MULTIPLY = 4
 TRUE_BLACK = { r: 0, g: 0, b: 0 }
 BLACK = { r: 25, g: 25, b: 25 }
 WHITE = { r: 255, g: 255, b: 255 }
+RED = { r: 231, g: 89, b: 82 }
 
 DIR_DOWN = :down
 DIR_UP = :up
@@ -423,6 +424,10 @@ def tick_player(args, player)
   player.bullets.reject! { |b| b.dead }
 
   player.familiars.each { |f| tick_familiar(args, player, f) }
+
+  if player.health == 1
+    player.merge!(RED)
+  end
 
   debug_label(args, player.x, player.y, "dir: #{player.direction}")
   debug_label(args, player.x, player.y - 14, "angle: #{player.angle}")
