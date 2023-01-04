@@ -516,8 +516,9 @@ def level_up(args, player)
     spawn_familiar(player, dist_from_player: 66)
     args.gtk.notify!(text(:lu_familiar_spawned))
   when 3
+    # familiar speed is weird and decreasing it makes it faster
     player.familiars.each do |f|
-      f.speed += 3
+      f.speed -= 3
     end
     args.gtk.notify!(text(:lu_familiar_speed_increased))
   when 4
