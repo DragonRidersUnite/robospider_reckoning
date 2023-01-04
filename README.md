@@ -45,10 +45,10 @@ There following debug-only shortcuts can be used to help make developing easier:
 
 ### Tests
 
-Simpler methods are tests in `app/tests.rb`. Run the tests with from within your engine dir with:
+Tests for methods live in `app/tests.rb`. Run the tests with from within your engine dir with:
 
 ``` console
-./dragonruby mygame --eval mygame/app/tests.rb --no-tick
+./dragonruby mygame --eval mygame/app/tests.rb --no-tick --exit-on-fail
 ```
 
 or just use `./run_tests`

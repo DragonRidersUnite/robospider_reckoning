@@ -1,17 +1,50 @@
-# To run the tests: ./dragonruby mygame --eval mygame/app/tests.rb --no-tick
+# To run the tests: ./run_tests
 #
-# methods prefixed with `test_` get run automatically and have `args` and
-# `assert` passed in.
-#
+# Available assertions:
 # assert.true!
 # assert.false!
 # assert.equal!
+#
+# View more details: https://github.com/DragonRidersUnite/dragon_test
+
+def run_tests
+  $gtk.tests&.passed.clear
+  $gtk.tests&.inconclusive.clear
+  $gtk.tests&.failed.clear
+  puts "running tests"
+  $gtk.reset 100
+  $gtk.log_level = :on
+  $gtk.tests.start
+
+  if $gtk.tests.failed.any?
+    puts "🙀 tests failed!"
+    failures = $gtk.tests.failed.uniq.map do |failure|
+      "🔴 ##{failure[:m]} - #{failure[:e]}"
+    end
+
+    if $gtk.cli_arguments.keys.include?(:"exit-on-fail")
+      $gtk.write_file("test-failures.txt", failures.join("\n"))
+      exit(1)
+    end
+  else
+    puts "🪩 tests passed!"
+  end
+end
+
+# an optional BDD-like method to use to group and document tests
+def it(message)
+  yield
+end
 
 def test(method)
   test_name = "test_#{method}"
   define_method(test_name) do |args, assert|
+    # define custom assertions here!
+    # assert.define_singleton_method(:rect!) do |obj|
+    #   assert.true!(obj.x && obj.y && obj.w && obj.h, "doesn't have needed properties")
+    # end
+
     yield(args, assert)
-    puts "✅ #{test_name}"
   end
 end
 
@@ -33,7 +66,24 @@ test :out_of_bounds do |args, assert|
   assert.false!(out_of_bounds?(grid, { x: 30, y: 30, w: 24, h: 24 }))
 end
 
-puts "running tests"
-$gtk.reset 100
-$gtk.log_level = :off
-$gtk.tests.start
+test :angle_for_dir do |args, assert|
+  assert.equal!(angle_for_dir(DIR_RIGHT), 0)
+  assert.equal!(angle_for_dir(DIR_LEFT), 180)
+  assert.equal!(angle_for_dir(DIR_UP), 90)
+  assert.equal!(angle_for_dir(DIR_DOWN), 270)
+end
+
+test :vel_from_angle do |args, assert|
+  it "calculates core four angles properly" do
+    assert.equal!(vel_from_angle(0, 5), [5.0, 0.0])
+    assert.equal!(vel_from_angle(90, 5).map { |v| v.round(2) }, [0.0, 5.0])
+    assert.equal!(vel_from_angle(180, 5).map { |v| v.round(2) }, [-5.0, 0.0])
+    assert.equal!(vel_from_angle(270, 5).map { |v| v.round(2) }, [0.0, -5.0])
+  end
+
+  it "calculates other values as expected" do
+    assert.equal!(vel_from_angle(12, 5).map { |v| v.round(2) }, [4.89, 1.04])
+  end
+end
+
+run_tests
