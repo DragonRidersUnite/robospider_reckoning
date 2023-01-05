@@ -18,8 +18,8 @@ BLACK = { r: 25, g: 25, b: 25 }
 WHITE = { r: 255, g: 255, b: 255 }
 RED = { r: 231, g: 89, b: 82 }
 DARK_RED = { r: 214, g: 26, b: 12 }
-GOLD = { r: 214, g: 173, b: 12 }
-DARK_GREEN = { r: 12, g: 142, b: 56 }
+DARK_GOLD = { r: 120, g: 97, b: 7 }
+DARK_GREEN = { r: 5, g: 84, b: 12 }
 DARK_BLUE = { r: 22, g: 122, b: 188 }
 DARK_PURPLE = { r: 88, g: 12, b: 144 }
 
@@ -166,7 +166,7 @@ def tick_scene_gameplay(args)
       invincible: false,
     }.merge(WHITE)
 
-    p.define_singleton_method(:dead) do
+    p.define_singleton_method(:dead?) do
       health <= 0
     end
 
@@ -220,10 +220,10 @@ def tick_scene_gameplay(args)
     absorb_exp(args, player, exp_chip)
     play_sfx(args, :exp_chip)
   end)
-  args.state.enemies.reject! { |e| e.dead }
+  args.state.enemies.reject! { |e| e.dead? }
   args.state.exp_chips.reject! { |e| e.dead }
 
-  if args.state.player.dead
+  if args.state.player.dead?
     play_sfx(args, :player_death)
     return switch_scene(args, :game_over)
   end
@@ -249,7 +249,6 @@ def damage_enemy(args, enemy, entity, sfx: :enemy_hit)
 end
 
 def destroy_enemy(args, enemy)
-  enemy.dead = true
   args.state.enemies_destroyed += 1
 
   random(enemy.min_exp_drop, enemy.max_exp_drop).times do |i|
@@ -276,7 +275,7 @@ def random(min, max)
 end
 
 def tick_scene_paused(args)
-  draw_bg(args, GOLD)
+  draw_bg(args, DARK_GOLD)
 
   options = [
     {
@@ -656,6 +655,10 @@ def spawn_enemy(args, type = nil)
     if percent_chance?(super_chance)
       enemy.merge!(ENEMY_SUPER)
     end
+  end
+
+  enemy.define_singleton_method(:dead?) do
+    health <= 0
   end
 
   args.state.enemies << enemy
