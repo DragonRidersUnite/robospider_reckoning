@@ -193,6 +193,7 @@ def tick_scene_gameplay(args)
   end)
   collide(args, args.state.enemies, args.state.player, -> (args, enemy, player) do
     player.health -= 1 unless player.invincible
+    flash(player, RED, 12)
     destroy_enemy(args, enemy, sfx: false)
     play_sfx(args, :hurt)
   end)
@@ -515,6 +516,8 @@ def tick_player(args, player)
   player.bullets.reject! { |b| b.dead }
 
   player.familiars.each { |f| tick_familiar(args, player, f) }
+
+  tick_flasher(player)
 
   if player.health == 1
     player.merge!(RED)
@@ -870,4 +873,28 @@ def play_sfx(args, key)
   if args.state.setting.sfx
     args.outputs.sounds << "sounds/#{key}.wav"
   end
+end
+
+def flash(entity, color, tick_count)
+  entity.flashing = true
+  entity.flash_ticks_remaining = tick_count
+  entity.flash_color = color
+end
+
+def tick_flasher(entity)
+  if entity.flashing
+    entity.flash_ticks_remaining -= 1
+    entity.merge!(entity.flash_color)
+    if entity.flash_ticks_remaining <= 0
+      entity.flashing = false
+      reset_color(entity)
+    end
+  end
+end
+
+def reset_color(entity)
+  entity.a = nil
+  entity.r = nil
+  entity.g = nil
+  entity.b = nil
 end
