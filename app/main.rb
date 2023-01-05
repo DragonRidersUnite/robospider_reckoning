@@ -626,16 +626,23 @@ ENEMY_KING = {
   body_power: 4,
 }
 
+ENEMY_SPAWN_LOCS = [
+  { x: -100, y: -100 }, # bottom left
+  { x: -100, y: 360 }, # middle left
+  { x: -100, y: 820 }, # upper left
+  { x: 1380, y: -100 }, # bottom right
+  { x: 1380, y: 360 }, # middle right
+  { x: 1380, y: 820 }, # upper right
+  { x: 640, y: -10 }, # bottom middle
+  { x: 640, y: 820 }, # top middle
+]
+
 # enemy `type` for overriding default algorithm:
 # - :basic
 # - :super
 # - :king
 def spawn_enemy(args, type = nil)
-  enemy = ENEMY_BASIC.merge({
-    x: [args.grid.left + 10, args.grid.right - 10].sample,
-    y: [args.grid.top + 10, args.grid.bottom - 10].sample,
-    dead: false,
-  })
+  enemy = ENEMY_BASIC.merge(ENEMY_SPAWN_LOCS.sample)
 
   case type
   when :basic
