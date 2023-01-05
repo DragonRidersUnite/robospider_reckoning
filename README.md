@@ -57,3 +57,17 @@ Tests for methods live in `app/tests.rb`. Run the tests with from within your en
 ```
 
 or just use `./run_tests`
+
+## Weekly Hand-Off
+
+These are the steps for Brett at the end of each participant's week:
+
+1. Test the build
+2. Bump the version
+3. Commit & tag the bump
+4. Record progress video
+5. Upload to itch.io for private viewing
+6. Add next person to GitHub repo
+7. Add next person to private Discord thread
+8. Let them know they're up!
+9. Update the [spreadsheet](https://docs.google.com/spreadsheets/d/1mYuRJ8Y6dVQJDy_0MaMyJSEselNp7LXFXM0fKSjbJqw/edit)
