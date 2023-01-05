@@ -128,4 +128,14 @@ test :opposite_angle do |args, assert|
   end
 end
 
+test :add_to_angle do |args, assert|
+  it "returns the new angle on the circle" do
+    assert.equal!(add_to_angle(0, 30), 30)
+    assert.equal!(add_to_angle(0, -30), 330)
+    assert.equal!(add_to_angle(180, -30), 150)
+    assert.equal!(add_to_angle(320, 60), 20)
+    assert.equal!(add_to_angle(320, -60), 260)
+  end
+end
+
 run_tests

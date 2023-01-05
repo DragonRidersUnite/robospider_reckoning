@@ -361,9 +361,11 @@ TEXT = {
   game_over: "Game Over",
   health: "Health",
   level: "Level",
-  lu_dual_shot: "Dual shot!",
   lu_familiar_spawned: "Familiar spawned!",
   lu_familiar_speed_increased: "Familiar speed increased!",
+  lu_fp_dual_shot: "Dual shot!",
+  lu_fp_tri_shot: "Tri shot!",
+  lu_fp_quad_shot: "Quad shot!",
   lu_player_exp_magnetism_increased: "Experience pick up distance increased!",
   lu_player_fire_rate_increased: "Player fire rate increased!",
   lu_player_speed_increased: "Player speed increased!",
@@ -473,6 +475,15 @@ def tick_player(args, player)
     when FP_DUAL
       bullets << bullet(player, player.angle)
       bullets << bullet(player, opposite_angle(player.angle))
+    when FP_TRI
+      bullets << bullet(player, player.angle)
+      bullets << bullet(player, add_to_angle(player.angle, -30))
+      bullets << bullet(player, add_to_angle(player.angle, 30))
+    when FP_QUAD
+      bullets << bullet(player, player.angle)
+      bullets << bullet(player, opposite_angle(player.angle))
+      bullets << bullet(player, add_to_angle(player.angle, -30))
+      bullets << bullet(player, add_to_angle(player.angle, 30))
     end
 
     play_sfx(args, :shoot)
@@ -582,6 +593,7 @@ LEVEL_EXP_DIFF = {
   7 => 30,
   8 => 33,
   9 => 35,
+  10 => 38,
 }
 
 def level_up(args, player)
@@ -607,14 +619,16 @@ def level_up(args, player)
     args.gtk.notify!(text(:lu_player_exp_magnetism_increased))
   when 6
     player.fire_pattern = FP_DUAL
-    args.gtk.notify!(text(:lu_dual_shot))
+    args.gtk.notify!(text(:lu_fp_dual_shot))
   when 7
-    # tri shot
+    player.fire_pattern = FP_TRI
+    args.gtk.notify!(text(:lu_fp_tri_shot))
   when 8
     player.bullet_delay -= 2
     args.gtk.notify!(text(:lu_player_fire_rate_increased))
   when 9
-    # second familiar
+    player.fire_pattern = FP_QUAD
+    args.gtk.notify!(text(:lu_fp_quad_shot))
   when 10
     # quad shot
   when 11
@@ -630,7 +644,13 @@ end
 # returns diametrically opposed angle
 # uses degrees
 def opposite_angle(angle)
-  (angle + 180).abs % 360
+  add_to_angle(angle, 180)
+end
+
+# returns a new angle from the og `angle` one summed with the `diff`
+# degrees! of course
+def add_to_angle(angle, diff)
+  ((angle + diff) % 360).abs
 end
 
 def deg_to_rad(deg)
