@@ -95,8 +95,8 @@ def tick_scene_main_menu(args)
 
   labels = []
   labels << label(
-    title, x: args.grid.w / 2, y: args.grid.top - 100,
-    size: SIZE_LG, align: ALIGN_CENTER)
+    title.upcase, x: args.grid.w / 2, y: args.grid.top - 100,
+    size: SIZE_LG, align: ALIGN_CENTER, font: FONT_BOLD_ITALIC)
   labels << label(
     "#{text(:made_by)} #{CREDITS.join(', ')}",
     x: args.grid.left + 24, y: 48,
@@ -232,9 +232,9 @@ def tick_scene_gameplay(args)
   args.outputs.sprites << [args.state.exp_chips, args.state.player.bullets, args.state.player, args.state.enemies, args.state.player.familiars]
 
   labels = []
-  labels << label("#{text(:health)}: #{args.state.player.health}", x: 40, y: args.grid.top - 40, size: SIZE_SM)
-  labels << label("#{text(:level)}: #{args.state.player.level}", x: args.grid.right - 40, y: args.grid.top - 40, size: SIZE_SM, align: ALIGN_RIGHT)
-  labels << label("#{text(:exp_to_next_level)}: #{args.state.player.exp_to_next_level}", x: args.grid.right - 40, y: args.grid.top - 88, size: SIZE_XS, align: ALIGN_RIGHT)
+  labels << label("#{text(:health)}: #{args.state.player.health}", x: 40, y: args.grid.top - 40, size: SIZE_SM, font: FONT_BOLD)
+  labels << label("#{text(:level)}: #{args.state.player.level}", x: args.grid.right - 40, y: args.grid.top - 40, size: SIZE_SM, align: ALIGN_RIGHT, font: FONT_BOLD)
+  labels << label("#{text(:exp_to_next_level)}: #{args.state.player.exp_to_next_level}", x: args.grid.right - 40, y: args.grid.top - 88, size: SIZE_XS, align: ALIGN_RIGHT, font: FONT_BOLD)
   args.outputs.labels << labels
 end
 
@@ -301,7 +301,7 @@ def tick_scene_paused(args)
 
   tick_menu(args, :paused, options)
 
-  args.outputs.labels << label(:paused, x: args.grid.w / 2, y: args.grid.top - 200, align: ALIGN_CENTER, size: SIZE_LG)
+  args.outputs.labels << label(:paused, x: args.grid.w / 2, y: args.grid.top - 200, align: ALIGN_CENTER, size: SIZE_LG, font: FONT_BOLD)
 end
 
 def toggle_fullscreen(args)
@@ -382,7 +382,7 @@ def tick_scene_settings(args)
 
   tick_menu(args, :settings, options)
 
-  args.outputs.labels << label(:settings, x: args.grid.w / 2, y: args.grid.top - 200, align: ALIGN_CENTER, size: SIZE_LG)
+  args.outputs.labels << label(:settings, x: args.grid.w / 2, y: args.grid.top - 200, align: ALIGN_CENTER, size: SIZE_LG, font: FONT_BOLD)
 end
 
 def tick_scene_game_over(args)
@@ -390,7 +390,7 @@ def tick_scene_game_over(args)
 
   labels = []
 
-  labels << label(:game_over, x: args.grid.w / 2, y: args.grid.top - 200, align: ALIGN_CENTER, size: SIZE_LG)
+  labels << label(:game_over, x: args.grid.w / 2, y: args.grid.top - 200, align: ALIGN_CENTER, size: SIZE_LG, font: FONT_BOLD)
   labels << label("#{text(:level)}: #{args.state.player.level}", x: args.grid.w / 2, y: args.grid.top - 320, size: SIZE_SM, align: ALIGN_CENTER)
   labels << label("#{text(:enemies_destroyed)}: #{args.state.enemies_destroyed}", x: args.grid.w / 2, y: args.grid.top - 380, size: SIZE_SM, align: ALIGN_CENTER)
   labels << label(:restart, x: args.grid.w / 2, y: args.grid.top - 480, align: ALIGN_CENTER, size: SIZE_SM).merge(a: args.state.tick_count % 155 + 100)
@@ -443,7 +443,12 @@ def text(key)
   TEXT.fetch(key)
 end
 
-def label(value_or_key, x:, y:, align: ALIGN_LEFT, size: SIZE_MD, color: WHITE)
+FONT_REGULAR = "fonts/Atkinson-Hyperlegible-Regular-102.ttf"
+FONT_ITALIC = "fonts/Atkinson-Hyperlegible-Italic-102.ttf"
+FONT_BOLD = "fonts/Atkinson-Hyperlegible-Bold-102.ttf"
+FONT_BOLD_ITALIC = "fonts/Atkinson-Hyperlegible-BoldItalic-102.ttf"
+
+def label(value_or_key, x:, y:, align: ALIGN_LEFT, size: SIZE_MD, color: WHITE, font: FONT_REGULAR)
   text = if value_or_key.is_a?(Symbol)
            text(value_or_key)
          else
@@ -456,6 +461,7 @@ def label(value_or_key, x:, y:, align: ALIGN_LEFT, size: SIZE_MD, color: WHITE)
     y: y,
     alignment_enum: align,
     size_enum: size,
+    font: font,
   }.merge(color)
 end
 
