@@ -17,6 +17,11 @@ TRUE_BLACK = { r: 0, g: 0, b: 0 }
 BLACK = { r: 25, g: 25, b: 25 }
 WHITE = { r: 255, g: 255, b: 255 }
 RED = { r: 231, g: 89, b: 82 }
+DARK_RED = { r: 214, g: 26, b: 12 }
+GOLD = { r: 214, g: 173, b: 12 }
+DARK_GREEN = { r: 12, g: 142, b: 56 }
+DARK_BLUE = { r: 22, g: 122, b: 188 }
+DARK_PURPLE = { r: 88, g: 12, b: 144 }
 
 DIR_DOWN = :down
 DIR_UP = :up
@@ -67,6 +72,7 @@ def tick(args)
 end
 
 def tick_scene_main_menu(args)
+  draw_bg(args, DARK_PURPLE)
   options = [
     {
       key: :start,
@@ -222,7 +228,7 @@ def tick_scene_gameplay(args)
     return switch_scene(args, :game_over)
   end
 
-  args.outputs.solids << { x: args.grid.left, y: args.grid.bottom, w: args.grid.w, h: args.grid.h }.merge(BLACK)
+  draw_bg(args, BLACK)
   args.outputs.sprites << [args.state.exp_chips, args.state.player.bullets, args.state.player, args.state.enemies, args.state.player.familiars]
 
   labels = []
@@ -270,6 +276,8 @@ def random(min, max)
 end
 
 def tick_scene_paused(args)
+  draw_bg(args, GOLD)
+
   options = [
     {
       key: :resume,
@@ -349,6 +357,8 @@ def settings_file
 end
 
 def tick_scene_settings(args)
+  draw_bg(args, DARK_GREEN)
+
   options = [
     {
       key: :sfx,
@@ -377,6 +387,8 @@ def tick_scene_settings(args)
 end
 
 def tick_scene_game_over(args)
+  draw_bg(args, DARK_BLUE)
+
   labels = []
 
   labels << label(:game_over, x: args.grid.w / 2, y: args.grid.top - 200, align: ALIGN_CENTER, size: SIZE_LG)
@@ -1023,4 +1035,8 @@ def reset_color(entity)
   entity.r = nil
   entity.g = nil
   entity.b = nil
+end
+
+def draw_bg(args, color)
+  args.outputs.solids << { x: args.grid.left, y: args.grid.bottom, w: args.grid.w, h: args.grid.h }.merge(color)
 end
