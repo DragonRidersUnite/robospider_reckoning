@@ -118,4 +118,14 @@ test :text do |args, assert|
   end
 end
 
+test :opposite_angle do |args, assert|
+  it "returns the diametrically opposed angle" do
+    assert.equal!(opposite_angle(0), 180)
+    assert.equal!(opposite_angle(180), 0)
+    assert.equal!(opposite_angle(360), 180)
+    assert.equal!(opposite_angle(90), 270)
+    assert.equal!(opposite_angle(270), 90)
+  end
+end
+
 run_tests

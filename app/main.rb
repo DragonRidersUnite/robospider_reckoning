@@ -121,6 +121,12 @@ def switch_scene(args, scene, reset: false, return_to: nil)
   args.state.scene = scene
 end
 
+# FP = Fire Pattern
+FP_SINGLE = :single
+FP_DUAL = :dual
+FP_TRI = :tri
+FP_QUAD = :quad
+
 def tick_scene_gameplay(args)
   args.state.player ||= begin
     p = {
@@ -138,6 +144,7 @@ def tick_scene_gameplay(args)
       exp_chip_magnetic_dist: 50,
       bullet_delay: INIT_BULLET_DELAY,
       bullet_delay_counter: INIT_BULLET_DELAY,
+      fire_pattern: FP_SINGLE,
       direction: DIR_UP,
       invincible: false,
     }.merge(WHITE)
@@ -354,11 +361,12 @@ TEXT = {
   game_over: "Game Over",
   health: "Health",
   level: "Level",
+  lu_dual_shot: "Dual shot!",
   lu_familiar_spawned: "Familiar spawned!",
   lu_familiar_speed_increased: "Familiar speed increased!",
-  lu_player_speed_increased: "Player speed increased!",
   lu_player_exp_magnetism_increased: "Experience pick up distance increased!",
   lu_player_fire_rate_increased: "Player fire rate increased!",
+  lu_player_speed_increased: "Player speed increased!",
   made_by: "A game by",
   off: "OFF",
   on: "ON",
@@ -444,33 +452,38 @@ def tick_player(args, player)
   player.angle = angle_for_dir(player.direction)
   player.bullet_delay_counter += 1
 
-  if player.bullet_delay_counter >= player.bullet_delay && firing
-    play_sfx(args, :shoot)
-    player.bullets << {
+  def bullet(player, angle)
+    {
       x: player.x + player.w / 2 - BULLET_SIZE / 2,
       y: player.y + player.h / 2 - BULLET_SIZE / 2,
       w: BULLET_SIZE,
       h: BULLET_SIZE,
+      angle: angle,
       speed: 12,
-      direction: player.direction,
-      angle: player.angle,
       dead: false,
       path: Sprite.for(:bullet),
     }.merge(WHITE)
+  end
+
+  if player.bullet_delay_counter >= player.bullet_delay && firing
+    bullets = []
+    case player.fire_pattern
+    when FP_SINGLE
+      bullets << bullet(player, player.angle)
+    when FP_DUAL
+      bullets << bullet(player, player.angle)
+      bullets << bullet(player, opposite_angle(player.angle))
+    end
+
+    play_sfx(args, :shoot)
     player.bullet_delay_counter = 0
+    player.bullets.concat(bullets)
   end
 
   player.bullets.each do |b|
-    case b.direction
-    when DIR_UP
-      b.y += b.speed
-    when DIR_DOWN
-      b.y -= b.speed
-    when DIR_LEFT
-      b.x -= b.speed
-    when DIR_RIGHT
-      b.x += b.speed
-    end
+    x_vel, y_vel = vel_from_angle(b.angle, b.speed)
+    b.x += x_vel
+    b.y += y_vel
 
     if out_of_bounds?(args.grid, b)
       b.dead = true
@@ -593,12 +606,13 @@ def level_up(args, player)
     player.exp_chip_magnetic_dist *= 2
     args.gtk.notify!(text(:lu_player_exp_magnetism_increased))
   when 6
+    player.fire_pattern = FP_DUAL
+    args.gtk.notify!(text(:lu_dual_shot))
+  when 7
+    # tri shot
+  when 8
     player.bullet_delay -= 2
     args.gtk.notify!(text(:lu_player_fire_rate_increased))
-  when 7
-    # dual shot
-  when 8
-    # tri shot
   when 9
     # second familiar
   when 10
@@ -611,6 +625,12 @@ end
 # +angle+ is expected to be in degrees with 0 being facing right
 def vel_from_angle(angle, speed)
   [speed * Math.cos(deg_to_rad(angle)), speed * Math.sin(deg_to_rad(angle))]
+end
+
+# returns diametrically opposed angle
+# uses degrees
+def opposite_angle(angle)
+  (angle + 180).abs % 360
 end
 
 def deg_to_rad(deg)
