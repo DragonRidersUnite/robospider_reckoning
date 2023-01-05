@@ -7,9 +7,16 @@ CREDITS = [
 ].shuffle
 
 require "app/constants.rb"
+require "app/enemy.rb"
+require "app/exp_chip.rb"
+require "app/familiar.rb"
 require "app/menu.rb"
+require "app/player.rb"
 require "app/scene.rb"
+require "app/settings.rb"
+require "app/sound.rb"
 require "app/sprite.rb"
+require "app/text.rb"
 
 require "app/scenes/game_over.rb"
 require "app/scenes/gameplay.rb"
