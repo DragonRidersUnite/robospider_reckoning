@@ -180,8 +180,9 @@ def tick_scene_gameplay(args)
     return switch_scene(args, :paused, reset: true)
   end
 
-  # spawns enemies faster when player level is higher; starts at every 12 seconds
-  if args.state.tick_count % FPS * (12 - (args.state.player.level / 3).to_i) == 0
+  # spawns enemies faster when player level is higher;
+  # starts at every 12 seconds
+  if args.state.tick_count % FPS * (12 - (args.state.player.level  * 0.4).to_i) == 0
     args.state.enemies << spawn_enemy(args)
   end
 
@@ -253,7 +254,7 @@ end
 def random(min, max)
   min = Integer(min)
   max = Integer(max)
-  rand(max - min) + min
+  rand((max + 1) - min) + min
 end
 
 def tick_scene_paused(args)
@@ -584,7 +585,7 @@ ENEMY_SUPER = {
   health: 3,
   speed: 3,
   min_exp_drop: 3,
-  max_exp_drop: 5,
+  max_exp_drop: 6,
 }
 
 def spawn_enemy(args)
@@ -594,7 +595,7 @@ def spawn_enemy(args)
     dead: false,
   })
 
-  super_chance = if args.state.player.level >= 10
+  super_chance = if args.state.player.level >= 8
                    50
                  elsif args.state.player.level >= 5
                    25
