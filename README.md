@@ -4,6 +4,11 @@
 
 Built with DragonRuby Game Toolkit v4.0 Standard Edition.
 
+## Controls
+
+- Move: WASD / Arrow Keys / Gamepad
+- Select & Fire: J / Z / Space / Gamepad A button
+
 ## Premise
 
 Inspired by the exquisite corpse exercise that artists do, what if we made a game where each person worked on it for a week and then passed it to the next person?

@@ -93,6 +93,14 @@ def tick_scene_main_menu(args)
     "#{text(:made_by)} #{CREDITS.join(', ')}",
     x: args.grid.left + 24, y: 48,
     size: SIZE_XS, align: ALIGN_LEFT)
+  labels << label(
+    :controls_title,
+    x: args.grid.right - 24, y: 84,
+    size: SIZE_SM, align: ALIGN_RIGHT)
+  labels << label(
+    args.inputs.controller_one.connected ? :controls_gamepad : :controls_keyboard,
+    x: args.grid.right - 24, y: 48,
+    size: SIZE_XS, align: ALIGN_RIGHT)
 
   args.outputs.labels << labels
 end
@@ -356,6 +364,9 @@ end
 
 TEXT = {
   back: "Back",
+  controls_title: "Controls",
+  controls_keyboard: "WASD/Arrows to move | J/Z/Space to confirm & shoot | Esc/P to pause",
+  controls_gamepad: "Stick/D-Pad to move | A to confirm & shoot | Start to pause",
   enemies_destroyed: "Enemies Destroyed",
   fullscreen: "Fullscreen",
   game_over: "Game Over",
@@ -686,7 +697,7 @@ def error(msg)
   raise StandardError.new(msg)
 end
 
-PRIMARY_KEYS = [:j, :z]
+PRIMARY_KEYS = [:j, :z, :space]
 def primary_down?(inputs)
   PRIMARY_KEYS.any? { |k| inputs.keyboard.key_down.send(k) } ||
     inputs.controller_one.key_down&.a
