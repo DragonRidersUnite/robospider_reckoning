@@ -7,8 +7,10 @@ CREDITS = [
 ].shuffle
 
 require "app/constants.rb"
-require "app/sprite.rb"
+require "app/menu.rb"
 require "app/scene.rb"
+require "app/sprite.rb"
+
 require "app/scenes/game_over.rb"
 require "app/scenes/gameplay.rb"
 require "app/scenes/main_menu.rb"

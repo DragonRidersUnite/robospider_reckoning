@@ -25,7 +25,7 @@ module Scene
         })
       end
 
-      tick_menu(args, :settings, options)
+      Menu.tick(args, :settings, options)
 
       args.outputs.labels << label(:settings, x: args.grid.w / 2, y: args.grid.top - 200, align: ALIGN_CENTER, size: SIZE_LG, font: FONT_BOLD)
     end

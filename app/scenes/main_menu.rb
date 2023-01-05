@@ -20,7 +20,7 @@ module Scene
         }
       end
 
-      tick_menu(args, :main_menu, options)
+      Menu.tick(args, :main_menu, options)
 
       labels = []
       labels << label(
