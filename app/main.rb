@@ -287,6 +287,7 @@ def load_settings(args)
       args.state.setting[k.to_sym] = v
     end
   else
+    args.state.setting.language = LANG_EN
     args.state.setting.sfx = true
     args.state.setting.fullscreen = false
   end
@@ -329,6 +330,13 @@ def tick_scene_settings(args)
       on_select: -> (args) { args.state.setting.sfx = !args.state.setting.sfx; save_settings(args) }
     },
     {
+      key: :language,
+      kind: :cycle,
+      setting_val: args.state.setting.language,
+      options: [LANG_EN, LANG_JP],
+      on_select: -> (args, new_val) { args.state.setting.language = new_val; save_settings(args) }
+    },
+    {
       key: :back,
       on_select: -> (args) { switch_scene(args, :back) }
     },
@@ -362,35 +370,76 @@ def tick_scene_game_over(args)
   args.outputs.labels << labels
 end
 
+# TODO: use the keys from the hash instead
+LANG_EN = "en"
+LANG_JP = "jp"
 TEXT = {
-  back: "Back",
-  controls_title: "Controls",
-  controls_keyboard: "WASD/Arrows to move | J/Z/Space to confirm & shoot | Esc/P to pause",
-  controls_gamepad: "Stick/D-Pad to move | A to confirm & shoot | Start to pause",
-  enemies_destroyed: "Enemies Destroyed",
-  fullscreen: "Fullscreen",
-  game_over: "Game Over",
-  health: "Health",
-  level: "Level",
-  lu_familiar_spawned: "Familiar spawned!",
-  lu_familiar_speed_increased: "Familiar speed increased!",
-  lu_fp_dual_shot: "Dual shot!",
-  lu_fp_tri_shot: "Tri shot!",
-  lu_fp_quad_shot: "Quad shot!",
-  lu_player_exp_magnetism_increased: "Experience pick up distance increased!",
-  lu_player_fire_rate_increased: "Player fire rate increased!",
-  lu_player_speed_increased: "Player speed increased!",
-  made_by: "A game by",
-  off: "OFF",
-  on: "ON",
-  paused: "Paused",
-  quit: "Quit",
-  restart: "Shoot to Restart",
-  resume: "Resume",
-  return_to_main_menu: "Return to Main Menu",
-  settings: "Settings",
-  sfx: "Sound Effects",
-  start: "Start",
+  en: {
+    back: "Back",
+    controls_title: "Controls",
+    controls_keyboard: "WASD/Arrows to move | J/Z/Space to confirm & shoot | Esc/P to pause",
+    controls_gamepad: "Stick/D-Pad to move | A to confirm & shoot | Start to pause",
+    enemies_destroyed: "Enemies Destroyed",
+    en: "English",
+    jp: "Japanese",
+    fullscreen: "Fullscreen",
+    game_over: "Game Over",
+    health: "Health",
+    language: "Language",
+    level: "Level",
+    lu_familiar_spawned: "Familiar spawned!",
+    lu_familiar_speed_increased: "Familiar speed increased!",
+    lu_fp_dual_shot: "Dual shot!",
+    lu_fp_tri_shot: "Tri shot!",
+    lu_fp_quad_shot: "Quad shot!",
+    lu_player_exp_magnetism_increased: "Experience pick up distance increased!",
+    lu_player_fire_rate_increased: "Player fire rate increased!",
+    lu_player_speed_increased: "Player speed increased!",
+    made_by: "A game by",
+    off: "OFF",
+    on: "ON",
+    paused: "Paused",
+    quit: "Quit",
+    restart: "Shoot to Restart",
+    resume: "Resume",
+    return_to_main_menu: "Return to Main Menu",
+    settings: "Settings",
+    sfx: "Sound Effects",
+    start: "Start",
+  },
+  jp: { # From Google Translate to test this out
+    back: "戻る",
+    controls_title: "コントロール",
+    controls_keyboard: "WASD/Arrows to move | J/Z/Space to confirm & shoot | Esc/P to pause",
+    controls_gamepad: "Stick/D-Pad to move | A to confirm & shoot | Start to pause",
+    enemies_destroyed: "Enemies Destroyed",
+    en: "英語",
+    jp: "日本",
+    fullscreen: "全画面表示",
+    game_over: "ゲームオーバー",
+    health: "健康",
+    language: "言語",
+    level: "レベル",
+    lu_familiar_spawned: "Familiar spawned!",
+    lu_familiar_speed_increased: "Familiar speed increased!",
+    lu_fp_dual_shot: "Dual shot!",
+    lu_fp_tri_shot: "Tri shot!",
+    lu_fp_quad_shot: "Quad shot!",
+    lu_player_exp_magnetism_increased: "Experience pick up distance increased!",
+    lu_player_fire_rate_increased: "Player fire rate increased!",
+    lu_player_speed_increased: "Player speed increased!",
+    made_by: "A game by",
+    off: "オフ",
+    on: "の上",
+    paused: "Paused",
+    quit: "Quit",
+    restart: "Shoot to Restart",
+    resume: "Resume",
+    return_to_main_menu: "メインメニューに戻る",
+    settings: "設定",
+    sfx: "音響効果",
+    start: "Start",
+  }
 }
 
 SIZE_XS = 0
@@ -399,7 +448,11 @@ SIZE_MD = 6
 SIZE_LG = 10
 
 def text(key)
-  TEXT.fetch(key)
+  TEXT.fetch(current_lang.to_sym).fetch(key)
+end
+
+def current_lang
+  $gtk.args.state.setting.language
 end
 
 def label(value_or_key, x:, y:, align: ALIGN_LEFT, size: SIZE_MD, color: WHITE)
@@ -792,7 +845,7 @@ def tick_menu(args, state_key, options)
 
   options.each.with_index do |option, i|
     text = case option.kind
-           when :toggle
+           when :toggle, :cycle
              "#{text(option[:key])}: #{text_for_setting_val(option[:setting_val])}"
            else
              text(option[:key])
@@ -851,7 +904,21 @@ def tick_menu(args, state_key, options)
 
   if primary_down?(args.inputs)
     play_sfx(args, :select)
-    options[menu_state.current_option_i][:on_select].call(args)
+    option = options[menu_state.current_option_i]
+    case option.kind
+    when :cycle
+      val = option[:setting_val]
+      opts = option[:options]
+      i = opts.index(val)
+      i += 1
+      if i >= opts.length
+        i = 0
+      end
+      new_val = opts[i]
+      option[:on_select].call(args, new_val)
+    else
+      option[:on_select].call(args)
+    end
   end
 end
 
@@ -862,7 +929,7 @@ def text_for_setting_val(val)
   when false
     text(:off)
   else
-    val
+    text(val.to_sym)
   end
 end
 
