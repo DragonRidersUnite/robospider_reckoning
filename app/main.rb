@@ -517,7 +517,7 @@ def tick_player(args, player)
 end
 
 def spawn_familiar(player, dist_from_player:, speed: 18)
-  player.familiars << {
+  familiar = {
     x: player.x + 10,
     y: player.y,
     w: 18,
@@ -526,6 +526,8 @@ def spawn_familiar(player, dist_from_player:, speed: 18)
     dist_from_player: dist_from_player,
     path: Sprite.for(:familiar),
   }
+  player.familiars << familiar
+  familiar
 end
 
 def tick_familiar(args, player, familiar)
@@ -630,9 +632,9 @@ def level_up(args, player)
     player.fire_pattern = FP_QUAD
     args.gtk.notify!(text(:lu_fp_quad_shot))
   when 10
-    # quad shot
-  when 11
-    # faster familiars
+    familiar = spawn_familiar(player, dist_from_player: 100)
+    args.gtk.notify!(text(:lu_familiar_spawned))
+    familiar.speed = player.familiars.first.speed - 2
   end
 end
 
