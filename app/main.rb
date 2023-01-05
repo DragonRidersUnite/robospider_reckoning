@@ -151,6 +151,7 @@ def tick_scene_gameplay(args)
       w: 32,
       h: 32,
       health: 6,
+      max_health: 6,
       speed: 4,
       level: 1,
       path: Sprite.for(:player),
@@ -605,6 +606,7 @@ ENEMY_BASIC = {
   h: 24,
   angle: 0,
   health: 1,
+  max_health: 1,
   path: Sprite.for(:enemy),
   min_exp_drop: 0,
   max_exp_drop: 2,
@@ -616,6 +618,7 @@ ENEMY_SUPER = {
   w: 32,
   h: 32,
   health: 3,
+  max_health: 3,
   speed: 3,
   min_exp_drop: 3,
   max_exp_drop: 6,
@@ -626,6 +629,7 @@ ENEMY_KING = {
   w: 64,
   h: 64,
   health: 32,
+  max_health: 32,
   speed: 4,
   min_exp_drop: 24,
   max_exp_drop: 32,
@@ -696,7 +700,12 @@ def tick_enemy(args, enemy)
 
   tick_flasher(enemy)
 
-  debug_label(args, enemy.x, enemy.y, "speed: #{enemy.speed}")
+  if enemy.health == 1 && enemy.max_health > 1
+    enemy.merge!(RED)
+  end
+
+  debug_label(args, enemy.x, enemy.y, "health: #{enemy.health}")
+  debug_label(args, enemy.x, enemy.y - 14, "speed: #{enemy.speed}")
 end
 
 def tick_exp_chip(args, exp_chip)
