@@ -147,7 +147,7 @@ def tick_scene_gameplay(args)
       speed: 4,
       level: 1,
       path: Sprite.for(:player),
-      exp_to_next_level: LEVEL_EXP_DIFF[2],
+      exp_to_next_level: LEVEL_PROG[2][:exp_diff],
       bullets: [],
       familiars: [],
       exp_chip_magnetic_dist: 50,
@@ -639,56 +639,82 @@ def absorb_exp(args, player, exp_chip)
   end
 end
 
-LEVEL_EXP_DIFF = {
-  2 => 10,
-  3 => 15,
-  4 => 18,
-  5 => 25,
-  6 => 26,
-  7 => 30,
-  8 => 33,
-  9 => 35,
-  10 => 38,
+LEVEL_PROG = {
+  2 => {
+    exp_diff: 10,
+    on_reach: -> (args, player) do
+      spawn_familiar(player, dist_from_player: 66)
+      args.gtk.notify!(text(:lu_familiar_spawned))
+    end
+  },
+  3 => {
+    exp_diff: 15,
+    on_reach: -> (args, player) do
+      # familiar speed is weird and decreasing it makes it faster
+      player.familiars.each do |f|
+        f.speed -= 3
+      end
+      args.gtk.notify!(text(:lu_familiar_speed_increased))
+    end
+  },
+  4 => {
+    exp_diff: 18,
+    on_reach: -> (args, player) do
+      player.speed += 2
+      args.gtk.notify!(text(:lu_player_speed_increased))
+    end
+  },
+  5 => {
+    exp_diff: 25,
+    on_reach: -> (args, player) do
+      player.exp_chip_magnetic_dist *= 2
+      args.gtk.notify!(text(:lu_player_exp_magnetism_increased))
+    end
+  },
+  6 => {
+    exp_diff: 26,
+    on_reach: -> (args, player) do
+      player.fire_pattern = FP_DUAL
+      args.gtk.notify!(text(:lu_fp_dual_shot))
+    end
+  },
+  7 => {
+    exp_diff: 30,
+    on_reach: -> (args, player) do
+      player.fire_pattern = FP_TRI
+      args.gtk.notify!(text(:lu_fp_tri_shot))
+    end
+  },
+  8 => {
+    exp_diff: 33,
+    on_reach: -> (args, player) do
+      player.bullet_delay -= 2
+      args.gtk.notify!(text(:lu_player_fire_rate_increased))
+    end
+  },
+  9 => {
+    exp_diff: 35,
+    on_reach: -> (args, player) do
+      player.fire_pattern = FP_QUAD
+      args.gtk.notify!(text(:lu_fp_quad_shot))
+    end
+  },
+  10 => {
+    exp_diff: 38,
+    on_reach: -> (args, player) do
+      familiar = spawn_familiar(player, dist_from_player: 100)
+      args.gtk.notify!(text(:lu_familiar_spawned))
+      familiar.speed = player.familiars.first.speed - 2
+    end
+  },
 }
 
 def level_up(args, player)
   player.level += 1
-  player.exp_to_next_level = LEVEL_EXP_DIFF[player.level] || 100 # 100 is just a fail-safe ceiling
+  level_up = LEVEL_PROG[player.level]
+  player.exp_to_next_level = level_up[:exp_diff] || 100 # 100 is just a fail-safe ceiling
   play_sfx(args, :level_up)
-
-  case player.level
-  when 2
-    spawn_familiar(player, dist_from_player: 66)
-    args.gtk.notify!(text(:lu_familiar_spawned))
-  when 3
-    # familiar speed is weird and decreasing it makes it faster
-    player.familiars.each do |f|
-      f.speed -= 3
-    end
-    args.gtk.notify!(text(:lu_familiar_speed_increased))
-  when 4
-    player.speed += 2
-    args.gtk.notify!(text(:lu_player_speed_increased))
-  when 5
-    player.exp_chip_magnetic_dist *= 2
-    args.gtk.notify!(text(:lu_player_exp_magnetism_increased))
-  when 6
-    player.fire_pattern = FP_DUAL
-    args.gtk.notify!(text(:lu_fp_dual_shot))
-  when 7
-    player.fire_pattern = FP_TRI
-    args.gtk.notify!(text(:lu_fp_tri_shot))
-  when 8
-    player.bullet_delay -= 2
-    args.gtk.notify!(text(:lu_player_fire_rate_increased))
-  when 9
-    player.fire_pattern = FP_QUAD
-    args.gtk.notify!(text(:lu_fp_quad_shot))
-  when 10
-    familiar = spawn_familiar(player, dist_from_player: 100)
-    args.gtk.notify!(text(:lu_familiar_spawned))
-    familiar.speed = player.familiars.first.speed - 2
-  end
+  level_up[:on_reach].call(args, player)
 end
 
 # +angle+ is expected to be in degrees with 0 being facing right
