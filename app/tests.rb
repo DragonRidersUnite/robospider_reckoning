@@ -138,4 +138,14 @@ test :add_to_angle do |args, assert|
   end
 end
 
+test :percent_chance? do |args, assert|
+  it "returns false if the percent is 0" do
+    assert.false!(percent_chance?(0))
+  end
+
+  it "returns true if the percent is 100" do
+    assert.true!(percent_chance?(100))
+  end
+end
+
 run_tests

@@ -504,13 +504,13 @@ def tick_player(args, player)
       bullets << bullet(player, opposite_angle(player.angle))
     when FP_TRI
       bullets << bullet(player, player.angle)
-      bullets << bullet(player, add_to_angle(player.angle, -30))
-      bullets << bullet(player, add_to_angle(player.angle, 30))
+      bullets << bullet(player, add_to_angle(player.angle, -15))
+      bullets << bullet(player, add_to_angle(player.angle, 15))
     when FP_QUAD
       bullets << bullet(player, player.angle)
       bullets << bullet(player, opposite_angle(player.angle))
-      bullets << bullet(player, add_to_angle(player.angle, -30))
-      bullets << bullet(player, add_to_angle(player.angle, 30))
+      bullets << bullet(player, add_to_angle(player.angle, -15))
+      bullets << bullet(player, add_to_angle(player.angle, 15))
     end
 
     play_sfx(args, :shoot)
@@ -594,12 +594,27 @@ def spawn_enemy(args)
     dead: false,
   })
 
-  # 1-in-4 chance to spawn super enemy if player level is 5+
-  if args.state.player.level >= 5 && rand(4) == 0
+  super_chance = if args.state.player.level >= 10
+                   50
+                 elsif args.state.player.level >= 5
+                   25
+                 else
+                   0
+                 end
+  if percent_chance?(super_chance)
     enemy.merge!(ENEMY_SUPER)
   end
 
   enemy
+end
+
+# returns true the passed in % of the time
+# ex: `percent_chance?(25)` -- 1/4 chance of returning true
+def percent_chance?(percent)
+  percent = Integer(percent)
+  error("percent param (#{percent}) can't be above 100!") if percent > 100
+  return false if percent == 0
+  rand(100 / percent) == 0
 end
 
 def tick_enemy(args, enemy)
@@ -648,7 +663,7 @@ LEVEL_PROG = {
     end
   },
   3 => {
-    exp_diff: 15,
+    exp_diff: 20,
     on_reach: -> (args, player) do
       # familiar speed is weird and decreasing it makes it faster
       player.familiars.each do |f|
@@ -658,61 +673,61 @@ LEVEL_PROG = {
     end
   },
   4 => {
-    exp_diff: 18,
-    on_reach: -> (args, player) do
-      player.speed += 2
-      args.gtk.notify!(text(:lu_player_speed_increased))
-    end
-  },
-  5 => {
-    exp_diff: 25,
-    on_reach: -> (args, player) do
-      player.exp_chip_magnetic_dist *= 2
-      args.gtk.notify!(text(:lu_player_exp_magnetism_increased))
-    end
-  },
-  6 => {
-    exp_diff: 26,
+    exp_diff: 22,
     on_reach: -> (args, player) do
       player.fire_pattern = FP_DUAL
       args.gtk.notify!(text(:lu_fp_dual_shot))
     end
   },
+  5 => {
+    exp_diff: 25,
+    on_reach: -> (args, player) do
+      familiar = spawn_familiar(player, dist_from_player: 100)
+      args.gtk.notify!(text(:lu_familiar_spawned))
+      familiar.speed = player.familiars.first.speed - 2 # familiar speed is weird and decreasing it makes it faster
+    end
+  },
+  6 => {
+    exp_diff: 26,
+    on_reach: -> (args, player) do
+      player.exp_chip_magnetic_dist *= 2
+      args.gtk.notify!(text(:lu_player_exp_magnetism_increased))
+    end
+  },
   7 => {
     exp_diff: 30,
     on_reach: -> (args, player) do
-      player.fire_pattern = FP_TRI
-      args.gtk.notify!(text(:lu_fp_tri_shot))
+      player.speed += 2
+      args.gtk.notify!(text(:lu_player_speed_increased))
     end
   },
   8 => {
     exp_diff: 33,
     on_reach: -> (args, player) do
-      player.bullet_delay -= 2
-      args.gtk.notify!(text(:lu_player_fire_rate_increased))
+      player.fire_pattern = FP_TRI
+      args.gtk.notify!(text(:lu_fp_tri_shot))
     end
   },
   9 => {
     exp_diff: 35,
     on_reach: -> (args, player) do
-      player.fire_pattern = FP_QUAD
-      args.gtk.notify!(text(:lu_fp_quad_shot))
+      player.bullet_delay -= 2
+      args.gtk.notify!(text(:lu_player_fire_rate_increased))
     end
   },
   10 => {
     exp_diff: 38,
     on_reach: -> (args, player) do
-      familiar = spawn_familiar(player, dist_from_player: 100)
-      args.gtk.notify!(text(:lu_familiar_spawned))
-      familiar.speed = player.familiars.first.speed - 2
+      player.fire_pattern = FP_QUAD
+      args.gtk.notify!(text(:lu_fp_quad_shot))
     end
   },
 }
 
 def level_up(args, player)
   player.level += 1
-  level_up = LEVEL_PROG[player.level]
-  player.exp_to_next_level = level_up[:exp_diff] || 100 # 100 is just a fail-safe ceiling
+  level_up = LEVEL_PROG[player.level] || { exp_diff: 100, on_reach: -> (_, _) {} } # just weird fallback
+  player.exp_to_next_level = level_up[:exp_diff]
   play_sfx(args, :level_up)
   level_up[:on_reach].call(args, player)
 end
