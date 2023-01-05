@@ -588,8 +588,8 @@ end
 
 def tick_familiar(args, player, familiar)
   rotator = args.state.tick_count / familiar.speed
-  familiar.x = player.x + player.w / 2 + Math.sin(rotator) * familiar.dist_from_player
-  familiar.y = player.y + player.h / 2 + Math.cos(rotator) * familiar.dist_from_player
+  familiar.x = player.x + player.w / 2 - familiar.w / 2 + Math.sin(rotator) * familiar.dist_from_player
+  familiar.y = player.y + player.h / 2 - familiar.h / 2 + Math.cos(rotator) * familiar.dist_from_player
   familiar.angle = args.geometry.angle_to(player, familiar)
   familiar
 end
