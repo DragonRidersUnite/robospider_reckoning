@@ -56,10 +56,10 @@ def test(method)
   end
 end
 
-test :text_for_setting_val do |args, assert|
-  assert.equal!(text_for_setting_val(true), "ON")
-  assert.equal!(text_for_setting_val(false), "OFF")
-  assert.equal!(text_for_setting_val("other"), "other")
+test :menu_text_for_setting_val do |args, assert|
+  assert.equal!(Menu.text_for_setting_val(true), "ON")
+  assert.equal!(Menu.text_for_setting_val(false), "OFF")
+  assert.equal!(Menu.text_for_setting_val("other"), "other")
 end
 
 test :out_of_bounds do |args, assert|
