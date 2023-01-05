@@ -29,6 +29,7 @@ module Sprite
   SPRITES = {
     bullet: "sprites/bullet.png",
     enemy: "sprites/enemy.png",
+    enemy_super: "sprites/enemy_super.png",
     exp_chip: "sprites/exp_chip.png",
     familiar: "sprites/familiar.png",
     player: "sprites/player.png",
@@ -189,7 +190,11 @@ def tick_scene_gameplay(args)
   args.state.exp_chips.each { |c| tick_exp_chip(args, c)  }
   collide(args, args.state.player.bullets, args.state.enemies, -> (args, bullet, enemy) do
     bullet.dead = true
-    destroy_enemy(args, enemy)
+    enemy.health -= bullet.power
+    flash(enemy, RED, 12)
+    if enemy.health <= 0
+      destroy_enemy(args, enemy)
+    end
   end)
   collide(args, args.state.enemies, args.state.player, -> (args, enemy, player) do
     player.health -= 1 unless player.invincible
@@ -227,7 +232,8 @@ def destroy_enemy(args, enemy, sfx: :enemy_death)
   play_sfx(args, sfx) if sfx
   enemy.dead = true
   args.state.enemies_destroyed += 1
-  rand(3).times do |i|
+
+  random(enemy.min_exp_drop, enemy.max_exp_drop).times do |i|
     args.state.exp_chips << {
       x: enemy.x + enemy.w / 2 + (-5..5).to_a.sample + i * 5,
       y: enemy.y + enemy.h / 2 + (-5..5).to_a.sample + i * 5,
@@ -240,6 +246,14 @@ def destroy_enemy(args, enemy, sfx: :enemy_death)
       path: Sprite.for(:exp_chip)
     }
   end
+end
+
+# returns random val between min & max, inclusive
+# needs integers, use rand if you don't need min/max and don't care much
+def random(min, max)
+  min = Integer(min)
+  max = Integer(max)
+  rand(max - min) + min
 end
 
 def tick_scene_paused(args)
@@ -474,6 +488,7 @@ def tick_player(args, player)
       h: BULLET_SIZE,
       angle: angle,
       speed: 12,
+      power: 1,
       dead: false,
       path: Sprite.for(:bullet),
     }.merge(WHITE)
@@ -552,17 +567,39 @@ def tick_familiar(args, player, familiar)
   familiar
 end
 
+ENEMY_BASIC = {
+  w: 24,
+  h: 24,
+  angle: 0,
+  health: 1,
+  path: Sprite.for(:enemy),
+  min_exp_drop: 0,
+  max_exp_drop: 2,
+  speed: 2,
+}
+ENEMY_SUPER = {
+  path: Sprite.for(:enemy_super),
+  w: 32,
+  h: 32,
+  health: 3,
+  speed: 3,
+  min_exp_drop: 3,
+  max_exp_drop: 5,
+}
+
 def spawn_enemy(args)
-  {
+  enemy = ENEMY_BASIC.merge({
     x: [args.grid.left + 10, args.grid.right - 10].sample,
     y: [args.grid.top + 10, args.grid.bottom - 10].sample,
-    w: 24,
-    h: 24,
-    angle: 0,
-    path: Sprite.for(:enemy),
     dead: false,
-    speed: 2,
-  }
+  })
+
+  # 1-in-4 chance to spawn super enemy if player level is 5+
+  if args.state.player.level >= 5 && rand(4) == 0
+    enemy.merge!(ENEMY_SUPER)
+  end
+
+  enemy
 end
 
 def tick_enemy(args, enemy)
@@ -571,6 +608,8 @@ def tick_enemy(args, enemy)
 
   enemy.x += enemy.x_vel
   enemy.y += enemy.y_vel
+
+  tick_flasher(enemy)
 
   debug_label(args, enemy.x, enemy.y, "speed: #{enemy.speed}")
 end
