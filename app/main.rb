@@ -275,7 +275,7 @@ def toggle_fullscreen(args)
 end
 
 def load_settings(args)
-  settings = args.gtk.read_file(settings_file)
+  settings = args.gtk.read_file(settings_file).chomp
 
   if settings
     settings.split(",").map { |s| s.split(":") }.to_h.each do |k, v|
