@@ -43,6 +43,14 @@ def test(method)
     # assert.define_singleton_method(:rect!) do |obj|
     #   assert.true!(obj.x && obj.y && obj.w && obj.h, "doesn't have needed properties")
     # end
+    assert.define_singleton_method(:exception!) do |lamb, error_class, message|
+      begin
+        lamb.call(args)
+      rescue StandardError => e
+        assert.equal!(e.class, error_class)
+        assert.equal!(e.message, message)
+      end
+    end
 
     yield(args, assert)
   end
@@ -83,6 +91,30 @@ test :vel_from_angle do |args, assert|
 
   it "calculates other values as expected" do
     assert.equal!(vel_from_angle(12, 5).map { |v| v.round(2) }, [4.89, 1.04])
+  end
+end
+
+test :open_entity_to_hash do |args, assert|
+  it "strips OpenEntity keys" do
+    args.state.foo.bar = true
+    args.state.foo.biz = false
+    assert.equal!(open_entity_to_hash(args.state.foo), { bar: true, biz: false })
+  end
+end
+
+test :settings_for_save do |args, assert|
+  it "joins hash keys and values" do
+    assert.equal!(settings_for_save({ fullscreen: true, sfx: false}), "fullscreen:true,sfx:false")
+  end
+end
+
+test :text do |args, assert|
+  it "returns the value for the passed in key" do
+    assert.equal!(text(:game_over), "Game Over")
+  end
+
+  it "raises when the key isn't present" do
+    assert.exception!(-> (_) { text(:not_present) }, KeyError, "Key not found: :not_present")
   end
 end
 
