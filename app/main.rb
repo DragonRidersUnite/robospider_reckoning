@@ -21,7 +21,7 @@ DARK_RED = { r: 214, g: 26, b: 12 }
 DARK_GOLD = { r: 120, g: 97, b: 7 }
 DARK_GREEN = { r: 5, g: 84, b: 12 }
 DARK_BLUE = { r: 22, g: 122, b: 188 }
-DARK_PURPLE = { r: 88, g: 12, b: 144 }
+DARK_PURPLE = { r: 66, g: 12, b: 109 }
 
 DIR_DOWN = :down
 DIR_UP = :up
