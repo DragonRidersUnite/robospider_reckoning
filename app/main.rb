@@ -227,8 +227,8 @@ def tick_scene_gameplay(args)
 
   labels = []
   labels << label("#{text(:health)}: #{args.state.player.health}", x: 40, y: args.grid.top - 40, size: SIZE_SM)
-  labels << label("#{text(:level)}: #{args.state.player.level}", x: 40, y: args.grid.top - 72, size: SIZE_SM)
-  labels << label("#{text(:enemies_destroyed)}: #{args.state.enemies_destroyed}", x: args.grid.right - 40, y: args.grid.top - 40, size: SIZE_SM, align: ALIGN_RIGHT)
+  labels << label("#{text(:level)}: #{args.state.player.level}", x: args.grid.right - 40, y: args.grid.top - 40, size: SIZE_SM, align: ALIGN_RIGHT)
+  labels << label("#{text(:exp_to_next_level)}: #{args.state.player.exp_to_next_level}", x: args.grid.right - 40, y: args.grid.top - 88, size: SIZE_XS, align: ALIGN_RIGHT)
   args.outputs.labels << labels
 end
 
@@ -380,8 +380,9 @@ def tick_scene_game_over(args)
   labels = []
 
   labels << label(:game_over, x: args.grid.w / 2, y: args.grid.top - 200, align: ALIGN_CENTER, size: SIZE_LG)
-  labels << label(:restart, x: args.grid.w / 2, y: args.grid.top - 420, align: ALIGN_CENTER, size: SIZE_SM).merge(a: args.state.tick_count % 155 + 100)
-  labels << label("#{text(:enemies_destroyed)}: #{args.state.enemies_destroyed}", x: args.grid.w / 2, y: args.grid.top - 320, size: SIZE_SM, align: ALIGN_CENTER)
+  labels << label("#{text(:level)}: #{args.state.player.level}", x: args.grid.w / 2, y: args.grid.top - 320, size: SIZE_SM, align: ALIGN_CENTER)
+  labels << label("#{text(:enemies_destroyed)}: #{args.state.enemies_destroyed}", x: args.grid.w / 2, y: args.grid.top - 380, size: SIZE_SM, align: ALIGN_CENTER)
+  labels << label(:restart, x: args.grid.w / 2, y: args.grid.top - 480, align: ALIGN_CENTER, size: SIZE_SM).merge(a: args.state.tick_count % 155 + 100)
 
   if primary_down?(args.inputs)
     return switch_scene(args, :gameplay, reset: true)
@@ -396,6 +397,7 @@ TEXT = {
   controls_keyboard: "WASD/Arrows to move | J/Z/Space to confirm & shoot | Esc/P to pause",
   controls_gamepad: "Stick/D-Pad to move | A to confirm & shoot | Start to pause",
   enemies_destroyed: "Enemies Destroyed",
+  exp_to_next_level: "Exp to Next Level",
   fullscreen: "Fullscreen",
   game_over: "Game Over",
   health: "Health",
