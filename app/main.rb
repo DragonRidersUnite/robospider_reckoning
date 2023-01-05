@@ -29,6 +29,7 @@ module Sprite
   SPRITES = {
     bullet: "sprites/bullet.png",
     enemy: "sprites/enemy.png",
+    enemy_king: "sprites/enemy_king.png",
     enemy_super: "sprites/enemy_super.png",
     exp_chip: "sprites/exp_chip.png",
     familiar: "sprites/familiar.png",
@@ -153,6 +154,7 @@ def tick_scene_gameplay(args)
       exp_chip_magnetic_dist: 50,
       bullet_delay: INIT_BULLET_DELAY,
       bullet_delay_counter: INIT_BULLET_DELAY,
+      body_power: 10,
       fire_pattern: FP_SINGLE,
       direction: DIR_UP,
       invincible: false,
@@ -183,11 +185,11 @@ def tick_scene_gameplay(args)
   # spawns enemies faster when player level is higher;
   # starts at every 12 seconds
   if args.state.tick_count % FPS * (12 - (args.state.player.level  * 0.5).to_i) == 0
-    args.state.enemies << spawn_enemy(args)
+    spawn_enemy(args)
 
     # double spawn at higher levels
     if args.state.player.level >= 12
-      args.state.enemies << spawn_enemy(args)
+      spawn_enemy(args)
     end
   end
 
@@ -196,20 +198,16 @@ def tick_scene_gameplay(args)
   args.state.exp_chips.each { |c| tick_exp_chip(args, c)  }
   collide(args, args.state.player.bullets, args.state.enemies, -> (args, bullet, enemy) do
     bullet.dead = true
-    enemy.health -= bullet.power
-    flash(enemy, RED, 12)
-    if enemy.health <= 0
-      destroy_enemy(args, enemy)
-    end
+    damage_enemy(args, enemy, bullet)
   end)
   collide(args, args.state.enemies, args.state.player, -> (args, enemy, player) do
-    player.health -= 1 unless player.invincible
+    player.health -= enemy.body_power unless player.invincible
     flash(player, RED, 12)
-    destroy_enemy(args, enemy, sfx: false)
+    damage_enemy(args, enemy, player, sfx: nil)
     play_sfx(args, :hurt)
   end)
   collide(args, args.state.enemies, args.state.player.familiars, -> (args, enemy, familiar) do
-    destroy_enemy(args, enemy, sfx: :enemy_death_by_familiar)
+    damage_enemy(args, enemy, familiar, sfx: :enemy_hit_by_familiar)
   end)
   collide(args, args.state.exp_chips, args.state.player, -> (args, exp_chip, player) do
     exp_chip.dead = true
@@ -234,8 +232,17 @@ def tick_scene_gameplay(args)
   args.outputs.labels << labels
 end
 
-def destroy_enemy(args, enemy, sfx: :enemy_death)
+# the `entity` that damages the enemy _must_ have `power` or `body_power`
+def damage_enemy(args, enemy, entity, sfx: :enemy_hit)
+  enemy.health -= entity.power || entity.body_power
+  flash(enemy, RED, 12)
   play_sfx(args, sfx) if sfx
+  if enemy.health <= 0
+    destroy_enemy(args, enemy)
+  end
+end
+
+def destroy_enemy(args, enemy)
   enemy.dead = true
   args.state.enemies_destroyed += 1
 
@@ -557,6 +564,7 @@ def spawn_familiar(player, dist_from_player:, speed: 18)
     y: player.y,
     w: 18,
     h: 18,
+    power: 2,
     speed: speed,
     dist_from_player: dist_from_player,
     path: Sprite.for(:familiar),
@@ -582,6 +590,7 @@ ENEMY_BASIC = {
   min_exp_drop: 0,
   max_exp_drop: 2,
   speed: 2,
+  body_power: 1,
 }
 ENEMY_SUPER = {
   path: Sprite.for(:enemy_super),
@@ -591,26 +600,51 @@ ENEMY_SUPER = {
   speed: 3,
   min_exp_drop: 3,
   max_exp_drop: 6,
+  body_power: 3,
+}
+ENEMY_KING = {
+  path: Sprite.for(:enemy_king),
+  w: 64,
+  h: 64,
+  health: 32,
+  speed: 4,
+  min_exp_drop: 24,
+  max_exp_drop: 32,
+  body_power: 4,
 }
 
-def spawn_enemy(args)
+# enemy `type` for overriding default algorithm:
+# - :basic
+# - :super
+# - :king
+def spawn_enemy(args, type = nil)
   enemy = ENEMY_BASIC.merge({
     x: [args.grid.left + 10, args.grid.right - 10].sample,
     y: [args.grid.top + 10, args.grid.bottom - 10].sample,
     dead: false,
   })
 
-  super_chance = if args.state.player.level >= 8
-                   50
-                 elsif args.state.player.level >= 5
-                   25
-                 else
-                   0
-                 end
-  if percent_chance?(super_chance)
+  case type
+  when :basic
+    # no-op, already got a basic
+  when :super
     enemy.merge!(ENEMY_SUPER)
+  when :king
+    enemy.merge!(ENEMY_KING)
+  else # the default algorithm
+    super_chance = if args.state.player.level >= 8
+                     50
+                   elsif args.state.player.level >= 5
+                     25
+                   else
+                     0
+                   end
+    if percent_chance?(super_chance)
+      enemy.merge!(ENEMY_SUPER)
+    end
   end
 
+  args.state.enemies << enemy
   enemy
 end
 
@@ -736,6 +770,10 @@ def level_up(args, player)
   player.exp_to_next_level = level_up[:exp_diff]
   play_sfx(args, :level_up)
   level_up[:on_reach].call(args, player)
+
+  if player.level >= 10
+    spawn_enemy(args, :king)
+  end
 end
 
 # +angle+ is expected to be in degrees with 0 being facing right
