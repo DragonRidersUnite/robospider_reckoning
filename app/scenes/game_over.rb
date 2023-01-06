@@ -1,5 +1,6 @@
 module Scene
   class << self
+    # Shown after the player dies
     def tick_game_over(args)
       draw_bg(args, DARK_BLUE)
 

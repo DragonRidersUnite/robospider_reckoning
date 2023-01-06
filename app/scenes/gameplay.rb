@@ -31,27 +31,32 @@ module Scene
       Player.tick(args, args.state.player)
       args.state.enemies.each { |e| Enemy.tick(args, e)  }
       args.state.exp_chips.each { |c| ExpChip.tick(args, c)  }
+
       collide(args, args.state.player.bullets, args.state.enemies, -> (args, bullet, enemy) do
         bullet.dead = true
         Enemy.damage(args, enemy, bullet)
       end)
+
       collide(args, args.state.enemies, args.state.player, -> (args, enemy, player) do
         player.health -= enemy.body_power unless player.invincible
         flash(player, RED, 12)
         Enemy.damage(args, enemy, player, sfx: nil)
         play_sfx(args, :hurt)
       end)
+
       collide(args, args.state.enemies, args.state.player.familiars, -> (args, enemy, familiar) do
         if familiar.cooldown_countdown <= 0
           Enemy.damage(args, enemy, familiar, sfx: :enemy_hit_by_familiar)
           familiar.cooldown_countdown = familiar.cooldown_ticks
         end
       end)
+
       collide(args, args.state.exp_chips, args.state.player, -> (args, exp_chip, player) do
         exp_chip.dead = true
         Player.absorb_exp(args, player, exp_chip)
         play_sfx(args, :exp_chip)
       end)
+
       args.state.enemies.reject! { |e| e.dead? }
       args.state.exp_chips.reject! { |e| e.dead }
 

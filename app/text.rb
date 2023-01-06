@@ -35,16 +35,16 @@ TEXT = {
   start: "Start",
 }
 
-SIZE_XS = 0
-SIZE_SM = 4
-SIZE_MD = 6
-SIZE_LG = 10
-
 # Gets the text for the passed in `key`. Raises if it does not exist. We don't
 # want missing text!
 def text(key)
   TEXT.fetch(key)
 end
+
+SIZE_XS = 0
+SIZE_SM = 4
+SIZE_MD = 6
+SIZE_LG = 10
 
 FONT_REGULAR = "fonts/Atkinson-Hyperlegible-Regular-102.ttf"
 FONT_ITALIC = "fonts/Atkinson-Hyperlegible-Italic-102.ttf"

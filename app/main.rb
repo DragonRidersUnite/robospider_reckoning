@@ -6,7 +6,9 @@ CREDITS = [
   "Brett Chalupa",
 ].shuffle
 
+require "app/input.rb"
 require "app/sprite.rb"
+
 require "app/constants.rb"
 require "app/enemy.rb"
 require "app/exp_chip.rb"
