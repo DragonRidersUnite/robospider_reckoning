@@ -30,7 +30,7 @@ module Scene
 
       Player.tick(args, args.state.player)
       args.state.enemies.each { |e| Enemy.tick(args, e)  }
-      args.state.exp_chips.each { |c| tick_exp_chip(args, c)  }
+      args.state.exp_chips.each { |c| ExpChip.tick(args, c)  }
       collide(args, args.state.player.bullets, args.state.enemies, -> (args, bullet, enemy) do
         bullet.dead = true
         Enemy.damage(args, enemy, bullet)
