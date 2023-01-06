@@ -102,9 +102,9 @@ test :open_entity_to_hash do |args, assert|
   end
 end
 
-test :settings_for_save do |args, assert|
+test :game_setting_settings_for_save do |args, assert|
   it "joins hash keys and values" do
-    assert.equal!(settings_for_save({ fullscreen: true, sfx: false}), "fullscreen:true,sfx:false")
+    assert.equal!(GameSetting.settings_for_save({ fullscreen: true, sfx: false}), "fullscreen:true,sfx:false")
   end
 end
 

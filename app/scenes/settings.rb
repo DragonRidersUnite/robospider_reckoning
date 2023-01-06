@@ -8,7 +8,11 @@ module Scene
           key: :sfx,
           kind: :toggle,
           setting_val: args.state.setting.sfx,
-          on_select: -> (args) { args.state.setting.sfx = !args.state.setting.sfx; save_settings(args) }
+          on_select: -> (args) do
+            GameSetting.save_after(args) do |args|
+              args.state.setting.sfx = !args.state.setting.sfx
+            end
+          end
         },
         {
           key: :back,
@@ -21,7 +25,12 @@ module Scene
           key: :fullscreen,
           kind: :toggle,
           setting_val: args.state.setting.fullscreen,
-          on_select: -> (args) { toggle_fullscreen(args); save_settings(args) }
+          on_select: -> (args) do
+            GameSetting.save_after(args) do |args|
+              args.state.setting.fullscreen = !args.state.setting.fullscreen
+              args.gtk.set_window_fullscreen(args.state.setting.fullscreen)
+            end
+          end
         })
       end
 

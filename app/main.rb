@@ -14,7 +14,7 @@ require "app/familiar.rb"
 require "app/menu.rb"
 require "app/player.rb"
 require "app/scene.rb"
-require "app/settings.rb"
+require "app/game_setting.rb"
 require "app/sound.rb"
 require "app/text.rb"
 
