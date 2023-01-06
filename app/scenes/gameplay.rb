@@ -50,30 +50,30 @@ module Scene
       # spawns enemies faster when player level is higher;
       # starts at every 12 seconds
       if args.state.tick_count % FPS * (12 - (args.state.player.level  * 0.5).to_i) == 0
-        spawn_enemy(args)
+        Enemy.spawn(args)
 
         # double spawn at higher levels
         if args.state.player.level >= 12
-          spawn_enemy(args)
+          Enemy.spawn(args)
         end
       end
 
       tick_player(args, args.state.player)
-      args.state.enemies.each { |e| tick_enemy(args, e)  }
+      args.state.enemies.each { |e| Enemy.tick(args, e)  }
       args.state.exp_chips.each { |c| tick_exp_chip(args, c)  }
       collide(args, args.state.player.bullets, args.state.enemies, -> (args, bullet, enemy) do
         bullet.dead = true
-        damage_enemy(args, enemy, bullet)
+        Enemy.damage(args, enemy, bullet)
       end)
       collide(args, args.state.enemies, args.state.player, -> (args, enemy, player) do
         player.health -= enemy.body_power unless player.invincible
         flash(player, RED, 12)
-        damage_enemy(args, enemy, player, sfx: nil)
+        Enemy.damage(args, enemy, player, sfx: nil)
         play_sfx(args, :hurt)
       end)
       collide(args, args.state.enemies, args.state.player.familiars, -> (args, enemy, familiar) do
         if familiar.cooldown_countdown <= 0
-          damage_enemy(args, enemy, familiar, sfx: :enemy_hit_by_familiar)
+          Enemy.damage(args, enemy, familiar, sfx: :enemy_hit_by_familiar)
           familiar.cooldown_countdown = familiar.cooldown_ticks
         end
       end)

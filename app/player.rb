@@ -188,6 +188,6 @@ def level_up(args, player)
   level_up[:on_reach].call(args, player)
 
   if player.level >= 10
-    spawn_enemy(args, :king)
+    Enemy.spawn(args, :king)
   end
 end
