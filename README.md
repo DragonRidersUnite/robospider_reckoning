@@ -71,3 +71,4 @@ These are the steps for Brett at the end of each participant's week:
 7. Add next person to private Discord thread
 8. Let them know they're up!
 9. Update the [spreadsheet](https://docs.google.com/spreadsheets/d/1mYuRJ8Y6dVQJDy_0MaMyJSEselNp7LXFXM0fKSjbJqw/edit)
+10. Add collaborator to itch.io
