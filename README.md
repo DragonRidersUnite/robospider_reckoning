@@ -56,7 +56,7 @@ Tests for methods live in `app/tests.rb`. Run the tests with from within your en
 ./dragonruby mygame --eval mygame/app/tests.rb --no-tick --exit-on-fail
 ```
 
-or just use `./run_tests`
+or just use `./run_tests` if you're on an OS with shell scripting (Linux/MacOS).
 
 ## Weekly Hand-Off
 
