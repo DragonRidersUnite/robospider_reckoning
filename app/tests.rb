@@ -7,6 +7,8 @@
 #
 # View more details: https://github.com/DragonRidersUnite/dragon_test
 
+return unless debug?
+
 def run_tests
   $gtk.tests&.passed.clear
   $gtk.tests&.inconclusive.clear
