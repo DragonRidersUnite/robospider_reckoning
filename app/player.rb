@@ -100,7 +100,7 @@ module Player
 
       player.bullets.reject! { |b| b.dead }
 
-      player.familiars.each { |f| tick_familiar(args, player, f) }
+      player.familiars.each { |f| Familiar.tick(args, player, f) }
 
       tick_flasher(player)
 
@@ -155,7 +155,7 @@ module Player
     2 => {
       exp_diff: 10,
       on_reach: -> (args, player) do
-        spawn_familiar(player, dist_from_player: 66)
+        Familiar.spawn(player, dist_from_player: 66)
         args.gtk.notify!(text(:lu_familiar_spawned))
       end
     },
@@ -179,7 +179,7 @@ module Player
     5 => {
       exp_diff: 25,
       on_reach: -> (args, player) do
-        familiar = spawn_familiar(player, dist_from_player: 100)
+        familiar = Familiar.spawn(player, dist_from_player: 100)
         args.gtk.notify!(text(:lu_familiar_spawned))
         familiar.speed = player.familiars.first.speed - 2 # familiar speed is weird and decreasing it makes it faster
       end
