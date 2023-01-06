@@ -1,37 +1,7 @@
 module Scene
   class << self
     def tick_gameplay(args)
-      args.state.player ||=
-        begin
-          p = {
-            x: args.grid.w / 2,
-            y: args.grid.h / 2,
-            w: 32,
-            h: 32,
-            health: 6,
-            max_health: 6,
-            speed: 4,
-            level: 1,
-            path: Sprite.for(:player),
-            exp_to_next_level: LEVEL_PROG[2][:exp_diff],
-            bullets: [],
-            familiars: [],
-            exp_chip_magnetic_dist: 50,
-            bullet_delay: INIT_BULLET_DELAY,
-            bullet_delay_counter: INIT_BULLET_DELAY,
-            body_power: 10,
-            fire_pattern: FP_SINGLE,
-            direction: DIR_UP,
-            invincible: false,
-          }.merge(WHITE)
-
-          p.define_singleton_method(:dead?) do
-            health <= 0
-          end
-
-          p
-        end
-
+      args.state.player ||= Player.create(args)
       args.state.enemies ||= []
       args.state.enemies_destroyed ||= 0
       args.state.exp_chips ||= []
@@ -58,7 +28,7 @@ module Scene
         end
       end
 
-      tick_player(args, args.state.player)
+      Player.tick(args, args.state.player)
       args.state.enemies.each { |e| Enemy.tick(args, e)  }
       args.state.exp_chips.each { |c| tick_exp_chip(args, c)  }
       collide(args, args.state.player.bullets, args.state.enemies, -> (args, bullet, enemy) do
@@ -79,7 +49,7 @@ module Scene
       end)
       collide(args, args.state.exp_chips, args.state.player, -> (args, exp_chip, player) do
         exp_chip.dead = true
-        absorb_exp(args, player, exp_chip)
+        Player.absorb_exp(args, player, exp_chip)
         play_sfx(args, :exp_chip)
       end)
       args.state.enemies.reject! { |e| e.dead? }

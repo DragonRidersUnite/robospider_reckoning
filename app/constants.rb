@@ -23,3 +23,9 @@ DIR_DOWN = :down
 DIR_UP = :up
 DIR_LEFT = :left
 DIR_RIGHT = :right
+
+# FP = Fire Pattern
+FP_SINGLE = :single
+FP_DUAL = :dual
+FP_TRI = :tri
+FP_QUAD = :quad

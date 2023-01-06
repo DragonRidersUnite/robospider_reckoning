@@ -160,7 +160,7 @@ def debug_tick(args)
   if player
     if args.inputs.keyboard.key_down.one
       play_sfx(args, :select)
-      level_up(args, player)
+      Player.level_up(args, player)
     end
 
     if args.inputs.keyboard.key_down.two
