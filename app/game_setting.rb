@@ -25,7 +25,7 @@ module GameSetting
 
     # loads settings from disk and puts them into `args.state.setting`
     def load_settings(args)
-      settings = args.gtk.read_file(settings_file).chomp
+      settings = args.gtk.read_file(settings_file)&.chomp
 
       if settings
         settings.split(",").map { |s| s.split(":") }.to_h.each do |k, v|
