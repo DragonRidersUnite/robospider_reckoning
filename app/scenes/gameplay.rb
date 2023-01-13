@@ -33,30 +33,30 @@ module Scene
       args.state.enemies.each { |e| Enemy.tick(args, e)  }
       args.state.exp_chips.each { |c| ExpChip.tick(args, c)  }
 
-      collide(args, args.state.player.bullets, args.state.enemies, -> (args, bullet, enemy) do
+      collide(args.state.player.bullets, args.state.enemies) do |bullet, enemy|
         bullet.dead = true
         Enemy.damage(args, enemy, bullet)
-      end)
+      end
 
-      collide(args, args.state.enemies, args.state.player, -> (args, enemy, player) do
+      collide(args.state.enemies, args.state.player) do |enemy, player|
         player.health -= enemy.body_power unless player.invincible
         flash(player, RED, 12)
         Enemy.damage(args, enemy, player, sfx: nil)
         play_sfx(args, :hurt)
-      end)
+      end
 
-      collide(args, args.state.enemies, args.state.player.familiars, -> (args, enemy, familiar) do
+      collide(args.state.enemies, args.state.player.familiars) do |enemy, familiar|
         if familiar.cooldown_countdown <= 0
           Enemy.damage(args, enemy, familiar, sfx: :enemy_hit_by_familiar)
           familiar.cooldown_countdown = familiar.cooldown_ticks
         end
-      end)
+      end
 
-      collide(args, args.state.exp_chips, args.state.player, -> (args, exp_chip, player) do
+      collide(args.state.exp_chips, args.state.player) do |exp_chip, player|
         exp_chip.dead = true
         Player.absorb_exp(args, player, exp_chip)
         play_sfx(args, :exp_chip)
-      end)
+      end
 
       args.state.enemies.reject! { |e| e.dead? }
       args.state.exp_chips.reject! { |e| e.dead }

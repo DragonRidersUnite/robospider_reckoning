@@ -33,9 +33,9 @@ def open_entity_to_hash(open_entity)
   open_entity.as_hash.except(:entity_id, :entity_name, :entity_keys_by_ref, :__thrash_count__)
 end
 
-# Executes the callback for each intersections of the collections. If a
+# Executes the block for each intersections of the collections. If a
 # collection isn't an array, it's put into one so it can properly loop.
-def collide(args, col1, col2, callback)
+def collide(col1, col2)
   col1 = [col1] unless col1.is_a?(Array)
   col2 = [col2] unless col2.is_a?(Array)
 
@@ -43,7 +43,7 @@ def collide(args, col1, col2, callback)
     col2.each do |j|
       if !i.dead && !j.dead
         if i.intersect_rect?(j)
-          callback.call(args, i, j)
+          yield(i, j)
         end
       end
     end
