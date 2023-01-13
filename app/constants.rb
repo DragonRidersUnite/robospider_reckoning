@@ -29,3 +29,6 @@ FP_SINGLE = :single
 FP_DUAL = :dual
 FP_TRI = :tri
 FP_QUAD = :quad
+
+# MAZE
+MODE = {small: "small", medium: "medium", large: "large"}

@@ -4,11 +4,14 @@
 # add your name to this array!
 CREDITS = [
   "Brett Chalupa",
+  "Jae Donley",
 ].shuffle
 
 require "app/input.rb"
 require "app/sprite.rb"
 
+require "app/camera.rb"
+require "app/classes.rb"
 require "app/constants.rb"
 require "app/enemy.rb"
 require "app/exp_chip.rb"
@@ -26,6 +29,9 @@ require "app/scenes/main_menu.rb"
 require "app/scenes/paused.rb"
 require "app/scenes/settings.rb"
 
+
+require "app/level_generation/cell.rb"
+require "app/level_generation/level.rb"
 # NOTE: add all requires above this
 
 require "app/tick.rb"

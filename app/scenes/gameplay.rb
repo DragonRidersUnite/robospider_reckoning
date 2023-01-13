@@ -1,11 +1,12 @@
 module Scene
   class << self
     def tick_gameplay(args)
+      args.state.level ||= Level.new()
       args.state.player ||= Player.create(args)
       args.state.enemies ||= []
       args.state.enemies_destroyed ||= 0
       args.state.exp_chips ||= []
-
+      args.state.camera ||= Camera.new()
       if !args.state.has_focus && args.inputs.keyboard.has_focus
         args.state.has_focus = true
       elsif args.state.has_focus && !args.inputs.keyboard.has_focus
@@ -28,7 +29,7 @@ module Scene
         end
       end
 
-      Player.tick(args, args.state.player)
+      Player.tick(args, args.state.player, args.state.camera)
       args.state.enemies.each { |e| Enemy.tick(args, e)  }
       args.state.exp_chips.each { |c| ExpChip.tick(args, c)  }
 
@@ -66,6 +67,8 @@ module Scene
       end
 
       draw_bg(args, BLACK)
+      args.state.camera.update(args)
+      args.state.level.draw(args, args.state.camera)
       args.outputs.sprites << [args.state.exp_chips, args.state.player.bullets, args.state.player, args.state.enemies, args.state.player.familiars]
 
       labels = []

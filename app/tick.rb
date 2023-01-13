@@ -1,14 +1,13 @@
 # Code that only gets run once on game start
 def init(args)
   GameSetting.load_settings(args)
-  args.gtk.hide_cursor
+  # args.gtk.hide_cursor
 end
 
 def tick(args)
   init(args) if args.state.tick_count == 0
 
   # this looks good on non 16:9 resolutions; game background is different
-  args.outputs.background_color = TRUE_BLACK.values
 
   args.state.has_focus ||= true
   args.state.scene ||= :main_menu
@@ -54,10 +53,10 @@ end
 # returns true the passed in % of the time
 # ex: `percent_chance?(25)` -- 1/4 chance of returning true
 def percent_chance?(percent)
-  error("percent param (#{percent}) can't be above 100!") if percent.to_f > 100.0
-  return false if percent.to_f == 0.0
-  return true if percent.to_f == 100.0
-  rand() < (p / 100.0)
+  error("percent param (#{percent}) can't be above 100!") if percent > 100.0
+  return false if percent == 0.0
+  return true if percent == 100.0
+  rand() < (percent / 100.0)
 end
 
 # +angle+ is expected to be in degrees with 0 being facing right

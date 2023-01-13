@@ -6,8 +6,10 @@ module Player
     # returns a new player data structure
     def create(args)
       p = {
-        x: args.grid.w / 2,
-        y: args.grid.h / 2,
+        sx: args.state.level.start_cell.screen.x + (128 / 2),
+        sy: args.state.level.start_cell.screen.y + (128 / 2),
+        x: args.state.level.start_cell.screen.x + (128 / 2),
+        y: args.state.level.start_cell.screen.y + (128 / 2),
         w: 32,
         h: 32,
         health: 6,
@@ -34,32 +36,36 @@ module Player
       p
     end
 
-    def tick(args, player)
+    def tick(args, player, camera)
       firing = primary_down_or_held?(args.inputs)
 
+      player.x = player.sx - camera.position.x
+      player.y = player.sy - camera.position.y
+
       if args.inputs.down
-        player.y -= player.speed
+        player.sy -= player.speed
         if !firing
           player.direction = DIR_DOWN
         end
       elsif args.inputs.up
-        player.y += player.speed
+        player.sy += player.speed
         if !firing
           player.direction = DIR_UP
         end
       end
 
       if args.inputs.left
-        player.x -= player.speed
+        player.sx -= player.speed
         if !firing
           player.direction = DIR_LEFT
         end
       elsif args.inputs.right
-        player.x += player.speed
+        player.sx += player.speed
         if !firing
           player.direction = DIR_RIGHT
         end
       end
+
 
       player.angle = angle_for_dir(player.direction)
       player.bullet_delay_counter += 1
