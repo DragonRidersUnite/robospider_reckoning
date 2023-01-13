@@ -2,7 +2,7 @@ devid=dragonridersunite
 devtitle=Dragon Riders Community
 gameid=exquisite-corps
 gametitle=Exquisite Corps
-version=0.1
+version=0.2
 icon=metadata/icon.png
 
 # === Flags available at all licensing tiers ===
