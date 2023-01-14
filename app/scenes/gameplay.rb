@@ -13,13 +13,8 @@ module Scene
       args.state.enemies_destroyed ||= 0
       args.state.exp_chips ||= []
       args.state.camera ||= Camera.new()
-      if !args.state.has_focus && args.inputs.keyboard.has_focus
-        args.state.has_focus = true
-      elsif args.state.has_focus && !args.inputs.keyboard.has_focus
-        args.state.has_focus = false
-      end
 
-      if !args.state.has_focus || Input.pause?(args.inputs)
+      if !args.inputs.keyboard.has_focus || Input.pause?(args.inputs)
         play_sfx(args, :select)
         return Scene.switch(args, :paused, reset: true)
       end

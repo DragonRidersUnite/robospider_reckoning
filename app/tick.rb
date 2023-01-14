@@ -9,7 +9,6 @@ def tick(args)
 
   # this looks good on non 16:9 resolutions; game background is different
 
-  args.state.has_focus ||= true
   args.state.scene ||= :main_menu
 
   Scene.send("tick_#{args.state.scene}", args)
