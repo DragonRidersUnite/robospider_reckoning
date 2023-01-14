@@ -1,15 +1,11 @@
 # Code that only gets run once on game start
 def init(args)
   GameSetting.load_settings(args)
-  # args.gtk.hide_cursor
+  args.state.scene = :main_menu
 end
 
 def tick(args)
   init(args) if args.state.tick_count == 0
-
-  # this looks good on non 16:9 resolutions; game background is different
-
-  args.state.scene ||= :main_menu
 
   Scene.send("tick_#{args.state.scene}", args)
 
