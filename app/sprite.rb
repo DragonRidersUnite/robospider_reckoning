@@ -13,7 +13,7 @@ module Sprite
 
   class << self
     def reset_all(args)
-      SPRITES.each { |_, v| args.gtk.reset_sprite(v) }
+      SPRITES.each_value { |v| args.gtk.reset_sprite(v) }
     end
 
     def for(key)
