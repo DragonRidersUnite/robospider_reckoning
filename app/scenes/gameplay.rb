@@ -13,7 +13,7 @@ module Scene
         args.state.has_focus = false
       end
 
-      if !args.state.has_focus || pause_down?(args)
+      if !args.state.has_focus || Input.pause?(args.inputs)
         play_sfx(args, :select)
         return Scene.switch(args, :paused, reset: true)
       end

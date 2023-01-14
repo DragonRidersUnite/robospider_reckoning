@@ -37,7 +37,7 @@ module Player
     end
 
     def tick(args, player, camera)
-      firing = primary_down_or_held?(args.inputs)
+      firing = Input.fire?(args.inputs)
 
       player.x = player.sx - camera.position.x
       player.y = player.sy - camera.position.y

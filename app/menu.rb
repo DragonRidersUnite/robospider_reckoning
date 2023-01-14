@@ -75,7 +75,7 @@ module Menu
         end
       end
 
-      if primary_down?(args.inputs)
+      if Input.confirm?(args.inputs)
         play_sfx(args, :select)
         options[menu_state.current_option_i][:on_select].call(args)
       end
