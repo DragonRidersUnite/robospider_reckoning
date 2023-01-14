@@ -29,5 +29,10 @@ module Scene
 
       args.outputs.labels << label(:paused, x: args.grid.w / 2, y: args.grid.top - 200, align: ALIGN_CENTER, size: SIZE_LG, font: FONT_BOLD)
     end
+
+    def reset_paused(args)
+      args.state.paused.current_option_i = nil
+      args.state.paused.hold_delay = nil
+    end
   end
 end

@@ -38,5 +38,10 @@ module Scene
 
       args.outputs.labels << label(:settings, x: args.grid.w / 2, y: args.grid.top - 200, align: ALIGN_CENTER, size: SIZE_LG, font: FONT_BOLD)
     end
+
+    def reset_settings(args)
+      args.state.settings.current_option_i = nil
+      args.state.settings.hold_delay = nil
+    end
   end
 end

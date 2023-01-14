@@ -78,5 +78,12 @@ module Scene
       labels << label("#{text(:exp_to_next_level)}: #{args.state.player.exp_to_next_level}", x: args.grid.right - 40, y: args.grid.top - 88, size: SIZE_XS, align: ALIGN_RIGHT, font: FONT_BOLD)
       args.outputs.labels << labels
     end
+
+    def reset_gameplay(args)
+      args.state.player = nil
+      args.state.enemies = nil
+      args.state.enemies_destroyed = nil
+      args.state.exp_chips = nil
+    end
   end
 end
