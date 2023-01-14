@@ -34,6 +34,9 @@ The engine files are not included in this source repository so that people can u
 
 When your week is beginning, add your name to the `CREDITS` array. It's a shuffled list of everyone who worked on the game.
 
+If you need inspiration of what kind of things could be added to the game, check out the [Issues](https://github.com/DragonRidersUnite/exquisite_corps/issues)
+of the repository.
+
 ### On the Code Architecture
 
 The code is intentionally structured to make use of functions and `args.state` without any classes. A functional-ish approach. This follows in the spirit of DRGTK's docs.
