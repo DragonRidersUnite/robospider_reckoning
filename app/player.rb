@@ -6,10 +6,10 @@ module Player
     # returns a new player data structure
     def create(args)
       p = {
-        sx: args.state.level.start_cell.screen.x + (128 / 2),
-        sy: args.state.level.start_cell.screen.y + (128 / 2),
-        x: args.state.level.start_cell.screen.x + (128 / 2),
-        y: args.state.level.start_cell.screen.y + (128 / 2),
+        sx: args.state.start_position.x,
+        sy: args.state.start_position.y,
+        x: args.state.start_position.x,
+        y: args.state.start_position.y,
         w: 32,
         h: 32,
         health: 6,

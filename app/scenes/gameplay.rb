@@ -1,7 +1,13 @@
 module Scene
   class << self
     def tick_gameplay(args)
-      args.state.level ||= Level.new()
+      # creates the maze for the levels
+      args.state.level ||= Level.new(mode: MODE[:small])
+      # creates the starting point for the player
+      args.state.start_position ||= Vector.new(
+          args.state.level.start_cell.x * args.state.level.size + (args.state.level.size / 2), #x
+          args.state.level.start_cell.y * args.state.level.size + (args.state.level.size / 2) #y
+        )
       args.state.player ||= Player.create(args)
       args.state.enemies ||= []
       args.state.enemies_destroyed ||= 0
