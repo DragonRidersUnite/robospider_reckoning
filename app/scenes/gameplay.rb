@@ -74,7 +74,7 @@ module Scene
 
       draw_bg(args, BLACK)
       args.state.camera.update(args)
-      args.state.level.draw(args, args.state.camera)
+      args.state.level.draw(args, camera)
       args.outputs.sprites << [
         translated(camera, args.state.exp_chips),
         translated(camera, args.state.player.bullets),
