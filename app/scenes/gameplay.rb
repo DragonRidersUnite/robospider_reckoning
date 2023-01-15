@@ -6,8 +6,8 @@ module Scene
       level = args.state.level
       # creates the starting point for the player
       args.state.start_position ||= {
-          x: args.state.level.start_cell.x * args.state.level.size + (args.state.level.size / 2),
-          y: args.state.level.start_cell.y * args.state.level.size + (args.state.level.size / 2)
+        x: (level.start_cell.x * level.cell_size) + (level.cell_size / 2) - (Player::W / 2),
+        y: (level.start_cell.y * level.cell_size) + (level.cell_size / 2) - (Player::H / 2)
       }
       args.state.player ||= Player.create(args)
       player = args.state.player

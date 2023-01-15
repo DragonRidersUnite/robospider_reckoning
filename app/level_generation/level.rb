@@ -1,7 +1,7 @@
 class Level
   attr_accessor :grid, :size, :mode, :start_cell
 
-  attr_reader :bounds
+  attr_reader :bounds, :cell_size
 
   def initialize(mode:)
     @mode = mode
