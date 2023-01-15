@@ -70,7 +70,7 @@ module Scene
         return Scene.switch(args, :game_over)
       end
 
-      update_camera_position(camera, args.state.player)
+      update_camera_position(camera, player: args.state.player, level: args.state.level)
 
       draw_bg(args, BLACK)
       args.state.level.draw(args, camera)
@@ -89,9 +89,10 @@ module Scene
       args.outputs.labels << labels
     end
 
-    def update_camera_position(camera, player)
-      camera[:x] = player.x - (camera.w / 2) + (player.w / 2)
-      camera[:y] = player.y - (camera.h / 2) + (player.h / 2)
+    def update_camera_position(camera, player:, level:)
+      bounds = level.bounds
+      camera[:x] = (player.x - (camera.w / 2) + (player.w / 2)).clamp(0, bounds.right - camera.w)
+      camera[:y] = (player.y - (camera.h / 2) + (player.h / 2)).clamp(0, bounds.top - camera.h)
     end
 
     def translated(camera, object)

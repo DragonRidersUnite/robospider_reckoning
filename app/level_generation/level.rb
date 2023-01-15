@@ -1,6 +1,8 @@
 class Level
   attr_accessor :grid, :size, :mode, :start_cell
 
+  attr_reader :bounds
+
   def initialize(mode:)
     @mode = mode
     case @mode
@@ -15,6 +17,7 @@ class Level
     create_grid_cells()
     create_level()
     @start_cell = select_alive_cell()
+    @bounds = { x: 0, y: 0, w: @size * @cell_size, h: @size * @cell_size }
   end
 
   def create_grid_cells()
