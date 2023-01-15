@@ -6,10 +6,10 @@ module Player
 
   class << self
     # returns a new player data structure
-    def create(args)
+    def create(args, x:, y:)
       p = {
-        x: args.state.start_position.x,
-        y: args.state.start_position.y,
+        x: x,
+        y: y,
         w: W,
         h: H,
         health: 6,

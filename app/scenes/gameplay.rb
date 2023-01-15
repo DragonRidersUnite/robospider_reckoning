@@ -4,12 +4,11 @@ module Scene
       # creates the maze for the levels
       args.state.level ||= Level.new(mode: MODE[:small])
       level = args.state.level
-      # creates the starting point for the player
-      args.state.start_position ||= {
+      args.state.player ||= Player.create(
+        args,
         x: (level.start_cell.x * level.cell_size) + (level.cell_size / 2) - (Player::W / 2),
         y: (level.start_cell.y * level.cell_size) + (level.cell_size / 2) - (Player::H / 2)
-      }
-      args.state.player ||= Player.create(args)
+      )
       player = args.state.player
       args.state.camera ||= { x: 0, y: 0, w: 1280, h: 720 }
       args.state.enemies ||= []
