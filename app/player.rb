@@ -94,7 +94,7 @@ module Player
         b.x += x_vel
         b.y += y_vel
 
-        if out_of_bounds?(args.grid, b)
+        if out_of_bounds?(camera, b)
           b.dead = true
         end
       end

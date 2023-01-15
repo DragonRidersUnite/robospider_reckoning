@@ -33,7 +33,8 @@ module Scene
         end
       end
 
-      Player.tick(args, args.state.player, args.state.camera)
+
+      Player.tick(args, args.state.player, camera)
       args.state.enemies.each { |e| Enemy.tick(args, e)  }
       args.state.exp_chips.each { |c| ExpChip.tick(args, c)  }
 
