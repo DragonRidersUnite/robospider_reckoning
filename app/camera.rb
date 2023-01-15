@@ -5,7 +5,7 @@ class Camera
 
   def initialize()
     @position = { x: 0, y: 0 }
-    @dimensions = Dimensions.new(width: 1280, height: 720)
+    @dimensions = { w: 1280, h: 720 }
   end
 
   def update(args)

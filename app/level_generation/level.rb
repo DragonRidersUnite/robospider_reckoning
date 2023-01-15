@@ -95,7 +95,7 @@ class Level
       row.each do |cell|
         screen_x = cell.screen.x - camera.position.x
         screen_y = cell.screen.y - camera.position.y
-        if (screen_x >= 0 - @cell_size && screen_x < (camera.dimensions.width + @cell_size)) && (screen_y >= 0 - @cell_size && screen_y < camera.dimensions.height + @cell_size)
+        if (screen_x >= 0 - @cell_size && screen_x < (camera.dimensions.w + @cell_size)) && (screen_y >= 0 - @cell_size && screen_y < camera.dimensions.h + @cell_size)
           if cell.alive
             args.outputs.solids << [screen_x, screen_y, @cell_size, @cell_size, 111, 111, 111]
           else
