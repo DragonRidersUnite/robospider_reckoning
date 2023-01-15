@@ -147,7 +147,7 @@ module Player
       level_up[:on_reach].call(args, player)
 
       if player.level >= 10
-        Enemy.spawn(args, :king)
+        Enemy.spawn(args, :king, camera: camera)
       end
     end
   end

@@ -25,11 +25,11 @@ module Scene
       # spawns enemies faster when player level is higher;
       # starts at every 12 seconds
       if args.state.tick_count % FPS * (12 - (args.state.player.level  * 0.5).to_i) == 0
-        Enemy.spawn(args)
+        Enemy.spawn(args, camera: camera)
 
         # double spawn at higher levels
         if args.state.player.level >= 12
-          Enemy.spawn(args)
+          Enemy.spawn(args, camera: camera)
         end
       end
 
