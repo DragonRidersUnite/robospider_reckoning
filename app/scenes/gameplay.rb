@@ -9,10 +9,13 @@ module Scene
           y: args.state.level.start_cell.y * args.state.level.size + (args.state.level.size / 2)
       }
       args.state.player ||= Player.create(args)
+      args.state.camera_viewport ||= { x: 0, y: 0, w: 1280, h: 720 }
       args.state.enemies ||= []
       args.state.enemies_destroyed ||= 0
       args.state.exp_chips ||= []
       args.state.camera ||= Camera.new()
+
+      camera = args.state.camera_viewport
 
       if !args.inputs.keyboard.has_focus || Input.pause?(args.inputs)
         play_sfx(args, :select)
