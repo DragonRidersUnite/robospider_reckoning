@@ -1,6 +1,8 @@
 module Player
   INIT_BULLET_DELAY = 10
   BULLET_SIZE = 10
+  W = 32
+  H = 32
 
   class << self
     # returns a new player data structure
@@ -8,8 +10,8 @@ module Player
       p = {
         x: args.state.start_position.x,
         y: args.state.start_position.y,
-        w: 32,
-        h: 32,
+        w: W,
+        h: H,
         health: 6,
         max_health: 6,
         speed: 4,
