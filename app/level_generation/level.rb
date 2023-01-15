@@ -23,7 +23,7 @@ class Level
   def create_grid_cells()
     @grid = Array.new(@size) { |x|
       Array.new(@size) { |y|
-        Cell.new(position: { x: x, y: y }, alive: false, visited: false)
+        Cell.new(position: { x: x, y: y }, alive: false, visited: false, size: @cell_size)
       }
     }
   end
