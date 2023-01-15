@@ -13,7 +13,7 @@ class Level
     when "large"
       @size = 90
     end
-    @cell_size = 128
+    @cell_size = 256
     create_grid_cells()
     create_level()
     @start_cell = select_alive_cell()
