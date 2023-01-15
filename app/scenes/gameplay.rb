@@ -13,7 +13,6 @@ module Scene
       args.state.enemies ||= []
       args.state.enemies_destroyed ||= 0
       args.state.exp_chips ||= []
-      args.state.camera ||= Camera.new()
 
       camera = args.state.camera_viewport
 
@@ -74,7 +73,6 @@ module Scene
       update_camera_position(camera, args.state.player)
 
       draw_bg(args, BLACK)
-      args.state.camera.update(args)
       args.state.level.draw(args, camera)
       args.outputs.sprites << [
         translated(camera, args.state.exp_chips),
