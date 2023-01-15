@@ -70,6 +70,8 @@ module Scene
         return Scene.switch(args, :game_over)
       end
 
+      update_camera_position(camera, args.state.player)
+
       draw_bg(args, BLACK)
       args.state.camera.update(args)
       args.state.level.draw(args, args.state.camera)
@@ -80,6 +82,11 @@ module Scene
       labels << label("#{text(:level)}: #{args.state.player.level}", x: args.grid.right - 40, y: args.grid.top - 40, size: SIZE_SM, align: ALIGN_RIGHT, font: FONT_BOLD)
       labels << label("#{text(:exp_to_next_level)}: #{args.state.player.exp_to_next_level}", x: args.grid.right - 40, y: args.grid.top - 88, size: SIZE_XS, align: ALIGN_RIGHT, font: FONT_BOLD)
       args.outputs.labels << labels
+    end
+
+    def update_camera_position(camera, player)
+      camera[:x] = player.x - (camera.w / 2) + (player.w / 2)
+      camera[:y] = player.y - (camera.h / 2) + (player.h / 2)
     end
 
     def reset_gameplay(args)
