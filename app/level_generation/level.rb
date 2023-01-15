@@ -18,7 +18,11 @@ class Level
   end
 
   def create_grid_cells()
-    @grid = Array.new(@size) {|x| Array.new(@size) {|y| Cell.new(position: Vector.new(x, y), alive: false, visited: false)} }
+    @grid = Array.new(@size) { |x|
+      Array.new(@size) { |y|
+        Cell.new(position: { x: x, y: y }, alive: false, visited: false)
+      }
+    }
   end
 
   def select_alive_cell()

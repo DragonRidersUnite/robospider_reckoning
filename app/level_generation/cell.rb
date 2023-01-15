@@ -6,7 +6,7 @@ class Cell
     @visited = visited
     @alive = alive
     @size = 128
-    @screen = Vector.new(@position.x * @size, @position.y * @size)
+    @screen = { x: @position.x * @size, y: @position.y * @size }
   end
 
   # def to_s

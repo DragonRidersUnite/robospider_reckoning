@@ -2,9 +2,9 @@
 
 class Camera
   attr_reader :position, :dimensions
-  
+
   def initialize()
-    @position = Vector.new(0, 0)
+    @position = { x: 0, y: 0 }
     @dimensions = Dimensions.new(width: 1280, height: 720)
   end
 
