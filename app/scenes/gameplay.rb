@@ -75,7 +75,13 @@ module Scene
       draw_bg(args, BLACK)
       args.state.camera.update(args)
       args.state.level.draw(args, args.state.camera)
-      args.outputs.sprites << [args.state.exp_chips, args.state.player.bullets, args.state.player, args.state.enemies, args.state.player.familiars]
+      args.outputs.sprites << [
+        translated(camera, args.state.exp_chips),
+        translated(camera, args.state.player.bullets),
+        translated(camera, args.state.player),
+        translated(camera, args.state.enemies),
+        translated(camera, args.state.player.familiars)
+      ]
 
       labels = []
       labels << label("#{text(:health)}: #{args.state.player.health}", x: 40, y: args.grid.top - 40, size: SIZE_SM, font: FONT_BOLD)
@@ -87,6 +93,15 @@ module Scene
     def update_camera_position(camera, player)
       camera[:x] = player.x - (camera.w / 2) + (player.w / 2)
       camera[:y] = player.y - (camera.h / 2) + (player.h / 2)
+    end
+
+    def translated(camera, object)
+      return object.map { |o| translated(camera, o) } if object.is_a?(Array)
+
+      object.merge(
+        x: object.x - camera.x,
+        y: object.y - camera.y
+      )
     end
 
     def reset_gameplay(args)
