@@ -40,15 +40,11 @@ module LevelGeneration
     end
 
     def get_neighbors(current_cell)
-      neighbors = []
-      @grid.each do |row|
-        row.each do |cell|
-          x_diff = (cell[:x] - current_cell[:x]).abs
-          y_diff = (cell[:y] - current_cell[:y]).abs
-          neighbors << cell if (x_diff == 2 && y_diff.zero?) || (x_diff.zero? && y_diff == 2)
-        end
-      end
-      neighbors
+      [[2, 0], [0, 2], [-2, 0], [0, -2]].map { |offset|
+        x = current_cell[:x] + offset[0]
+        y = current_cell[:y] + offset[1]
+        @grid[x][y] if x.between?(0, @size - 1) && y.between?(0, @size - 1)
+      }.compact
     end
 
     def mark_cell_in_between_as_wall(current_cell, next_cell)
