@@ -10,7 +10,7 @@ module Scene
         y: (level.start_cell.y * level.cell_size) + (level.cell_size / 2) - (Player::H / 2)
       )
       player = args.state.player
-      args.state.camera ||= { x: 0, y: 0, w: 1280, h: 720 }
+      args.state.camera ||= Camera.build
       args.state.enemies ||= []
       args.state.enemies_destroyed ||= 0
       args.state.exp_chips ||= []
@@ -71,16 +71,16 @@ module Scene
         return Scene.switch(args, :game_over)
       end
 
-      update_camera_position(camera, player: player, level: level)
+      Camera.follow(camera, target: player, bounds: level.bounds)
 
       draw_bg(args, BLACK)
       level.draw(args, camera)
       args.outputs.sprites << [
-        translated(camera, args.state.exp_chips),
-        translated(camera, args.state.player.bullets),
-        translated(camera, player),
-        translated(camera, args.state.enemies),
-        translated(camera, args.state.player.familiars)
+        Camera.translate(camera, args.state.exp_chips),
+        Camera.translate(camera, args.state.player.bullets),
+        Camera.translate(camera, player),
+        Camera.translate(camera, args.state.enemies),
+        Camera.translate(camera, args.state.player.familiars)
       ]
 
       labels = []
@@ -88,21 +88,6 @@ module Scene
       labels << label("#{text(:level)}: #{player.level}", x: args.grid.right - 40, y: args.grid.top - 40, size: SIZE_SM, align: ALIGN_RIGHT, font: FONT_BOLD)
       labels << label("#{text(:exp_to_next_level)}: #{player.exp_to_next_level}", x: args.grid.right - 40, y: args.grid.top - 88, size: SIZE_XS, align: ALIGN_RIGHT, font: FONT_BOLD)
       args.outputs.labels << labels
-    end
-
-    def update_camera_position(camera, player:, level:)
-      bounds = level.bounds
-      camera[:x] = (player.x - (camera.w / 2) + (player.w / 2)).clamp(0, bounds.right - camera.w)
-      camera[:y] = (player.y - (camera.h / 2) + (player.h / 2)).clamp(0, bounds.top - camera.h)
-    end
-
-    def translated(camera, object)
-      return object.map { |o| translated(camera, o) } if object.is_a?(Array)
-
-      object.merge(
-        x: object.x - camera.x,
-        y: object.y - camera.y
-      )
     end
 
     def reset_gameplay(args)
