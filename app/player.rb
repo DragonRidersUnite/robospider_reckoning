@@ -111,11 +111,12 @@ module Player
         player.merge!(RED)
       end
 
-      debug_label(args, player.x, player.y, "dir: #{player.direction}")
-      debug_label(args, player.x, player.y - 14, "angle: #{player.angle}")
-      debug_label(args, player.x, player.y - 28, "bullets: #{player.bullets.length}")
-      debug_label(args, player.x, player.y - 42, "exp 2 nxt lvl: #{player.exp_to_next_level}")
-      debug_label(args, player.x, player.y - 54, "bullet delay: #{player.bullet_delay}")
+      position_on_screen = Camera.translate(args.state.camera, player)
+      debug_label(args, position_on_screen.x, position_on_screen.y, "dir: #{player.direction}")
+      debug_label(args, position_on_screen.x, position_on_screen.y - 14, "angle: #{player.angle}")
+      debug_label(args, position_on_screen.x, position_on_screen.y - 28, "bullets: #{player.bullets.length}")
+      debug_label(args, position_on_screen.x, position_on_screen.y - 42, "exp 2 nxt lvl: #{player.exp_to_next_level}")
+      debug_label(args, position_on_screen.x, position_on_screen.y - 54, "bullet delay: #{player.bullet_delay}")
     end
 
     def bullet(player, angle)

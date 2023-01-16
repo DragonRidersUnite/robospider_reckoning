@@ -96,8 +96,9 @@ module Enemy
         enemy.merge!(RED)
       end
 
-      debug_label(args, enemy.x, enemy.y, "health: #{enemy.health}")
-      debug_label(args, enemy.x, enemy.y - 14, "speed: #{enemy.speed}")
+      position_on_screen = Camera.translate(args.state.camera, enemy)
+      debug_label(args, position_on_screen.x, position_on_screen.y, "health: #{enemy.health}")
+      debug_label(args, position_on_screen.x, position_on_screen.y - 14, "speed: #{enemy.speed}")
     end
 
     # the `entity` that damages the enemy _must_ have `power` or `body_power`
