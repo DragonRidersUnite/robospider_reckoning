@@ -22,7 +22,7 @@ module Scene
 
       Menu.tick(args, :main_menu, options)
 
-      labels = []
+      labels = args.outputs.labels
       labels << label(
         title.upcase, x: args.grid.w / 2, y: args.grid.top - 100,
         size: SIZE_LG, align: ALIGN_CENTER, font: FONT_BOLD_ITALIC)
@@ -38,9 +38,6 @@ module Scene
         args.inputs.controller_one.connected ? :controls_gamepad : :controls_keyboard,
         x: args.grid.right - 24, y: 48,
         size: SIZE_XS, align: ALIGN_RIGHT)
-
-      args.outputs.labels << labels
     end
-
   end
 end
