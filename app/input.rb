@@ -18,5 +18,9 @@ module Input
       PAUSE_KEYS.any? { |k| inputs.keyboard.key_down.send(k) } ||
         inputs.controller_one.key_down&.start
     end
+
+    def window_out_of_focus?(inputs)
+      !inputs.keyboard.has_focus
+    end
   end
 end
