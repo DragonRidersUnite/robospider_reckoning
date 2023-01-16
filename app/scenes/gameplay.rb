@@ -87,6 +87,8 @@ module Scene
     end
 
     def reset_gameplay(args)
+      args.state.level = nil
+      args.state.camera = nil
       args.state.player = nil
       args.state.enemies = nil
       args.state.enemies_destroyed = nil
