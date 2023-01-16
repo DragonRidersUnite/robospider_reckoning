@@ -31,8 +31,7 @@ module Scene
     end
 
     def reset_paused(args)
-      args.state.paused.current_option_i = nil
-      args.state.paused.hold_delay = nil
+      Menu.reset_state(args, :paused)
     end
   end
 end

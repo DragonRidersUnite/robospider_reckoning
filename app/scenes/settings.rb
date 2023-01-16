@@ -40,8 +40,7 @@ module Scene
     end
 
     def reset_settings(args)
-      args.state.settings.current_option_i = nil
-      args.state.settings.hold_delay = nil
+      Menu.reset_state(args, :settings)
     end
   end
 end

@@ -81,6 +81,11 @@ module Menu
       end
     end
 
+    def reset_state(args, state_key)
+      args.state.send(state_key).current_option_i = nil
+      args.state.send(state_key).hold_delay = nil
+    end
+
     def text_for_setting_val(val)
       case val
       when true
