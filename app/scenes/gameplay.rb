@@ -1,7 +1,7 @@
 module Scene
   class << self
     def tick_gameplay(args)
-      args.state.level ||= generate_level
+      args.state.level ||= Level.generate
       level = args.state.level
       args.state.player ||= Player.create(args, x: level[:start_position][:x], y: level[:start_position][:y])
       player = args.state.player
@@ -70,7 +70,7 @@ module Scene
       Camera.follow(camera, target: player, bounds: level[:bounds])
 
       draw_bg(args, BLACK)
-      draw_level(args, level: level, camera: camera)
+      Level.draw(args, level, camera: camera)
       args.outputs.sprites << [
         Camera.translate(camera, args.state.exp_chips),
         Camera.translate(camera, args.state.player.bullets),
@@ -84,46 +84,6 @@ module Scene
       labels << label("#{text(:level)}: #{player.level}", x: args.grid.right - 40, y: args.grid.top - 40, size: SIZE_SM, align: ALIGN_RIGHT, font: FONT_BOLD)
       labels << label("#{text(:exp_to_next_level)}: #{player.exp_to_next_level}", x: args.grid.right - 40, y: args.grid.top - 88, size: SIZE_XS, align: ALIGN_RIGHT, font: FONT_BOLD)
       args.outputs.labels << labels
-    end
-
-    def generate_level
-      cell_size = 256
-      maze_size = 30
-      grid = LevelGeneration::MazeGenerator.new(size: maze_size).generate
-      start_cell = grid.flatten.reject(&:wall).sample
-      {
-        cell_size: cell_size,
-        bounds: { x: 0, y: 0, w: maze_size * cell_size, h:  maze_size * cell_size },
-        grid: grid,
-        start_position: {
-          x: (start_cell[:x] * cell_size) + (cell_size / 2) - (Player::W / 2),
-          y: (start_cell[:y] * cell_size) + (cell_size / 2) - (Player::H / 2)
-        }
-      }
-    end
-
-    def draw_level(args, level:, camera:)
-      cell_size = level[:cell_size]
-      level[:grid].each do |row|
-        row.each do |cell|
-          next unless cell[:wall]
-
-          rendered_cell = {
-            x: (cell[:x] * cell_size),
-            y: (cell[:y] * cell_size),
-            w: cell_size,
-            h: cell_size
-          }
-          next unless rendered_cell.intersect_rect? camera
-
-          args.outputs.sprites << rendered_cell.sprite!(
-            x: rendered_cell.x - camera.x,
-            y: rendered_cell.y - camera.y,
-            path: :pixel,
-            r: 111, g: 111, b: 111
-          )
-        end
-      end
     end
 
     def reset_gameplay(args)
