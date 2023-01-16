@@ -22,6 +22,7 @@ require "app/scene.rb"
 require "app/game_setting.rb"
 require "app/sound.rb"
 require "app/text.rb"
+require "app/timer.rb"
 
 require "app/scenes/game_over.rb"
 require "app/scenes/gameplay.rb"
