@@ -2,8 +2,8 @@ module ExpChip
   class << self
     def create(enemy)
       {
-        x: enemy.x + enemy.w / 2 + (-5..5).to_a.sample + i * 5,
-        y: enemy.y + enemy.h / 2 + (-5..5).to_a.sample + i * 5,
+        x: enemy.x + (enemy.w / 2) + (-5..5).to_a.sample,
+        y: enemy.y + (enemy.h / 2) + (-5..5).to_a.sample,
         speed: 6,
         angle: rand(360),
         w: 12,

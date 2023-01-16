@@ -114,18 +114,8 @@ module Enemy
     def destroy(args, enemy)
       args.state.enemies_destroyed += 1
 
-      random(enemy.min_exp_drop, enemy.max_exp_drop).times do |i|
-        args.state.exp_chips << {
-          x: enemy.x + enemy.w / 2 + (-5..5).to_a.sample + i * 5,
-          y: enemy.y + enemy.h / 2 + (-5..5).to_a.sample + i * 5,
-          speed: 6,
-          angle: rand(360),
-          w: 12,
-          h: 12,
-          dead: false,
-          exp_amount: 1,
-          path: Sprite.for(:exp_chip)
-        }
+      random(enemy.min_exp_drop, enemy.max_exp_drop).times do
+        args.state.exp_chips << ExpChip.create(enemy)
       end
     end
   end
