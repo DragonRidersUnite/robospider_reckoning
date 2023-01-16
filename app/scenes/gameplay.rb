@@ -15,6 +15,8 @@ module Scene
       args.state.enemies ||= []
       args.state.enemies_destroyed ||= 0
       args.state.exp_chips ||= []
+      args.state.enemy_spawn_timer ||= Timer.every(60)
+      enemy_spawn_timer = args.state.enemy_spawn_timer
 
       if Input.window_out_of_focus?(args.inputs) || Input.pause?(args.inputs)
         play_sfx(args, :select)
@@ -22,8 +24,11 @@ module Scene
       end
 
       # spawns enemies faster when player level is higher;
-      # starts at every 12 seconds
-      if args.state.tick_count % FPS * (12 - (player.level  * 0.5).to_i) == 0
+      # starts at every 60 ticks
+      Timer.update_period enemy_spawn_timer, 60 - (player.level * 2)
+
+      Timer.tick(enemy_spawn_timer)
+      if Timer.active?(enemy_spawn_timer)
         Enemy.spawn(args, camera: camera)
 
         # double spawn at higher levels
