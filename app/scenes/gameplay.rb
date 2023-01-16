@@ -11,11 +11,10 @@ module Scene
       )
       player = args.state.player
       args.state.camera ||= Camera.build
+      camera = args.state.camera
       args.state.enemies ||= []
       args.state.enemies_destroyed ||= 0
       args.state.exp_chips ||= []
-
-      camera = args.state.camera
 
       if !args.inputs.keyboard.has_focus || Input.pause?(args.inputs)
         play_sfx(args, :select)
