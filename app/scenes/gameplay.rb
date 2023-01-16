@@ -29,14 +29,11 @@ module Scene
 
       Timer.tick(enemy_spawn_timer)
       if Timer.active?(enemy_spawn_timer)
-        Enemy.spawn(args, camera: camera)
+        Enemy.spawn(args)
 
         # double spawn at higher levels
-        if player.level >= 12
-          Enemy.spawn(args, camera: camera)
-        end
+        Enemy.spawn(args) if player.level >= 12
       end
-
 
       Player.tick(args, player, camera)
       args.state.enemies.each { |e| Enemy.tick(args, e)  }

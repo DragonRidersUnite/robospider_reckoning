@@ -50,10 +50,10 @@ module Enemy
     # - :basic
     # - :super
     # - :king
-    def spawn(args, type = nil, camera:)
+    def spawn(args, type = nil)
       enemy = ENEMY_BASIC.merge(ENEMY_SPAWN_LOCS.sample)
-      enemy.x += camera.x
-      enemy.y += camera.y
+      enemy.x += args.state.camera.x
+      enemy.y += args.state.camera.y
 
       case type
       when :basic
