@@ -4,10 +4,7 @@ module LevelGeneration
       def covered_by_wall?(wall, other_wall)
         return true if wall == other_wall
 
-        other_wall[:x] <= wall[:x] &&
-          other_wall[:y] <= wall[:y] &&
-          other_wall[:w] >= (wall[:x] - other_wall[:x] + wall[:w]) &&
-          other_wall[:h] >= (wall[:y] - other_wall[:y] + wall[:h])
+        (coordinates(wall) - coordinates(other_wall)).empty?
       end
 
       def coordinates(wall)
