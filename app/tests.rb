@@ -150,4 +150,38 @@ test :percent_chance? do |args, assert|
   end
 end
 
+def build_grid_from_map(map)
+  converted_map = map.split("\n").map { |row|
+    row[1..-2].chars.map { |char|
+      { wall: char == "X" }
+    }
+  }
+  converted_map.reverse   # reverse the rows since y goes upwards
+               .transpose # grids are stored as columns since you access them as grid[x][y]
+end
+
+test :level_generation_extract_walls do |_args, assert|
+  map = <<~MAP
+    |X XX|
+    |XX  |
+    |XX  |
+  MAP
+
+  grid = build_grid_from_map map
+  walls = LevelGeneration.extract_walls grid
+
+  assert.equal! walls, [
+    # vertical walls
+    { x: 0, y: 0, w: 1, h: 3 },
+    { x: 1, y: 0, w: 1, h: 2 },
+    { x: 2, y: 2, w: 1, h: 1 },
+    { x: 3, y: 2, w: 1, h: 1 },
+    # horizontal walls
+    { x: 0, y: 0, w: 2, h: 1 },
+    { x: 0, y: 1, w: 2, h: 1 },
+    { x: 0, y: 2, w: 1, h: 1 },
+    { x: 2, y: 2, w: 2, h: 1 }
+  ]
+end
+
 run_tests
