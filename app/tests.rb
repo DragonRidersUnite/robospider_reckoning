@@ -201,6 +201,9 @@ test :level_generation_wall_covered_by do |_args, assert|
     [{ x: 0, y: 0, w: 1, h: 1 }, { x: 0, y: 0, w: 1, h: 1 }, true, true],
     [{ x: 0, y: 0, w: 1, h: 1 }, { x: 0, y: 0, w: 2, h: 1 }, true, false],
     [{ x: 0, y: 0, w: 1, h: 1 }, { x: 0, y: 0, w: 1, h: 2 }, true, false],
+    [{ x: 1, y: 0, w: 1, h: 1 }, { x: 0, y: 0, w: 2, h: 1 }, true, false],
+    [{ x: 0, y: 1, w: 1, h: 1 }, { x: 0, y: 0, w: 1, h: 2 }, true, false],
+    [{ x: 0, y: 0, w: 1, h: 3 }, { x: 1, y: 0, w: 1, h: 1 }, false, false]
   ].each do |wall, other_wall, expected, opposite_case_expected|
     assert.equal! LevelGeneration::Wall.covered_by?(wall, other_wall),
                   expected,
