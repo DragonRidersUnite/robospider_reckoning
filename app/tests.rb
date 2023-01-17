@@ -160,7 +160,7 @@ def build_grid_from_map(map)
                .transpose # grids are stored as columns since you access them as grid[x][y]
 end
 
-test :level_generation_extract_vertical_walls do |_args, assert|
+test :level_generation_wall_determine_vertical_walls do |_args, assert|
   map = <<~MAP
     |X XX|
     |XX  |
@@ -168,7 +168,7 @@ test :level_generation_extract_vertical_walls do |_args, assert|
   MAP
 
   grid = build_grid_from_map map
-  walls = LevelGeneration.extract_vertical_walls grid
+  walls = LevelGeneration::Wall.determine_vertical_walls grid
 
   assert.equal! walls, [
     { x: 0, y: 0, w: 1, h: 3 },
@@ -178,7 +178,7 @@ test :level_generation_extract_vertical_walls do |_args, assert|
   ]
 end
 
-test :level_generation_extract_horizontal_walls do |_args, assert|
+test :level_generation_wall_determine_horizontal_walls do |_args, assert|
   map = <<~MAP
     |X XX|
     |XX  |
@@ -186,7 +186,7 @@ test :level_generation_extract_horizontal_walls do |_args, assert|
   MAP
 
   grid = build_grid_from_map map
-  walls = LevelGeneration.extract_horizontal_walls grid
+  walls = LevelGeneration::Wall.determine_horizontal_walls grid
 
   assert.equal! walls, [
     { x: 0, y: 0, w: 2, h: 1 },
