@@ -196,4 +196,14 @@ test :level_generation_wall_determine_horizontal_walls do |_args, assert|
   ]
 end
 
+test :level_generation_wall_covered_by do |_args, assert|
+  [
+    [{ x: 0, y: 0, w: 1, h: 1 }, { x: 0, y: 0, w: 1, h: 1 }, true]
+  ].each do |wall, other_wall, expected|
+    assert.equal! LevelGeneration::Wall.covered_by?(wall, other_wall),
+                  expected,
+                  "Expected #{wall} #{expected ? '' : 'not '}to be covered by #{other_wall}"
+  end
+end
+
 run_tests

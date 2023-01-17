@@ -1,6 +1,10 @@
 module LevelGeneration
   module Wall
     class << self
+      def covered_by?(wall, other_wall)
+        wall == other_wall
+      end
+
       def determine_vertical_walls(grid)
         walls = []
 
