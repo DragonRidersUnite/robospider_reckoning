@@ -19,8 +19,8 @@ module Level
 
     def draw(args, level, camera:)
       cell_size = level[:cell_size]
-      level[:grid].each do |row|
-        row.each do |cell|
+      level[:grid].each do |column|
+        column.each do |cell|
           next unless cell[:wall]
 
           rendered_cell = {

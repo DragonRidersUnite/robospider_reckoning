@@ -54,8 +54,8 @@ module LevelGeneration
     end
 
     def build_result
-      @grid.map do |row|
-        row.map do |cell|
+      @grid.map do |column|
+        column.map do |cell|
           cell.slice(:x, :y, :wall)
         end
       end
