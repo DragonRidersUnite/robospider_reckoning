@@ -10,6 +10,16 @@ module LevelGeneration
         remaining_walls = walls.dup
         # Start with the smallest walls and see if they are redundant and work our way up
         walls = walls.sort_by { |wall| wall[:w] * wall[:h] }
+        # This part is somewhat slow (1-2 seconds for a 30x30 grid)
+        #
+        # Possible fix 1: Optimize algorithm
+        # Maybe keeping a map with number of overlapping walls for each coordinate
+        # and then updating that as we remove walls instead of calling #covered_by_walls?
+        # many times
+        #
+        # Possible fix 2: Show progress bar (reticulating splines...)
+        # For this this step needs to be refactored with Fiber or something equivalent
+        # so it can be paused and resumed
         walls.each do |wall|
           other_walls = remaining_walls.reject { |other_wall| other_wall == wall }
           next unless covered_by_walls?(wall, other_walls)
