@@ -6,10 +6,19 @@ module Level
     def generate
       grid = LevelGeneration::MazeGenerator.new(size: MAZE_SIZE).generate
       start_cell = grid.flatten.reject(&:wall).sample
+      walls = LevelGeneration::Wall.determine_walls(grid)
       {
         cell_size: CELL_SIZE,
         bounds: { x: 0, y: 0, w: MAZE_SIZE * CELL_SIZE, h:  MAZE_SIZE * CELL_SIZE },
         grid: grid,
+        walls: walls.map { |wall|
+          {
+            x: wall[:x] * CELL_SIZE,
+            y: wall[:y] * CELL_SIZE,
+            w: wall[:w] * CELL_SIZE,
+            h: wall[:h] * CELL_SIZE
+          }
+        },
         start_position: {
           x: (start_cell[:x] * CELL_SIZE) + (CELL_SIZE / 2) - (Player::W / 2),
           y: (start_cell[:y] * CELL_SIZE) + (CELL_SIZE / 2) - (Player::H / 2)
@@ -18,26 +27,15 @@ module Level
     end
 
     def draw(args, level, camera:)
-      cell_size = level[:cell_size]
-      level[:grid].each do |column|
-        column.each do |cell|
-          next unless cell[:wall]
+      level[:walls].each do |wall|
+        next unless wall.intersect_rect? camera
 
-          rendered_cell = {
-            x: (cell[:x] * cell_size),
-            y: (cell[:y] * cell_size),
-            w: cell_size,
-            h: cell_size
-          }
-          next unless rendered_cell.intersect_rect? camera
-
-          args.outputs.sprites << rendered_cell.sprite!(
-            x: rendered_cell.x - camera.x,
-            y: rendered_cell.y - camera.y,
-            path: :pixel,
-            r: 111, g: 111, b: 111
-          )
-        end
+        args.outputs.sprites << wall.to_sprite(
+          x: wall.x - camera.x,
+          y: wall.y - camera.y,
+          path: :pixel,
+          r: 111, g: 111, b: 111
+        )
       end
     end
   end
