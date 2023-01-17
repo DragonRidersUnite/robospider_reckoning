@@ -10,6 +10,14 @@ module LevelGeneration
           other_wall[:h] >= (wall[:y] - other_wall[:y] + wall[:h])
       end
 
+      def coordinates(wall)
+        (wall.left...wall.right).map { |x|
+          (wall.bottom...wall.top).map { |y|
+            { x: x, y: y }
+          }
+        }.flatten
+      end
+
       def determine_vertical_walls(grid)
         walls = []
 

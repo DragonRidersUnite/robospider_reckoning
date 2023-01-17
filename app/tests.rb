@@ -215,4 +215,11 @@ test :level_generation_wall_covered_by_wall do |_args, assert|
   end
 end
 
+test :level_generation_wall_coordinates do |_args, assert|
+  assert.equal! LevelGeneration::Wall.coordinates({ x: 0, y: 0, w: 2, h: 1 }), [
+    { x: 0, y: 0 },
+    { x: 1, y: 0 }
+  ]
+end
+
 run_tests
