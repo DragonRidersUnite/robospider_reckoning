@@ -3,10 +3,14 @@ module LevelGeneration
     class << self
       def determine_walls(grid)
         all_walls = determine_vertical_walls(grid) + determine_horizontal_walls(grid)
-        remaining_walls = all_walls.dup
+        remove_redundant_walls(all_walls)
+      end
+
+      def remove_redundant_walls(walls)
+        remaining_walls = walls.dup
         # Start with the smallest walls and see if they are redundant and work our way up
-        all_walls = all_walls.sort_by { |wall| wall[:w] * wall[:h] }
-        all_walls.each do |wall|
+        walls = walls.sort_by { |wall| wall[:w] * wall[:h] }
+        walls.each do |wall|
           other_walls = remaining_walls.reject { |other_wall| other_wall == wall }
           next unless covered_by_walls?(wall, other_walls)
 
