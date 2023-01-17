@@ -198,13 +198,17 @@ end
 
 test :level_generation_wall_covered_by do |_args, assert|
   [
-    [{ x: 0, y: 0, w: 1, h: 1 }, { x: 0, y: 0, w: 1, h: 1 }, true],
-    [{ x: 0, y: 0, w: 1, h: 1 }, { x: 0, y: 0, w: 2, h: 1 }, true],
-    [{ x: 0, y: 0, w: 1, h: 1 }, { x: 0, y: 0, w: 1, h: 2 }, true]
-  ].each do |wall, other_wall, expected|
+    [{ x: 0, y: 0, w: 1, h: 1 }, { x: 0, y: 0, w: 1, h: 1 }, true, true],
+    [{ x: 0, y: 0, w: 1, h: 1 }, { x: 0, y: 0, w: 2, h: 1 }, true, false],
+    [{ x: 0, y: 0, w: 1, h: 1 }, { x: 0, y: 0, w: 1, h: 2 }, true, false],
+  ].each do |wall, other_wall, expected, opposite_case_expected|
     assert.equal! LevelGeneration::Wall.covered_by?(wall, other_wall),
                   expected,
                   "Expected #{wall} #{expected ? '' : 'not '}to be covered by #{other_wall}"
+
+    assert.equal! LevelGeneration::Wall.covered_by?(other_wall, wall),
+                  opposite_case_expected,
+                  "Expected #{other_wall} #{opposite_case_expected ? '' : 'not '}to be covered by #{wall}"
   end
 end
 
