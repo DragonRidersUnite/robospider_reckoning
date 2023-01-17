@@ -1,7 +1,7 @@
 module LevelGeneration
   module Wall
     class << self
-      def covered_by?(wall, other_wall)
+      def covered_by_wall?(wall, other_wall)
         return true if wall == other_wall
 
         other_wall[:x] <= wall[:x] &&
