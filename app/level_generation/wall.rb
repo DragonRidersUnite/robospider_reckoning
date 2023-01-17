@@ -2,7 +2,9 @@ module LevelGeneration
   module Wall
     class << self
       def covered_by?(wall, other_wall)
-        wall == other_wall
+        return true if wall == other_wall
+
+        wall[:x] == other_wall[:x] && wall[:y] == other_wall[:y] && (wall[:w] <= other_wall[:w] && wall[:h] <= other_wall[:h])
       end
 
       def determine_vertical_walls(grid)
