@@ -4,8 +4,6 @@ module LevelGeneration
       extract_vertical_walls(grid) + extract_horizontal_walls(grid)
     end
 
-    private
-
     def extract_vertical_walls(grid)
       walls = []
 
