@@ -1,6 +1,15 @@
 module LevelGeneration
   module Wall
     class << self
+      def covered_by_walls?(wall, other_walls)
+        remaining_coordinates = coordinates(wall)
+        other_walls.each do |other_wall|
+          remaining_coordinates -= coordinates(other_wall)
+          return true if remaining_coordinates.empty?
+        end
+        false
+      end
+
       def covered_by_wall?(wall, other_wall)
         return true if wall == other_wall
 
