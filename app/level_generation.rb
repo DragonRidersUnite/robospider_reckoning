@@ -1,6 +1,12 @@
 module LevelGeneration
   class << self
     def extract_walls(grid)
+      extract_vertical_walls(grid) + extract_horizontal_walls(grid)
+    end
+
+    private
+
+    def extract_vertical_walls(grid)
       walls = []
 
       grid.each_with_index do |column, x|
@@ -22,6 +28,12 @@ module LevelGeneration
 
         walls << current_wall if current_wall
       end
+
+      walls
+    end
+
+    def extract_horizontal_walls(grid)
+      walls = []
 
       grid.transpose.each_with_index do |row, y|
         current_wall = nil
