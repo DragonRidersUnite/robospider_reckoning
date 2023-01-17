@@ -232,4 +232,23 @@ test :level_generation_wall_covered_by_walls do |_args, assert|
   assert.false! LevelGeneration::Wall.covered_by_walls?({ x: 0, y: 0, w: 3, h: 1 }, walls)
 end
 
+test :level_generation_wall_determine_walls do |_args, assert|
+  map = <<~MAP
+    |X XX|
+    |X   |
+    |XXX |
+  MAP
+
+  grid = build_grid_from_map map
+  walls = LevelGeneration::Wall.determine_walls grid
+
+  assert.equal! walls, [
+    # vertical walls
+    { x: 0, y: 0, w: 1, h: 3 },
+    # horizontal walls
+    { x: 0, y: 0, w: 3, h: 1 },
+    { x: 2, y: 2, w: 2, h: 1 }
+  ]
+end
+
 run_tests
