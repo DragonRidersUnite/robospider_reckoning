@@ -8,6 +8,7 @@ module Scene
       args.state.camera ||= Camera.build
       camera = args.state.camera
       args.state.enemies ||= []
+      enemies = args.state.enemies
       args.state.enemies_destroyed ||= 0
       args.state.exp_chips ||= []
       args.state.enemy_spawn_timer ||= Timer.every(60)
@@ -31,7 +32,7 @@ module Scene
       end
 
       Player.tick(args, player, camera)
-      args.state.enemies.each { |e| Enemy.tick(args, e)  }
+      enemies.each { |e| Enemy.tick(args, e)  }
       args.state.exp_chips.each { |c| ExpChip.tick(args, c)  }
 
       # TODO: Use some kind of spatial hash (quadtree?) to speed this up?
@@ -44,24 +45,24 @@ module Scene
       end
 
       unless args.state.enemies_pass_walls
-        collide(level[:walls], args.state.enemies) do |wall, enemy|
+        collide(level[:walls], enemies) do |wall, enemy|
           Collision.move_out_of_collider(enemy, wall)
         end
       end
 
-      collide(player.bullets, args.state.enemies) do |bullet, enemy|
+      collide(player.bullets, enemies) do |bullet, enemy|
         bullet.dead = true
         Enemy.damage(args, enemy, bullet)
       end
 
-      collide(args.state.enemies, player) do |enemy, _|
+      collide(enemies, player) do |enemy, _|
         player.health -= enemy.body_power unless player.invincible
         flash(player, RED, 12)
         Enemy.damage(args, enemy, player, sfx: nil)
         play_sfx(args, :hurt)
       end
 
-      collide(args.state.enemies, player.familiars) do |enemy, familiar|
+      collide(enemies, player.familiars) do |enemy, familiar|
         if familiar.cooldown_countdown <= 0
           Enemy.damage(args, enemy, familiar, sfx: :enemy_hit_by_familiar)
           familiar.cooldown_countdown = familiar.cooldown_ticks
@@ -74,7 +75,7 @@ module Scene
         play_sfx(args, :exp_chip)
       end
 
-      args.state.enemies.reject! { |e| e.dead? }
+      enemies.reject! { |e| e.dead? }
       args.state.exp_chips.reject! { |e| e.dead }
 
       if player.dead?
@@ -90,7 +91,7 @@ module Scene
         Camera.translate(camera, args.state.exp_chips),
         Camera.translate(camera, args.state.player.bullets),
         Camera.translate(camera, player),
-        Camera.translate(camera, args.state.enemies),
+        Camera.translate(camera, enemies),
         Camera.translate(camera, args.state.player.familiars)
       ]
 
