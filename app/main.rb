@@ -13,6 +13,7 @@ require "app/sprite.rb"
 
 require "app/camera.rb"
 require "app/constants.rb"
+require "app/collision.rb"
 require "app/enemy.rb"
 require "app/exp_chip.rb"
 require "app/familiar.rb"

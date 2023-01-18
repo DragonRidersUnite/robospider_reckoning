@@ -251,4 +251,23 @@ test :level_generation_wall_determine_walls do |_args, assert|
   ]
 end
 
+test :collision_move_out_of_collider do |_args, assert|
+  collider = { x: 100, y: 100, w: 100, h: 100 }
+
+  [
+    { before: { x: 195, y: 150, w: 10, h: 10 }, after: { x: 200, y: 150, w: 10, h: 10 } }, # from the right
+    { before: { x: 95, y: 150, w: 10, h: 10 }, after: { x: 90, y: 150, w: 10, h: 10 } },  # from the left
+    { before: { x: 150, y: 195, w: 10, h: 10 }, after: { x: 150, y: 200, w: 10, h: 10 } }, # from the top
+    { before: { x: 150, y: 95, w: 10, h: 10 }, after: { x: 150, y: 90, w: 10, h: 10 } }   # from the bottom
+  ].each do |test_case|
+    object = test_case[:before].dup
+
+    Collision.move_out_of_collider object, collider
+
+    assert.equal! object,
+                  test_case[:after],
+                  "Expected #{test_case[:before]} to be moved out of #{collider} to #{test_case[:after]}\nbut got #{object}"
+  end
+end
+
 run_tests
