@@ -19,6 +19,10 @@ module Input
         inputs.controller_one.key_down&.start
     end
 
+    def toggle_minimap?(inputs)
+      inputs.keyboard.key_down.m || inputs.controller_one.key_down&.y
+    end
+
     def window_out_of_focus?(inputs)
       !inputs.keyboard.has_focus
     end

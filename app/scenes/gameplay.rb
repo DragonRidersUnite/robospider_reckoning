@@ -19,6 +19,8 @@ module Scene
         return Scene.switch(args, :paused, reset: true)
       end
 
+      args.state.render_minimap = !args.state.render_minimap if Input.toggle_minimap?(args.inputs)
+
       # spawns enemies faster when player level is higher;
       # starts at every 60 ticks
       Timer.update_period enemy_spawn_timer, 60 - (player.level * 2)
@@ -94,6 +96,7 @@ module Scene
         Camera.translate(camera, enemies),
         Camera.translate(camera, args.state.player.familiars)
       ]
+      Minimap.draw(args, level: level, player: player, enemies: enemies) if args.state.render_minimap
 
       labels = []
       labels << label("#{text(:health)}: #{player.health}", x: 40, y: args.grid.top - 40, size: SIZE_SM, font: FONT_BOLD)
