@@ -39,6 +39,10 @@ module Scene
         Collision.move_out_of_collider(player, wall)
       end
 
+      collide(player.bullets, level[:walls]) do |bullet, _|
+        bullet.dead = true
+      end
+
       collide(player.bullets, args.state.enemies) do |bullet, enemy|
         bullet.dead = true
         Enemy.damage(args, enemy, bullet)
