@@ -34,6 +34,11 @@ module Scene
       args.state.enemies.each { |e| Enemy.tick(args, e)  }
       args.state.exp_chips.each { |c| ExpChip.tick(args, c)  }
 
+      # TODO: Use some kind of spatial hash (quadtree?) to speed this up?
+      collide(player, level[:walls], ) do |player, wall|
+        Collision.move_out_of_collider(player, wall)
+      end
+
       collide(player.bullets, args.state.enemies) do |bullet, enemy|
         bullet.dead = true
         Enemy.damage(args, enemy, bullet)
