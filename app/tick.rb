@@ -157,6 +157,11 @@ def debug_tick(args)
     if player.invincible && args.state.scene == :gameplay
       args.outputs.labels << label("inv", x: player.x + player.w / 2, y: player.y + player.h + 16, align: ALIGN_CENTER, size: SIZE_XS)
     end
+
+    if args.inputs.keyboard.key_down.three
+      args.state.enemies_pass_walls = !args.state.enemies_pass_walls
+      args.gtk.notify!("Enemies pass walls: #{args.state.enemies_pass_walls}")
+    end
   end
 end
 
