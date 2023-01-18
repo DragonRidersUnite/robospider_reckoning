@@ -6,7 +6,6 @@ module Collision
       collider_center_x = collider[:x] + (collider[:w] / 2)
       collider_center_y = collider[:y] + (collider[:h] / 2)
 
-      move_direction = nil
       collider_diagonal_slope = collider[:h] / collider[:w]
       collider_to_object_x = object_center_x - collider_center_x
       collider_to_object_y = object_center_y - collider_center_y
