@@ -8,29 +8,33 @@ module LevelGeneration
 
     def generate
       @grid = initialize_grid
-      @stack = []
-      # Start one cell away from the edge to have the maze surrounded by walls
-      first_cell = @grid[1][1]
-      first_cell[:wall] = false
-      @stack.push(first_cell)
-
-      until @stack.empty?
-        current_cell = @stack.last
-        neighbors = get_neighbors(current_cell)
-        unvisited_neighbors = neighbors.select(&:wall)
-        if unvisited_neighbors.empty?
-          @stack.pop
-        else
-          next_cell = unvisited_neighbors.sample
-          remove_wall_between(current_cell, next_cell)
-          next_cell[:wall] = false
-          @stack.push(next_cell)
-        end
-      end
+      grow_random_corridors
       build_result
     end
 
     private
+
+    def grow_random_corridors
+      stack = []
+      # Start one cell away from the edge to have the maze surrounded by walls
+      first_cell = @grid[1][1]
+      first_cell[:wall] = false
+      stack.push(first_cell)
+
+      until stack.empty?
+        current_cell = stack.last
+        neighbors = get_neighbors(current_cell)
+        unvisited_neighbors = neighbors.select(&:wall)
+        if unvisited_neighbors.empty?
+          stack.pop
+        else
+          next_cell = unvisited_neighbors.sample
+          remove_wall_between(current_cell, next_cell)
+          next_cell[:wall] = false
+          stack.push(next_cell)
+        end
+      end
+    end
 
     def initialize_grid
       Array.new(@size) { |x|
