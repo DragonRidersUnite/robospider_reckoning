@@ -288,4 +288,41 @@ test :collision_move_out_of_collider do |_args, assert|
   end
 end
 
+test :calculate_as_stepwise_fiber do |_args, assert|
+  progress = []
+  fiber = calculate_as_stepwise_fiber do |fiber_context|
+    10.times do |i|
+      progress << i
+      fiber_context.step
+    end
+    :finished
+  end
+
+  result = fiber.resume 5
+
+  assert.equal! progress, [0, 1, 2, 3, 4]
+  assert.nil! result
+
+  result = fiber.resume 6
+
+  assert.equal! progress, [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+  assert.equal! result, :finished
+end
+
+test :calculate_as_stepwise_fiber_calculate_in_one_step do |_args, assert|
+  progress = []
+  fiber = calculate_as_stepwise_fiber do |fiber_context|
+    10.times do |i|
+      progress << i
+      fiber_context.step
+    end
+    :finished
+  end
+
+  result = fiber.calculate_in_one_step
+
+  assert.equal! progress, [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+  assert.equal! result, :finished
+end
+
 run_tests
