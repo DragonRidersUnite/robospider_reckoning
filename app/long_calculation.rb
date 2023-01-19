@@ -25,6 +25,10 @@ module LongCalculation
       fiber.define_singleton_method(:steps=) do |steps|
         state.steps = steps
       end
+      fiber.define_singleton_method(:calculate_in_one_step) do
+        result = resume(1000) while result.nil?
+        result
+      end
     end
   end
 end

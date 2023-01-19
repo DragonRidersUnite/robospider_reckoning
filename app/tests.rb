@@ -314,21 +314,20 @@ test :long_calculation_basic_behaviour do |_args, assert|
   assert.equal! result, :finished
 end
 
-test :calculate_as_stepwise_fiber_calculate_in_one_step do |_args, assert|
+test :long_calculation_calculate_in_one_step do |_args, assert|
   progress = []
-  fiber = calculate_as_stepwise_fiber do
+  calculation = LongCalculation.define do
     10.times do |i|
       progress << i
-      $fiber_context.step
+      LongCalculation.finish_step
     end
     :finished
   end
 
-  result = fiber.calculate_in_one_step
+  result = calculation.calculate_in_one_step
 
   assert.equal! progress, [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
   assert.equal! result, :finished
-  assert.nil! $fiber_context
 end
 
 test :calculate_as_stepwise_fiber_nested do |_args, assert|
