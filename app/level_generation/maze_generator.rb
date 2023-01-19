@@ -46,9 +46,9 @@ module LevelGeneration
     end
 
     def get_four_neighbors(current_cell, distance: 1)
-      [[distance, 0], [0, distance], [-distance, 0], [0, -distance]].map { |offset|
-        x = current_cell[:x] + offset[0]
-        y = current_cell[:y] + offset[1]
+      [[distance, 0], [0, distance], [-distance, 0], [0, -distance]].map { |(offset_x, offset_y)|
+        x = current_cell[:x] + offset_x
+        y = current_cell[:y] + offset_y
         @grid[x][y] if x.between?(0, @size - 1) && y.between?(0, @size - 1)
       }.compact
     end
