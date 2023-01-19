@@ -2,12 +2,15 @@ module LevelGeneration
   class MazeGenerator
     def initialize(size:)
       @size = size
+      # Make sure the maze is always odd-sized so that it is surrounded by walls
+      @size += 1 if @size.even?
     end
 
     def generate
       @grid = initialize_grid
       @stack = []
-      first_cell = @grid[0][0]
+      # Start one cell away from the edge to have the maze surrounded by walls
+      first_cell = @grid[1][1]
       first_cell[:wall] = false
       @stack.push(first_cell)
 

@@ -9,7 +9,7 @@ module Level
       walls = LevelGeneration::Wall.determine_walls(grid)
       {
         cell_size: CELL_SIZE,
-        bounds: { x: 0, y: 0, w: MAZE_SIZE * CELL_SIZE, h:  MAZE_SIZE * CELL_SIZE },
+        bounds: { x: 0, y: 0, w: grid.size * CELL_SIZE, h: grid.size * CELL_SIZE },
         grid: grid,
         walls: walls.map { |wall|
           {
