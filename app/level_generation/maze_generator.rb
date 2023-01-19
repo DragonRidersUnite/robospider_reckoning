@@ -7,7 +7,7 @@ module LevelGeneration
     end
 
     def generate
-      calculate_fiber_result generate_fiber
+      generate_fiber.calculate_in_one_step
     end
 
     def generate_fiber

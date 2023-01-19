@@ -205,11 +205,16 @@ def draw_bg(args, color)
 end
 
 def calculate_stepwise_fiber
-  Fiber.new do |steps|
+  fiber = Fiber.new do |steps|
     context = StepwiseFiberContext.new(steps)
     result = yield(context)
     Fiber.yield result
   end
+  fiber.define_singleton_method(:calculate_in_one_step) do
+    result = resume(1000) while result.nil?
+    result
+  end
+  fiber
 end
 
 class StepwiseFiberContext
@@ -221,9 +226,4 @@ class StepwiseFiberContext
     @steps -= 1
     @steps = Fiber.yield if @steps.zero?
   end
-end
-
-def calculate_fiber_result(fiber)
-  result = fiber.resume(1000) while result.nil?
-  result
 end

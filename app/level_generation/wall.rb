@@ -2,7 +2,7 @@ module LevelGeneration
   module Wall
     class << self
       def determine_walls(grid)
-        calculate_fiber_result determine_walls_fiber(grid)
+        determine_walls_fiber(grid).calculate_in_one_step
       end
 
       def determine_walls_fiber(grid)
