@@ -9,7 +9,7 @@ module LevelGeneration
       @grid = initialize_grid
       @stack = []
       current_cell = @grid[0][0]
-      visit_and_mark_as_wall current_cell
+      visit_and_remove_wall current_cell
 
       until @stack.empty?
         current_cell = @stack.last
@@ -19,8 +19,8 @@ module LevelGeneration
           @stack.pop
         else
           next_cell = unvisited_neighbors.sample
-          mark_cell_in_between_as_wall(current_cell, next_cell)
-          visit_and_mark_as_wall next_cell
+          remove_wall_between(current_cell, next_cell)
+          visit_and_remove_wall next_cell
         end
       end
       build_result
@@ -31,13 +31,13 @@ module LevelGeneration
     def initialize_grid
       Array.new(@size) { |x|
         Array.new(@size) { |y|
-          { x: x, y: y, wall: false, visited: false }
+          { x: x, y: y, wall: true, visited: false }
         }
       }
     end
 
-    def visit_and_mark_as_wall(cell)
-      cell[:wall] = true
+    def visit_and_remove_wall(cell)
+      cell[:wall] = false
       cell[:visited] = true
       @stack.push(cell)
     end
@@ -50,10 +50,10 @@ module LevelGeneration
       }.compact
     end
 
-    def mark_cell_in_between_as_wall(current_cell, next_cell)
+    def remove_wall_between(current_cell, next_cell)
       x = (current_cell[:x] + next_cell[:x]).idiv 2
       y = (current_cell[:y] + next_cell[:y]).idiv 2
-      @grid[x][y][:wall] = true
+      @grid[x][y][:wall] = false
     end
 
     def build_result
