@@ -1,18 +1,34 @@
 module LongCalculation
   class << self
     def define
-      fiber = Fiber.new do |steps|
-        Fiber.current.steps = steps
+      if inside_calculation?
+        # Don't create a new fiber just execute the block
         result = yield
-        Fiber.yield result
+        # Create a fake fiber-like object which responds to calculate_in_one_step
+        # and returns the result of the block
+        fake_fiber = Object.new
+        fake_fiber.define_singleton_method(:calculate_in_one_step) do
+          result
+        end
+        fake_fiber
+      else
+        fiber = Fiber.new do |steps|
+          Fiber.current.steps = steps
+          result = yield
+          Fiber.yield result
+        end
+        add_additional_methods fiber
+        fiber
       end
-      add_additional_methods fiber
-      fiber
     end
 
     def finish_step
       Fiber.current.steps -= 1
       Fiber.current.steps = Fiber.yield if Fiber.current.steps.zero?
+    end
+
+    def inside_calculation?
+      Fiber.current.respond_to?(:steps)
     end
 
     private

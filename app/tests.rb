@@ -330,32 +330,30 @@ test :long_calculation_calculate_in_one_step do |_args, assert|
   assert.equal! result, :finished
 end
 
-test :calculate_as_stepwise_fiber_nested do |_args, assert|
+test :long_calculation_nested do |_args, assert|
   progress = []
-  fiber = calculate_as_stepwise_fiber do
+  calculation = LongCalculation.define do
     progress << 1
-    $fiber_context.step
-    sub_fiber = calculate_as_stepwise_fiber do
+    LongCalculation.finish_step
+    sub_calculation = LongCalculation.define do
       progress << 2
-      $fiber_context.step
+      LongCalculation.finish_step
       progress << 3
-      $fiber_context.step
+      LongCalculation.finish_step
       :sub_finished
     end
-    sub_fiber.calculate_in_one_step
+    sub_calculation.calculate_in_one_step
   end
 
-  result = fiber.resume 2
+  result = calculation.resume 2
 
   assert.equal! progress, [1, 2]
   assert.nil! result
-  assert.nil! $fiber_context
 
-  result = fiber.resume 2
+  result = calculation.resume 2
 
   assert.equal! progress, [1, 2, 3]
   assert.equal! result, :sub_finished
-  assert.nil! $fiber_context
 end
 
 test :calculate_as_stepwise_fiber_run_for_ms do |_args, assert|
