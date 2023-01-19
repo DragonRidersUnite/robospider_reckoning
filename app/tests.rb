@@ -161,13 +161,13 @@ def build_grid_from_map(map)
 end
 
 test :level_generation_wall_determine_vertical_walls do |_args, assert|
-  map = <<~MAP
+  grid = build_grid_from_map <<~MAP
     |X XX|
     |XX  |
     |XX  |
   MAP
 
-  grid = build_grid_from_map map
+
   walls = LevelGeneration::Wall.determine_vertical_walls grid
 
   assert.equal! walls, [
@@ -179,13 +179,12 @@ test :level_generation_wall_determine_vertical_walls do |_args, assert|
 end
 
 test :level_generation_wall_determine_horizontal_walls do |_args, assert|
-  map = <<~MAP
+  grid = build_grid_from_map <<~MAP
     |X XX|
     |XX  |
     |XX  |
   MAP
 
-  grid = build_grid_from_map map
   walls = LevelGeneration::Wall.determine_horizontal_walls grid
 
   assert.equal! walls, [
@@ -233,13 +232,12 @@ test :level_generation_wall_covered_by_walls do |_args, assert|
 end
 
 test :level_generation_wall_determine_walls do |_args, assert|
-  map = <<~MAP
+  grid = build_grid_from_map <<~MAP
     |X XX|
     |X   |
     |XXX |
   MAP
 
-  grid = build_grid_from_map map
   walls = LevelGeneration::Wall.determine_walls grid
 
   assert.equal! walls, [
