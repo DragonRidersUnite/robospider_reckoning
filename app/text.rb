@@ -14,6 +14,7 @@ TEXT = {
   exp_to_next_level: "Exp to Next Level",
   fullscreen: "Fullscreen",
   game_over: "Game Over",
+  generating_level: "Generating Level",
   health: "Health",
   level: "Level",
   lu_familiar_spawned: "Familiar spawned!",

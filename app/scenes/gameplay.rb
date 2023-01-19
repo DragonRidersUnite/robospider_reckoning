@@ -1,7 +1,6 @@
 module Scene
   class << self
     def tick_gameplay(args)
-      args.state.level ||= Level.generate
       level = args.state.level
       args.state.player ||= Player.create(args, x: level[:start_position][:x], y: level[:start_position][:y])
       player = args.state.player
@@ -106,7 +105,6 @@ module Scene
     end
 
     def reset_gameplay(args)
-      args.state.level = nil
       args.state.camera = nil
       args.state.player = nil
       args.state.enemies = nil

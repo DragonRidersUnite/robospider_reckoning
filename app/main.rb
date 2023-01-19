@@ -32,6 +32,7 @@ require "app/timer.rb"
 
 require "app/scenes/game_over.rb"
 require "app/scenes/gameplay.rb"
+require "app/scenes/level_generation.rb"
 require "app/scenes/main_menu.rb"
 require "app/scenes/paused.rb"
 require "app/scenes/settings.rb"

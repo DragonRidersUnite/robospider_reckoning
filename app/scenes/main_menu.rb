@@ -5,7 +5,7 @@ module Scene
       options = [
         {
           key: :start,
-          on_select: -> (args) { Scene.switch(args, :gameplay, reset: true) }
+          on_select: -> (args) { Scene.switch(args, :level_generation) }
         },
         {
           key: :settings,
