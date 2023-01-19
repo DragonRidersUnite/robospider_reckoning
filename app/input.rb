@@ -10,7 +10,9 @@ module Input
     end
 
     def fire?(inputs)
-      PRIMARY_KEYS.any? { |k| inputs.keyboard.key_held.send(k) } ||
+      PRIMARY_KEYS.any? { |k| inputs.keyboard.key_down.send(k) } ||
+        PRIMARY_KEYS.any? { |k| inputs.keyboard.key_held.send(k) } ||
+        inputs.controller_one.key_down&.a ||
         inputs.controller_one.key_held&.a
     end
 
