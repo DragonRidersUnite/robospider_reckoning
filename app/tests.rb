@@ -303,12 +303,12 @@ test :long_calculation_basic_behaviour do |_args, assert|
   assert.equal! progress, [0, 1, 2, 3, 4]
   assert.nil! result
 
-  result = calculation.resume 3
+  result = calculation.resume
 
-  assert.equal! progress, [0, 1, 2, 3, 4, 5, 6, 7]
+  assert.equal! progress, [0, 1, 2, 3, 4, 5]
   assert.nil! result
 
-  result = calculation.resume 3
+  result = calculation.resume 5
 
   assert.equal! progress, [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
   assert.equal! result, :finished
@@ -356,21 +356,20 @@ test :long_calculation_nested do |_args, assert|
   assert.equal! result, :sub_finished
 end
 
-test :calculate_as_stepwise_fiber_run_for_ms do |_args, assert|
-  fiber = calculate_as_stepwise_fiber do
+test :long_calculation_run_for_ms do |_args, assert|
+  calculation = LongCalculation.define do
     loop do
-      $fiber_context.step
+      LongCalculation.finish_step
     end
   end
 
   start_time = Time.now.to_f
-  result = fiber.run_for_ms(5)
+  result = calculation.run_for_ms(5)
   end_time = Time.now.to_f
 
   run_time = (end_time - start_time) * 1000
   assert.true! run_time.between?(5, 10), "Expected fiber to run for rougly 5ms but it ran for #{run_time}ms"
   assert.nil! result
-  assert.nil! $fiber_context
 end
 
 run_tests
