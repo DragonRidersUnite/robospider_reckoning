@@ -22,7 +22,8 @@ module Level
         start_position: {
           x: (start_cell[:x] * CELL_SIZE) + (CELL_SIZE / 2) - (Player::W / 2),
           y: (start_cell[:y] * CELL_SIZE) + (CELL_SIZE / 2) - (Player::H / 2)
-        }
+        },
+        pathfinding_graph: LevelGeneration::PathfindingGraph.generate(grid)
       }
     end
 

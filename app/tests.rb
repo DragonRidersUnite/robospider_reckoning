@@ -249,6 +249,26 @@ test :level_generation_wall_determine_walls do |_args, assert|
   ]
 end
 
+test :level_generation_pathfinding_graph_generate do |_args, assert|
+  grid = build_grid_from_map <<~MAP
+    |XXXXX|
+    |XX XX|
+    |X   X|
+    |XX XX|
+    |XXXXX|
+  MAP
+
+  graph = LevelGeneration::PathfindingGraph.generate grid
+
+  assert.equal! graph, {
+    { x: 2, y: 1 } => [{ x: 2, y: 2 }],
+    { x: 2, y: 2 } => [{ x: 2, y: 3 }, { x: 3, y: 2 }, { x: 2, y: 1 }, { x: 1, y: 2 }],
+    { x: 2, y: 3 } => [{ x: 2, y: 2 }],
+    { x: 3, y: 2 } => [{ x: 2, y: 2 }],
+    { x: 1, y: 2 } => [{ x: 2, y: 2 }]
+  }
+end
+
 test :collision_move_out_of_collider do |_args, assert|
   collider = { x: 100, y: 100, w: 100, h: 100 }
 
