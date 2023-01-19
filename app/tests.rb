@@ -328,4 +328,32 @@ test :calculate_as_stepwise_fiber_calculate_in_one_step do |_args, assert|
   assert.nil! $fiber_context
 end
 
+test :calculate_as_stepwise_fiber_nested do |_args, assert|
+  progress = []
+  fiber = calculate_as_stepwise_fiber do
+    progress << 1
+    $fiber_context.step
+    sub_fiber = calculate_as_stepwise_fiber do
+      progress << 2
+      $fiber_context.step
+      progress << 3
+      $fiber_context.step
+      :sub_finished
+    end
+    sub_fiber.calculate_in_one_step
+  end
+
+  result = fiber.resume 2
+
+  assert.equal! progress, [1, 2]
+  assert.nil! result
+  assert.nil! $fiber_context
+
+  result = fiber.resume 2
+
+  assert.equal! progress, [1, 2, 3]
+  assert.equal! result, :sub_finished
+  assert.nil! $fiber_context
+end
+
 run_tests
