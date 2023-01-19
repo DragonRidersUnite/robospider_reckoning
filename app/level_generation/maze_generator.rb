@@ -9,6 +9,7 @@ module LevelGeneration
     def generate
       @grid = initialize_grid
       grow_random_corridors
+      add_some_more_connections
       build_result
     end
 
@@ -56,6 +57,24 @@ module LevelGeneration
       x = (current_cell[:x] + next_cell[:x]).idiv 2
       y = (current_cell[:y] + next_cell[:y]).idiv 2
       @grid[x][y][:wall] = false
+    end
+
+    def add_some_more_connections
+      10.times do
+        wall_cells = @grid.flatten.select(&:wall)
+        walls_separating_opposite_corridors = wall_cells.select { |cell|
+          corridor_neighbors = get_four_neighbors(cell).reject(&:wall)
+          next false unless corridor_neighbors.count == 2
+
+          # Only allow walls that separate two corridors that are on opposite sides
+          corridor_neighbors[0][:x] == corridor_neighbors[1][:x] ||
+            corridor_neighbors[0][:y] == corridor_neighbors[1][:y]
+        }
+        # TODO: Maybe measure path length between the two corridors and only remove
+        #       walls that separate corridors that are separated more than a certain
+        #       threshold to create meaningful shortcuts
+        walls_separating_opposite_corridors.sample[:wall] = false
+      end
     end
 
     def build_result
