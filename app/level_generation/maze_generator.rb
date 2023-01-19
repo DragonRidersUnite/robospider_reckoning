@@ -8,9 +8,9 @@ module LevelGeneration
     def generate
       @grid = initialize_grid
       @stack = []
-      current_cell = @grid[0][0]
-      current_cell[:wall] = false
-      @stack.push(current_cell)
+      first_cell = @grid[0][0]
+      first_cell[:wall] = false
+      @stack.push(first_cell)
 
       until @stack.empty?
         current_cell = @stack.last
