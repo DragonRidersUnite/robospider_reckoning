@@ -2,7 +2,6 @@ module LevelGeneration
   class MazeGenerator
     def initialize(size:)
       @size = size
-      @stack = []
     end
 
     def generate
