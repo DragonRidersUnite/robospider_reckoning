@@ -269,6 +269,24 @@ test :level_generation_pathfinding_graph_generate do |_args, assert|
   }
 end
 
+test :pathfinding_find_path do |_args, assert|
+  grid = build_grid_from_map <<~MAP
+    |    |
+    | XX |
+    |    |
+  MAP
+  graph = LevelGeneration::PathfindingGraph.generate grid
+
+  path = Pathfinding.find_path graph, start: { x: 0, y: 0 }, goal: { x: 1, y: 2 }
+
+  assert.equal! path, [
+    { x: 0, y: 0 },
+    { x: 0, y: 1 },
+    { x: 0, y: 2 },
+    { x: 1, y: 2 }
+  ]
+end
+
 test :collision_move_out_of_collider do |_args, assert|
   collider = { x: 100, y: 100, w: 100, h: 100 }
 
