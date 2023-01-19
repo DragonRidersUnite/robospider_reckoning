@@ -23,7 +23,7 @@ module LevelGeneration
 
       until stack.empty?
         current_cell = stack.last
-        neighbors = get_neighbors(current_cell)
+        neighbors = get_four_neighbors(current_cell, distance: 2)
         unvisited_neighbors = neighbors.select(&:wall)
         if unvisited_neighbors.empty?
           stack.pop
@@ -44,8 +44,8 @@ module LevelGeneration
       }
     end
 
-    def get_neighbors(current_cell)
-      [[2, 0], [0, 2], [-2, 0], [0, -2]].map { |offset|
+    def get_four_neighbors(current_cell, distance: 1)
+      [[distance, 0], [0, distance], [-distance, 0], [0, -distance]].map { |offset|
         x = current_cell[:x] + offset[0]
         y = current_cell[:y] + offset[1]
         @grid[x][y] if x.between?(0, @size - 1) && y.between?(0, @size - 1)
