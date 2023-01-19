@@ -14,7 +14,7 @@ module LevelGeneration
       until @stack.empty?
         current_cell = @stack.last
         neighbors = get_neighbors(current_cell)
-        unvisited_neighbors = neighbors.reject(&:visited)
+        unvisited_neighbors = neighbors.select(&:wall)
         if unvisited_neighbors.empty?
           @stack.pop
         else
@@ -31,14 +31,13 @@ module LevelGeneration
     def initialize_grid
       Array.new(@size) { |x|
         Array.new(@size) { |y|
-          { x: x, y: y, wall: true, visited: false }
+          { x: x, y: y, wall: true }
         }
       }
     end
 
     def visit_and_remove_wall(cell)
       cell[:wall] = false
-      cell[:visited] = true
       @stack.push(cell)
     end
 
