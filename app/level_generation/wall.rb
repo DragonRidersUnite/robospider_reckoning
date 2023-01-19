@@ -6,7 +6,7 @@ module LevelGeneration
       end
 
       def determine_walls_fiber(grid)
-        calculate_as_stepwise_fiber do
+        LongCalculation.define do
           all_walls = determine_vertical_walls(grid) + determine_horizontal_walls(grid)
           remove_redundant_walls(all_walls)
         end
@@ -27,7 +27,7 @@ module LevelGeneration
         # For this this step needs to be refactored with Fiber or something equivalent
         # so it can be paused and resumed
         walls.each do |wall|
-          $fiber_context&.step
+          LongCalculation.finish_step
           other_walls = remaining_walls.reject { |other_wall| other_wall == wall }
           next unless covered_by_walls?(wall, other_walls)
 

@@ -8,7 +8,7 @@ module Level
     end
 
     def generate_fiber
-      calculate_as_stepwise_fiber do
+      LongCalculation.define do
         grid = LevelGeneration::MazeGenerator.new(size: MAZE_SIZE).generate
         start_cell = grid.flatten.reject(&:wall).sample
         walls = LevelGeneration::Wall.determine_walls(grid)
