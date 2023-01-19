@@ -10,7 +10,7 @@ module LevelGeneration
       # It will either return `nil` if it is not done yet or a hash
       # with the pathfinding graph once it is done.
       def generate_fiber(grid)
-        calculate_stepwise_fiber do |fiber_context|
+        calculate_as_stepwise_fiber do |fiber_context|
           result = {}
           grid.each_with_index do |column, x|
             column.each_with_index do |cell, y|

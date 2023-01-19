@@ -11,7 +11,7 @@ module LevelGeneration
     end
 
     def generate_fiber
-      calculate_stepwise_fiber do |fiber_context|
+      calculate_as_stepwise_fiber do |fiber_context|
         @fiber_context = fiber_context
 
         @grid = initialize_grid

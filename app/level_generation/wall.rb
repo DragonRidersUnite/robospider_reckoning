@@ -6,7 +6,7 @@ module LevelGeneration
       end
 
       def determine_walls_fiber(grid)
-        calculate_stepwise_fiber do |fiber_context|
+        calculate_as_stepwise_fiber do |fiber_context|
           all_walls = determine_vertical_walls(grid) + determine_horizontal_walls(grid)
           remove_redundant_walls(all_walls, fiber_context: fiber_context)
         end

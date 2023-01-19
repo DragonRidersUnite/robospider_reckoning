@@ -204,7 +204,7 @@ def draw_bg(args, color)
   args.outputs.solids << { x: args.grid.left, y: args.grid.bottom, w: args.grid.w, h: args.grid.h }.merge(color)
 end
 
-def calculate_stepwise_fiber
+def calculate_as_stepwise_fiber
   fiber = Fiber.new do |steps|
     context = StepwiseFiberContext.new(steps)
     result = yield(context)
