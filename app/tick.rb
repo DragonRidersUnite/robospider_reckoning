@@ -226,19 +226,24 @@ def calculate_as_stepwise_fiber
       result = resume(1000) while result.nil?
       result
     end
+    fiber.define_singleton_method(:run_for_ms) do |ms|
+      start_time = Time.now.to_f
+      result = resume while result.nil? && (Time.now.to_f - start_time) * 1000 < ms
+      result
+    end
     fiber
   end
 end
 
 class StepwiseFiberContext
   def initialize(initial_steps)
-    @steps = initial_steps
+    @steps = initial_steps || 1
   end
 
   def step
     $fiber_context = nil
     @steps -= 1
-    @steps = Fiber.yield if @steps.zero?
+    @steps = (Fiber.yield || 1) if @steps.zero?
     $fiber_context = self
   end
 end

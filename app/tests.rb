@@ -356,4 +356,21 @@ test :calculate_as_stepwise_fiber_nested do |_args, assert|
   assert.nil! $fiber_context
 end
 
+test :calculate_as_stepwise_fiber_run_for_ms do |_args, assert|
+  fiber = calculate_as_stepwise_fiber do
+    loop do
+      $fiber_context.step
+    end
+  end
+
+  start_time = Time.now.to_f
+  result = fiber.run_for_ms(5)
+  end_time = Time.now.to_f
+
+  run_time = (end_time - start_time) * 1000
+  assert.true! run_time.between?(5, 10), "Expected fiber to run for rougly 5ms but it ran for #{run_time}ms"
+  assert.nil! result
+  assert.nil! $fiber_context
+end
+
 run_tests
