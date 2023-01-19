@@ -4,27 +4,33 @@ module Level
 
   class << self
     def generate
-      grid = LevelGeneration::MazeGenerator.new(size: MAZE_SIZE).generate
-      start_cell = grid.flatten.reject(&:wall).sample
-      walls = LevelGeneration::Wall.determine_walls(grid)
-      {
-        cell_size: CELL_SIZE,
-        bounds: { x: 0, y: 0, w: grid.size * CELL_SIZE, h: grid.size * CELL_SIZE },
-        grid: grid,
-        walls: walls.map { |wall|
-          {
-            x: wall[:x] * CELL_SIZE,
-            y: wall[:y] * CELL_SIZE,
-            w: wall[:w] * CELL_SIZE,
-            h: wall[:h] * CELL_SIZE
-          }
-        },
-        start_position: {
-          x: (start_cell[:x] * CELL_SIZE) + (CELL_SIZE / 2) - (Player::W / 2),
-          y: (start_cell[:y] * CELL_SIZE) + (CELL_SIZE / 2) - (Player::H / 2)
-        },
-        pathfinding_graph: LevelGeneration::PathfindingGraph.generate(grid)
-      }
+      generate_fiber.calculate_in_one_step
+    end
+
+    def generate_fiber
+      calculate_as_stepwise_fiber do
+        grid = LevelGeneration::MazeGenerator.new(size: MAZE_SIZE).generate
+        start_cell = grid.flatten.reject(&:wall).sample
+        walls = LevelGeneration::Wall.determine_walls(grid)
+        {
+          cell_size: CELL_SIZE,
+          bounds: { x: 0, y: 0, w: grid.size * CELL_SIZE, h: grid.size * CELL_SIZE },
+          grid: grid,
+          walls: walls.map { |wall|
+            {
+              x: wall[:x] * CELL_SIZE,
+              y: wall[:y] * CELL_SIZE,
+              w: wall[:w] * CELL_SIZE,
+              h: wall[:h] * CELL_SIZE
+            }
+          },
+          start_position: {
+            x: (start_cell[:x] * CELL_SIZE) + (CELL_SIZE / 2) - (Player::W / 2),
+            y: (start_cell[:y] * CELL_SIZE) + (CELL_SIZE / 2) - (Player::H / 2)
+          },
+          pathfinding_graph: LevelGeneration::PathfindingGraph.generate(grid)
+        }
+      end
     end
 
     def draw(args, level, camera:)
