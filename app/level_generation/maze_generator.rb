@@ -7,10 +7,10 @@ module LevelGeneration
     end
 
     def generate
-      generate_fiber.calculate_in_one_step
+      generate_calculation.calculate_in_one_step
     end
 
-    def generate_fiber
+    def generate_calculation
       LongCalculation.define do
         @grid = initialize_grid
         grow_random_corridors

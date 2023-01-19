@@ -3,7 +3,7 @@ module Scene
     def tick_level_generation(args)
       draw_bg(args, DARK_GOLD)
 
-      args.state.level_generation ||= Level.generate_fiber
+      args.state.level_generation ||= Level.generate_calculation
 
       result = args.state.level_generation.run_for_ms(15)
 

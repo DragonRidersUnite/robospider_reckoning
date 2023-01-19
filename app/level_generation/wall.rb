@@ -2,10 +2,10 @@ module LevelGeneration
   module Wall
     class << self
       def determine_walls(grid)
-        determine_walls_fiber(grid).calculate_in_one_step
+        determine_walls_calculation(grid).calculate_in_one_step
       end
 
-      def determine_walls_fiber(grid)
+      def determine_walls_calculation(grid)
         LongCalculation.define do
           all_walls = determine_vertical_walls(grid) + determine_horizontal_walls(grid)
           remove_redundant_walls(all_walls)

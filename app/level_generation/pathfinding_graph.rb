@@ -2,14 +2,14 @@ module LevelGeneration
   module PathfindingGraph
     class << self
       def generate(grid)
-        generate_fiber(grid).calculate_in_one_step
+        generate_calculation(grid).calculate_in_one_step
       end
 
       # Returns a fiber that continues to generate a pathfinding graph.
       # The fiber can be resumed with a number of steps to perform.
       # It will either return `nil` if it is not done yet or a hash
       # with the pathfinding graph once it is done.
-      def generate_fiber(grid)
+      def generate_calculation(grid)
         LongCalculation.define do
           result = {}
           grid.each_with_index do |column, x|

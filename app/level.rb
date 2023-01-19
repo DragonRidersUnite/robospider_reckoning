@@ -4,10 +4,10 @@ module Level
 
   class << self
     def generate
-      generate_fiber.calculate_in_one_step
+      generate_calculation.calculate_in_one_step
     end
 
-    def generate_fiber
+    def generate_calculation
       LongCalculation.define do
         grid = LevelGeneration::MazeGenerator.new(size: MAZE_SIZE).generate
         start_cell = grid.flatten.reject(&:wall).sample
