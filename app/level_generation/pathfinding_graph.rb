@@ -2,9 +2,7 @@ module LevelGeneration
   module PathfindingGraph
     class << self
       def generate(grid)
-        fiber = generate_fiber(grid)
-        result = fiber.resume(1000) while result.nil?
-        result
+        calculate_fiber_result generate_fiber(grid)
       end
 
       # Returns a fiber that continues to generate a pathfinding graph.

@@ -7,9 +7,7 @@ module LevelGeneration
     end
 
     def generate
-      fiber = generate_fiber
-      result = fiber.resume(1000) while result.nil?
-      result
+      calculate_fiber_result generate_fiber
     end
 
     def generate_fiber

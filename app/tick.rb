@@ -203,3 +203,8 @@ end
 def draw_bg(args, color)
   args.outputs.solids << { x: args.grid.left, y: args.grid.bottom, w: args.grid.w, h: args.grid.h }.merge(color)
 end
+
+def calculate_fiber_result(fiber)
+  result = fiber.resume(1000) while result.nil?
+  result
+end
