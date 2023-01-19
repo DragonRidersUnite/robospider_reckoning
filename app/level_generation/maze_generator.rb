@@ -60,6 +60,7 @@ module LevelGeneration
     end
 
     def add_some_more_connections
+      # TODO: Probably need to make this configurable or derive it from the maze size
       10.times do
         wall_cells = @grid.flatten.select(&:wall)
         walls_separating_opposite_corridors = wall_cells.select { |cell|
