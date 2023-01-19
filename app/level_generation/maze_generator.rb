@@ -2,28 +2,29 @@ module LevelGeneration
   class MazeGenerator
     def initialize(size:)
       @size = size
+      @stack = []
     end
 
     def generate
       @grid = initialize_grid
+      @stack = []
       current_cell = @grid[0][0]
       current_cell[:wall] = true
       current_cell[:visited] = true
-      stack = []
-      stack.push(current_cell)
+      @stack.push(current_cell)
 
-      until stack.empty?
-        current_cell = stack.last
+      until @stack.empty?
+        current_cell = @stack.last
         neighbors = get_neighbors(current_cell)
         unvisited_neighbors = neighbors.reject(&:visited)
         if unvisited_neighbors.empty?
-          stack.pop
+          @stack.pop
         else
           next_cell = unvisited_neighbors.sample
           mark_cell_in_between_as_wall(current_cell, next_cell)
           next_cell[:wall] = true
           next_cell[:visited] = true
-          stack.push(next_cell)
+          @stack.push(next_cell)
         end
       end
       build_result
