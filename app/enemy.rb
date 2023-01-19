@@ -51,9 +51,14 @@ module Enemy
     # - :super
     # - :king
     def spawn(args, type = nil)
-      enemy = ENEMY_BASIC.merge(ENEMY_SPAWN_LOCS.sample)
-      enemy.x += args.state.camera.x
-      enemy.y += args.state.camera.y
+      player = args.state.player
+      level = args.state.level
+      player_grid_position = { x: player.x.idiv(level[:cell_size]), y: player.y.idiv(level[:cell_size]) }
+      spawn_location = level[:spawn_locations][player_grid_position].sample
+      enemy = ENEMY_BASIC.merge(
+        x: (spawn_location.x * level[:cell_size]) + (level[:cell_size] / 2),
+        y: (spawn_location.y * level[:cell_size]) + (level[:cell_size] / 2)
+      )
 
       case type
       when :basic
