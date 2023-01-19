@@ -314,6 +314,11 @@ test :long_calculation_basic_behaviour do |_args, assert|
   assert.equal! result, :finished
 end
 
+test :long_calculation_do_nothing_when_finish_step_outside_calculation do |_args, assert|
+  LongCalculation.finish_step # should not raise any error
+  assert.ok!
+end
+
 test :long_calculation_calculate_in_one_step do |_args, assert|
   progress = []
   calculation = LongCalculation.define do

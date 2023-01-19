@@ -23,6 +23,8 @@ module LongCalculation
     end
 
     def finish_step
+      return unless inside_calculation?
+
       Fiber.current.steps -= 1
       Fiber.current.steps = (Fiber.yield || 1) if Fiber.current.steps.zero?
     end
