@@ -290,10 +290,10 @@ end
 
 test :calculate_as_stepwise_fiber do |_args, assert|
   progress = []
-  fiber = calculate_as_stepwise_fiber do |fiber_context|
+  fiber = calculate_as_stepwise_fiber do
     10.times do |i|
       progress << i
-      fiber_context.step
+      $fiber_context.step
     end
     :finished
   end
@@ -302,19 +302,21 @@ test :calculate_as_stepwise_fiber do |_args, assert|
 
   assert.equal! progress, [0, 1, 2, 3, 4]
   assert.nil! result
+  assert.nil! $fiber_context
 
   result = fiber.resume 6
 
   assert.equal! progress, [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
   assert.equal! result, :finished
+  assert.nil! $fiber_context
 end
 
 test :calculate_as_stepwise_fiber_calculate_in_one_step do |_args, assert|
   progress = []
-  fiber = calculate_as_stepwise_fiber do |fiber_context|
+  fiber = calculate_as_stepwise_fiber do
     10.times do |i|
       progress << i
-      fiber_context.step
+      $fiber_context.step
     end
     :finished
   end
@@ -323,6 +325,7 @@ test :calculate_as_stepwise_fiber_calculate_in_one_step do |_args, assert|
 
   assert.equal! progress, [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
   assert.equal! result, :finished
+  assert.nil! $fiber_context
 end
 
 run_tests

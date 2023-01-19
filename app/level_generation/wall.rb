@@ -6,13 +6,13 @@ module LevelGeneration
       end
 
       def determine_walls_fiber(grid)
-        calculate_as_stepwise_fiber do |fiber_context|
+        calculate_as_stepwise_fiber do
           all_walls = determine_vertical_walls(grid) + determine_horizontal_walls(grid)
-          remove_redundant_walls(all_walls, fiber_context: fiber_context)
+          remove_redundant_walls(all_walls)
         end
       end
 
-      def remove_redundant_walls(walls, fiber_context: nil)
+      def remove_redundant_walls(walls)
         remaining_walls = walls.dup
         # Start with the smallest walls and see if they are redundant and work our way up
         walls = walls.sort_by { |wall| wall[:w] * wall[:h] }
@@ -27,7 +27,7 @@ module LevelGeneration
         # For this this step needs to be refactored with Fiber or something equivalent
         # so it can be paused and resumed
         walls.each do |wall|
-          fiber_context&.step
+          $fiber_context&.step
           other_walls = remaining_walls.reject { |other_wall| other_wall == wall }
           next unless covered_by_walls?(wall, other_walls)
 

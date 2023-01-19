@@ -11,9 +11,7 @@ module LevelGeneration
     end
 
     def generate_fiber
-      calculate_as_stepwise_fiber do |fiber_context|
-        @fiber_context = fiber_context
-
+      calculate_as_stepwise_fiber do
         @grid = initialize_grid
         grow_random_corridors
         add_some_more_connections
@@ -31,7 +29,7 @@ module LevelGeneration
       stack.push(first_cell)
 
       until stack.empty?
-        @fiber_context.step
+        $fiber_context&.step
         current_cell = stack.last
         neighbors = get_four_neighbors(current_cell, distance: 2)
         unvisited_neighbors = neighbors.select(&:wall)
@@ -73,7 +71,7 @@ module LevelGeneration
       10.times do
         wall_cells = @grid.flatten.select(&:wall)
         walls_separating_opposite_corridors = wall_cells.select { |cell|
-          @fiber_context.step
+          $fiber_context&.step
           corridor_neighbors = get_four_neighbors(cell).reject(&:wall)
           next false unless corridor_neighbors.count == 2
 

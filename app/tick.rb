@@ -206,8 +206,9 @@ end
 
 def calculate_as_stepwise_fiber
   fiber = Fiber.new do |steps|
-    context = StepwiseFiberContext.new(steps)
-    result = yield(context)
+    $fiber_context = StepwiseFiberContext.new(steps)
+    result = yield
+    $fiber_context = nil
     Fiber.yield result
   end
   fiber.define_singleton_method(:calculate_in_one_step) do
@@ -223,7 +224,9 @@ class StepwiseFiberContext
   end
 
   def step
+    $fiber_context = nil
     @steps -= 1
     @steps = Fiber.yield if @steps.zero?
+    $fiber_context = self
   end
 end
