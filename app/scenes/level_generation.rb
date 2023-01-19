@@ -5,7 +5,7 @@ module Scene
 
       args.state.level_generation ||= Level.generate_fiber
 
-      result = args.state.level_generation.resume(100)
+      result = args.state.level_generation.run_for_ms(15)
 
       if result
         args.state.level_generation = nil
