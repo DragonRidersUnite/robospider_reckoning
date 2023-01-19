@@ -12,7 +12,7 @@ module Level
         grid = LevelGeneration::MazeGenerator.new(size: MAZE_SIZE).generate
         start_cell = grid.flatten.reject(&:wall).sample
         walls = LevelGeneration::Wall.determine_walls(grid)
-        {
+        level = {
           cell_size: CELL_SIZE,
           bounds: { x: 0, y: 0, w: grid.size * CELL_SIZE, h: grid.size * CELL_SIZE },
           grid: grid,
@@ -30,6 +30,8 @@ module Level
           },
           pathfinding_graph: LevelGeneration::PathfindingGraph.generate(grid)
         }
+        level[:spawn_locations] = LevelGeneration::SpawnLocations.calculate(level)
+        level
       end
     end
 
