@@ -6,21 +6,38 @@ module LevelGeneration
 
     def self.open_walls_calculation(count, grid:, pathfinding_graph:)
       LongCalculation.define do
-        count.times do
-          wall_cells = grid.flatten.select(&:wall)
-          walls_separating_opposite_corridors = wall_cells.select { |cell|
-            LongCalculation.finish_step
-            corridor_neighbors = Level::Grid.get_four_neighbors(grid, cell).reject(&:wall)
-            next false unless corridor_neighbors.count == 2
+        wall_cells = grid.flatten.select(&:wall)
+        candidates = []
 
-            # Only allow walls that separate two corridors that are on opposite sides
-            corridor_neighbors[0][:x] == corridor_neighbors[1][:x] ||
-              corridor_neighbors[0][:y] == corridor_neighbors[1][:y]
-          }
-          # TODO: Maybe measure path length between the two corridors and only remove
-          #       walls that separate corridors that are separated more than a certain
-          #       threshold to create meaningful shortcuts
-          removed_wall = walls_separating_opposite_corridors.sample
+        wall_cells.each do |cell|
+          LongCalculation.finish_step
+          corridor_neighbors = Level::Grid.get_four_neighbors(grid, cell).reject(&:wall)
+          next unless corridor_neighbors.count == 2
+
+          # Only allow walls that separate two corridors that are on opposite sides
+          next unless corridor_neighbors[0][:x] == corridor_neighbors[1][:x] ||
+                      corridor_neighbors[0][:y] == corridor_neighbors[1][:y]
+
+          # Don't be too close to other candidates for removal
+          next if candidates.any? { |candidate| (candidate[:x] - cell[:x]).abs + (candidate[:y] - cell[:y]).abs < 10 }
+
+          path_between_corridors = Pathfinding.find_path(
+            pathfinding_graph,
+            start: corridor_neighbors[0].slice(:x, :y),
+            goal: corridor_neighbors[1].slice(:x, :y)
+          )
+
+          # Only allow walls that separate two corridors that are sufficiently far apart
+          next unless path_between_corridors.size > 20
+
+          candidates << cell
+        end
+
+        count.times do
+          break if candidates.empty?
+
+          removed_wall = candidates.sample
+          candidates.delete(removed_wall)
           removed_wall[:wall] = false
           LevelGeneration::PathfindingGraph.remove_wall(pathfinding_graph, removed_wall.slice(:x, :y))
         end
