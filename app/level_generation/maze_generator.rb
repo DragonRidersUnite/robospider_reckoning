@@ -14,17 +14,17 @@ module LevelGeneration
           corridor_neighbors = Level::Grid.get_four_neighbors(grid, cell).reject(&:wall)
           next unless corridor_neighbors.count == 2
 
+          corridor1, corridor2 = corridor_neighbors
           # Only allow walls that separate two corridors that are on opposite sides
-          next unless corridor_neighbors[0][:x] == corridor_neighbors[1][:x] ||
-                      corridor_neighbors[0][:y] == corridor_neighbors[1][:y]
+          next unless corridor1[:x] == corridor2[:x] || corridor1[:y] == corridor2[:y]
 
           # Don't be too close to other candidates for removal
           next if candidates.any? { |candidate| (candidate[:x] - cell[:x]).abs + (candidate[:y] - cell[:y]).abs < 10 }
 
           path_between_corridors = Pathfinding.find_path(
             pathfinding_graph,
-            start: corridor_neighbors[0].slice(:x, :y),
-            goal: corridor_neighbors[1].slice(:x, :y)
+            start: corridor1.slice(:x, :y),
+            goal: corridor2.slice(:x, :y)
           )
 
           # Only allow walls that separate two corridors that are sufficiently far apart
