@@ -1,5 +1,22 @@
 module Collision
   class << self
+    # Executes the block for each intersections of the collections. If a
+    # collection isn't an array, it's put into one so it can properly loop.
+    def detect(col1, col2)
+      col1 = [col1] unless col1.is_a?(Array)
+      col2 = [col2] unless col2.is_a?(Array)
+
+      col1.each do |i|
+        col2.each do |j|
+          if !i.dead && !j.dead
+            if i.intersect_rect?(j)
+              yield(i, j)
+            end
+          end
+        end
+      end
+    end
+
     def move_out_of_collider(object, collider)
       object_center_x = object[:x] + (object[:w] / 2)
       object_center_y = object[:y] + (object[:h] / 2)

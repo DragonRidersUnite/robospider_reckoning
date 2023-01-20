@@ -37,40 +37,40 @@ module Scene
       args.state.exp_chips.each { |c| ExpChip.tick(args, c)  }
 
       # TODO: Use some kind of spatial hash (quadtree?) to speed this up?
-      collide(player, level[:walls]) do |player, wall|
+      Collision.detect(player, level[:walls]) do |player, wall|
         Collision.move_out_of_collider(player, wall)
       end
 
-      collide(player.bullets, level[:walls]) do |bullet, _|
+      Collision.detect(player.bullets, level[:walls]) do |bullet, _|
         bullet.dead = true
       end
 
       unless args.state.enemies_pass_walls
-        collide(level[:walls], enemies) do |wall, enemy|
+        Collision.detect(level[:walls], enemies) do |wall, enemy|
           Collision.move_out_of_collider(enemy, wall)
         end
       end
 
-      collide(player.bullets, enemies) do |bullet, enemy|
+      Collision.detect(player.bullets, enemies) do |bullet, enemy|
         bullet.dead = true
         Enemy.damage(args, enemy, bullet)
       end
 
-      collide(enemies, player) do |enemy, _|
+      Collision.detect(enemies, player) do |enemy, _|
         player.health -= enemy.body_power unless player.invincible
         flash(player, RED, 12)
         Enemy.damage(args, enemy, player, sfx: nil)
         play_sfx(args, :hurt)
       end
 
-      collide(enemies, player.familiars) do |enemy, familiar|
+      Collision.detect(enemies, player.familiars) do |enemy, familiar|
         if familiar.cooldown_countdown <= 0
           Enemy.damage(args, enemy, familiar, sfx: :enemy_hit_by_familiar)
           familiar.cooldown_countdown = familiar.cooldown_ticks
         end
       end
 
-      collide(args.state.exp_chips, player) do |exp_chip, _|
+      Collision.detect(args.state.exp_chips, player) do |exp_chip, _|
         exp_chip.dead = true
         Player.absorb_exp(args, player, exp_chip)
         play_sfx(args, :exp_chip)
