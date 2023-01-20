@@ -67,7 +67,7 @@ module Pathfinding
     def heapify_up(index)
       return if index == 1
 
-      parent_index = index / 2
+      parent_index = index.idiv 2
       return if @data[index].priority >= @data[parent_index].priority
 
       swap(index, parent_index)
