@@ -1,5 +1,30 @@
 module LevelGeneration
   class MazeGenerator
+    def self.open_walls(count, grid:)
+      open_walls_calculation(count, grid: grid).calculate_in_one_step
+    end
+
+    def self.open_walls_calculation(count, grid:)
+      LongCalculation.define do
+        count.times do
+          wall_cells = grid.flatten.select(&:wall)
+          walls_separating_opposite_corridors = wall_cells.select { |cell|
+            LongCalculation.finish_step
+            corridor_neighbors = Level::Grid.get_four_neighbors(grid, cell).reject(&:wall)
+            next false unless corridor_neighbors.count == 2
+
+            # Only allow walls that separate two corridors that are on opposite sides
+            corridor_neighbors[0][:x] == corridor_neighbors[1][:x] ||
+              corridor_neighbors[0][:y] == corridor_neighbors[1][:y]
+          }
+          # TODO: Maybe measure path length between the two corridors and only remove
+          #       walls that separate corridors that are separated more than a certain
+          #       threshold to create meaningful shortcuts
+          walls_separating_opposite_corridors.sample[:wall] = false
+        end
+      end
+    end
+
     def initialize(size:)
       @size = size
       # Make sure the maze is always odd-sized so that it is surrounded by walls
@@ -14,7 +39,6 @@ module LevelGeneration
       LongCalculation.define do
         @grid = initialize_grid
         grow_random_corridors
-        add_some_more_connections
         build_result
       end
     end
@@ -56,26 +80,6 @@ module LevelGeneration
       x = (current_cell[:x] + next_cell[:x]).idiv 2
       y = (current_cell[:y] + next_cell[:y]).idiv 2
       @grid[x][y][:wall] = false
-    end
-
-    def add_some_more_connections
-      # TODO: Probably need to make this configurable or derive it from the maze size
-      10.times do
-        wall_cells = @grid.flatten.select(&:wall)
-        walls_separating_opposite_corridors = wall_cells.select { |cell|
-          LongCalculation.finish_step
-          corridor_neighbors = Level::Grid.get_four_neighbors(@grid, cell).reject(&:wall)
-          next false unless corridor_neighbors.count == 2
-
-          # Only allow walls that separate two corridors that are on opposite sides
-          corridor_neighbors[0][:x] == corridor_neighbors[1][:x] ||
-            corridor_neighbors[0][:y] == corridor_neighbors[1][:y]
-        }
-        # TODO: Maybe measure path length between the two corridors and only remove
-        #       walls that separate corridors that are separated more than a certain
-        #       threshold to create meaningful shortcuts
-        walls_separating_opposite_corridors.sample[:wall] = false
-      end
     end
 
     def build_result
