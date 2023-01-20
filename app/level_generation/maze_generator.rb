@@ -31,7 +31,7 @@ module LevelGeneration
       until stack.empty?
         LongCalculation.finish_step
         current_cell = stack.last
-        neighbors = get_four_neighbors(current_cell, distance: 2)
+        neighbors = Level::Grid.get_four_neighbors(@grid, current_cell, distance: 2)
         unvisited_neighbors = neighbors.select(&:wall)
         if unvisited_neighbors.empty?
           stack.pop
@@ -52,14 +52,6 @@ module LevelGeneration
       }
     end
 
-    def get_four_neighbors(current_cell, distance: 1)
-      [[distance, 0], [0, distance], [-distance, 0], [0, -distance]].map { |(offset_x, offset_y)|
-        x = current_cell[:x] + offset_x
-        y = current_cell[:y] + offset_y
-        @grid[x][y] if x.between?(0, @size - 1) && y.between?(0, @size - 1)
-      }.compact
-    end
-
     def remove_wall_between(current_cell, next_cell)
       x = (current_cell[:x] + next_cell[:x]).idiv 2
       y = (current_cell[:y] + next_cell[:y]).idiv 2
@@ -72,7 +64,7 @@ module LevelGeneration
         wall_cells = @grid.flatten.select(&:wall)
         walls_separating_opposite_corridors = wall_cells.select { |cell|
           LongCalculation.finish_step
-          corridor_neighbors = get_four_neighbors(cell).reject(&:wall)
+          corridor_neighbors = Level::Grid.get_four_neighbors(@grid, cell).reject(&:wall)
           next false unless corridor_neighbors.count == 2
 
           # Only allow walls that separate two corridors that are on opposite sides

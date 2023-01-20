@@ -2,6 +2,20 @@ module Level
   CELL_SIZE = 256
   MAZE_SIZE = 30
 
+  module Grid
+    class << self
+      def get_four_neighbors(grid, cell, distance: 1)
+        grid_w = grid.size
+        grid_h = grid.first.size
+        [[distance, 0], [0, distance], [-distance, 0], [0, -distance]].map { |(offset_x, offset_y)|
+        x = cell[:x] + offset_x
+        y = cell[:y] + offset_y
+        grid[x][y] if x.between?(0, grid_w - 1) && y.between?(0, grid_h - 1)
+        }.compact
+      end
+    end
+  end
+
   class << self
     def generate
       generate_calculation.calculate_in_one_step
