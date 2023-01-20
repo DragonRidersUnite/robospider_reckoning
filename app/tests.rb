@@ -269,6 +269,23 @@ test :level_generation_pathfinding_graph_generate do |_args, assert|
   }
 end
 
+test :level_generation_pathfinding_graph_remove_wall do |_args, assert|
+  grid = build_grid_from_map <<~MAP
+    |   |
+    | X |
+    | X |
+    | X |
+    |   |
+  MAP
+  graph = LevelGeneration::PathfindingGraph.generate grid
+
+  LevelGeneration::PathfindingGraph.remove_wall graph, { x: 1, y: 2 }
+
+  assert.equal! graph[{ x: 0, y: 2 }], [{ x: 0, y: 3 }, { x: 0, y: 1 }, { x: 1, y: 2 }]
+  assert.equal! graph[{ x: 1, y: 2 }], [{ x: 2, y: 2 }, { x: 0, y: 2 }]
+  assert.equal! graph[{ x: 2, y: 2 }], [{ x: 2, y: 3 }, { x: 2, y: 1 }, { x: 1, y: 2 }]
+end
+
 test :pathfinding_find_path do |_args, assert|
   grid = build_grid_from_map <<~MAP
     |    |

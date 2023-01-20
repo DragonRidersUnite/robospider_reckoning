@@ -32,6 +32,19 @@ module LevelGeneration
           result
         end
       end
+
+      def remove_wall(graph, position)
+        return if graph.key? position
+
+        [[0, 1], [1, 0], [0, -1], [-1, 0]].each do |(offset_x, offset_y)|
+          neighbor = { x: position[:x] + offset_x, y: position[:y] + offset_y }
+          next unless graph.key? neighbor
+
+          graph[neighbor] << position
+          graph[position] ||= []
+          graph[position] << neighbor
+        end
+      end
     end
   end
 end
