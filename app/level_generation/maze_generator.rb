@@ -1,10 +1,10 @@
 module LevelGeneration
   class MazeGenerator
-    def self.open_walls(count, grid:)
-      open_walls_calculation(count, grid: grid).calculate_in_one_step
+    def self.open_walls(count, grid:, pathfinding_graph:)
+      open_walls_calculation(count, grid: grid, pathfinding_graph: pathfinding_graph).calculate_in_one_step
     end
 
-    def self.open_walls_calculation(count, grid:)
+    def self.open_walls_calculation(count, grid:, pathfinding_graph:)
       LongCalculation.define do
         count.times do
           wall_cells = grid.flatten.select(&:wall)
@@ -20,7 +20,9 @@ module LevelGeneration
           # TODO: Maybe measure path length between the two corridors and only remove
           #       walls that separate corridors that are separated more than a certain
           #       threshold to create meaningful shortcuts
-          walls_separating_opposite_corridors.sample[:wall] = false
+          removed_wall = walls_separating_opposite_corridors.sample
+          removed_wall[:wall] = false
+          LevelGeneration::PathfindingGraph.remove_wall(pathfinding_graph, removed_wall.slice(:x, :y))
         end
       end
     end
