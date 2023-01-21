@@ -7,56 +7,62 @@ module LevelGeneration
 
       def determine_walls_calculation(grid)
         LongCalculation.define do
-          all_walls = determine_vertical_walls(grid) + determine_horizontal_walls(grid)
+          putz "Raw: #{grid.flatten.length}"
+          all_walls = determine_vertical_walls(grid)
+          putz "After vertical trimming: #{all_walls.length}" 
           remove_redundant_walls(all_walls)
         end
       end
 
       def remove_redundant_walls(walls)
-        remaining_walls = walls.dup
-        # Start with the smallest walls and see if they are redundant and work our way up
-        walls = walls.sort_by { |wall| wall[:w] * wall[:h] }
-        # This part is somewhat slow (1-2 seconds for a 30x30 grid)
-        #
-        # Possible fix 1: Optimize algorithm
-        # Maybe keeping a map with number of overlapping walls for each coordinate
-        # and then updating that as we remove walls instead of calling #covered_by_walls?
-        # many times
-        #
-        # Possible fix 2: Show progress bar (reticulating splines...)
-        # For this this step needs to be refactored with Fiber or something equivalent
-        # so it can be paused and resumed
+        horizontal_walls = {}
+		largest = 0
         walls.each do |wall|
-          LongCalculation.finish_step
-          other_walls = remaining_walls.reject { |other_wall| other_wall == wall }
-          next unless covered_by_walls?(wall, other_walls)
-
-          remaining_walls.delete(wall)
+          horizontal_walls[wall[:x]] ||= []
+		  horizontal_walls[wall[:x]] << wall
+		  largest = [largest, wall[:x]].max
         end
-        remaining_walls
-      end
-
-      def covered_by_walls?(wall, other_walls)
-        remaining_coordinates = coordinates(wall)
-        other_walls.each do |other_wall|
-          remaining_coordinates -= coordinates(other_wall)
-          return true if remaining_coordinates.empty?
+        
+        i = 0
+        while largest > i
+          prev_column = horizontal_walls[i] || []
+          new_column = horizontal_walls[i+1] || []
+        
+          k1 = 0
+          k2 = 0
+		
+          while prev_column.length > k1 && new_column.length > k2
+            LongCalculation.finish_step
+            prev_wall = prev_column[k1]
+            new_wall = new_column[k2]
+            case prev_wall[:y] <=> new_wall[:y]
+            when -1
+              k1 += 1
+            when 1
+              k2 += 1
+            when 0
+			  case new_wall[:h] <=> prev_wall[:h]
+              when -1
+                k1 += 1
+              when 1
+                k2 += 1
+              when 0
+                new_wall[:x] -= prev_wall[:w]
+                new_wall[:w] += prev_wall[:w]
+                prev_column.delete_at(k1)
+              end
+            end
+          end
+		  i += 1
         end
-        false
-      end
-
-      def covered_by_wall?(wall, other_wall)
-        return true if wall == other_wall
-
-        (coordinates(wall) - coordinates(other_wall)).empty?
-      end
-
-      def coordinates(wall)
-        (wall.left...wall.right).map { |x|
-          (wall.bottom...wall.top).map { |y|
-            { x: x, y: y }
-          }
-        }.flatten
+        result = []
+        horizontal_walls.each do |column|
+          result.concat(column[1])
+        end
+		
+        putz "After final trimming: #{result.length}"
+		
+        return result
       end
 
       def determine_vertical_walls(grid)
@@ -64,6 +70,7 @@ module LevelGeneration
 
         grid.each_with_index do |column, x|
           current_wall = nil
+		  current_column = []
           column.each_with_index do |cell, y|
             unless current_wall
               current_wall = { x: x, y: y, w: 1, h: 1 } if cell[:wall]
@@ -82,34 +89,9 @@ module LevelGeneration
           walls << current_wall if current_wall
         end
 
-        walls
+        return walls
       end
 
-      def determine_horizontal_walls(grid)
-        walls = []
-
-        grid.transpose.each_with_index do |row, y|
-          current_wall = nil
-          row.each_with_index do |cell, x|
-            unless current_wall
-              current_wall = { x: x, y: y, w: 1, h: 1 } if cell[:wall]
-              next
-            end
-
-            if cell[:wall]
-              current_wall[:w] += 1
-              next
-            end
-
-            walls << current_wall
-            current_wall = nil
-          end
-
-          walls << current_wall if current_wall
-        end
-
-        walls
-      end
     end
   end
 end

@@ -10,7 +10,7 @@ module Minimap
       minimap.primitives << { x: 0, y: 0, w: w, h: h, path: :pixel }.sprite!(BLACK)
       level[:walls].each do |wall|
         minimap.primitives << {
-          x: wall.x / FACTOR, y: wall.y / FACTOR, w: wall.w / FACTOR, h: wall.h / FACTOR,
+          x: wall.x / FACTOR, y: wall.y / FACTOR, w: (wall.w - 0) / FACTOR, h: (wall.h - 0) / FACTOR,
           path: :pixel
         }.sprite!(WHITE)
       end

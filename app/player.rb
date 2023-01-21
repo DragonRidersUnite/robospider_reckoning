@@ -166,9 +166,8 @@ module Player
     3 => {
       exp_diff: 20,
       on_reach: -> (args, player) do
-        # familiar speed is weird and decreasing it makes it faster
         player.familiars.each do |f|
-          f.speed -= 3
+          f.speed += 3
         end
         args.gtk.notify!(text(:lu_familiar_speed_increased))
       end
@@ -185,7 +184,7 @@ module Player
       on_reach: -> (args, player) do
         familiar = Familiar.spawn(player, dist_from_player: 100)
         args.gtk.notify!(text(:lu_familiar_spawned))
-        familiar.speed = player.familiars.first.speed - 2 # familiar speed is weird and decreasing it makes it faster
+        familiar.speed = player.familiars.first.speed + 2
       end
     },
     6 => {

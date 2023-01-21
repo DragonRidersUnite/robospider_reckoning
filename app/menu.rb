@@ -71,8 +71,14 @@ module Menu
             index = 0
           end
           menu_state.current_option_i = index
-          menu_state.hold_delay = 10
+		  if menu_state.hold_delay == -1
+            menu_state.hold_delay = 20
+          else
+            menu_state.hold_delay = 6
+          end
         end
+      else
+        menu_state.hold_delay = 0
       end
 
       if Input.confirm?(args.inputs)

@@ -34,17 +34,6 @@ module Enemy
     body_power: 4,
   }
 
-  ENEMY_SPAWN_LOCS = [
-    { x: -100, y: -100 }, # bottom left
-    { x: -100, y: 360 }, # middle left
-    { x: -100, y: 820 }, # upper left
-    { x: 1380, y: -100 }, # bottom right
-    { x: 1380, y: 360 }, # middle right
-    { x: 1380, y: 820 }, # upper right
-    { x: 640, y: -10 }, # bottom middle
-    { x: 640, y: 820 }, # top middle
-  ]
-
   class << self
     # enemy `type` for overriding default algorithm:
     # - :basic
@@ -53,12 +42,11 @@ module Enemy
     def spawn(args, type = nil)
       player = args.state.player
       level = args.state.level
-      player_grid_position = { x: player.x.idiv(level[:cell_size]), y: player.y.idiv(level[:cell_size]) }
-      spawn_location = level[:spawn_locations][player_grid_position].sample
-      enemy = ENEMY_BASIC.merge(
-        x: (spawn_location.x * level[:cell_size]) + (level[:cell_size] / 2),
-        y: (spawn_location.y * level[:cell_size]) + (level[:cell_size] / 2)
-      )
+      spot = spawn_location(args)
+	  
+	  return unless spot
+	  
+      enemy = ENEMY_BASIC.merge(spot)
 
       case type
       when :basic
@@ -86,6 +74,14 @@ module Enemy
 
       args.state.enemies << enemy
       enemy
+    end
+  
+    def spawn_location(args)
+      attempts = 10
+      while attempts > 0
+        attempts -= 1
+      end
+      return nil
     end
 
     def tick(args, enemy)
