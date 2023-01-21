@@ -76,7 +76,7 @@ module Scene
         play_sfx(args, :exp_chip)
       end
 
-      enemies.reject! { |e| e.dead? }
+      enemies.reject! { |e| e.dead }
       args.state.exp_chips.reject! { |e| e.dead }
 
       if player.dead?

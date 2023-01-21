@@ -1,4 +1,5 @@
 module Enemy
+  DESPAWN_RANGE = 1500
   ENEMY_BASIC = {
     w: 24,
     h: 24,
@@ -68,19 +69,37 @@ module Enemy
         end
       end
 
-      enemy.define_singleton_method(:dead?) do
-        health <= 0
-      end
-
       args.state.enemies << enemy
       enemy
     end
   
     def spawn_location(args)
-      attempts = 10
+      level = args.state.level
+	  grid = level.grid.flatten.reject{|i| i.wall}
+	  player = {
+        x: args.state.player.x/level.cell_size,
+        y: args.state.player.y/level.cell_size
+      }
+	  
+      attempts = 50
       while attempts > 0
         attempts -= 1
+        
+	    pos = grid.sample
+
+        dist = [(pos.x-player.x).abs, (pos.y-player.y).abs].max * level.cell_size
+		if dist > 640 && dist < DESPAWN_RANGE
+		  putz "#{50 - attempts} attempts"
+          pos = {
+            x: (pos.x + random(0.2, 0.8)) * level.cell_size,
+            y: (pos.y + random(0.2, 0.8)) * level.cell_size,
+          }
+		  putz pos
+		  putz dist
+          return pos
+        end
       end
+	  putz "#{50 - attempts} attempts, and failed"
       return nil
     end
 
@@ -93,9 +112,10 @@ module Enemy
 
       tick_flasher(enemy)
 
-      if enemy.health == 1 && enemy.max_health > 1
-        enemy.merge!(RED)
-      end
+      enemy.merge!(RED) if enemy.health == 1 && enemy.max_health > 1
+
+      dist = [(enemy.x - args.state.player.x).abs, (enemy.y - args.state.player.y).abs].max
+      despawn(enemy) if dist > DESPAWN_RANGE
 
       position_on_screen = Camera.translate(args.state.camera, enemy)
       debug_label(args, position_on_screen.x, position_on_screen.y, "health: #{enemy.health}")
@@ -113,11 +133,16 @@ module Enemy
     end
 
     def destroy(args, enemy)
+      despawn(enemy)
       args.state.enemies_destroyed += 1
 
       random(enemy.min_exp_drop, enemy.max_exp_drop).times do
         args.state.exp_chips << ExpChip.create(enemy)
       end
+    end
+
+    def despawn(enemy)
+      enemy.dead = true
     end
   end
 end
