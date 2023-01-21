@@ -1,6 +1,6 @@
 module Familiar
   class << self
-    def spawn(player, dist_from_player:, speed: 18)
+    def spawn(player, dist_from_player:, speed: 10)
       familiar = {
         x: player.x + 10,
         y: player.y,
@@ -18,10 +18,10 @@ module Familiar
     end
 
     def tick(args, player, familiar)
-      rotator = args.state.tick_count / familiar.speed
+      rotator = args.state.tick_count * familiar.speed / (Math::PI * familiar.dist_from_player)
       familiar.x = player.x + player.w / 2 - familiar.w / 2 + Math.sin(rotator) * familiar.dist_from_player
       familiar.y = player.y + player.h / 2 - familiar.h / 2 + Math.cos(rotator) * familiar.dist_from_player
-      familiar.angle = args.geometry.angle_to(player, familiar)
+      familiar.angle = 270 - (rotator * 180 / Math::PI) % 360
       if familiar.cooldown_countdown > 0
         familiar.a = 255 / 2
       else

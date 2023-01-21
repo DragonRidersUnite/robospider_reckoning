@@ -25,10 +25,11 @@ module Level
       LongCalculation.define do
         grid = LevelGeneration::MazeGenerator.new(size: MAZE_SIZE).generate
         pathfinding_graph = LevelGeneration::PathfindingGraph.generate(grid)
-        # TODO: Probably need to make this 10 configurable or derive it from the maze size
-        LevelGeneration::MazeGenerator.open_walls(10, grid: grid, pathfinding_graph: pathfinding_graph)
+        # # TODO: Probably need to make this 10 configurable or derive it from the maze size
+        # LevelGeneration::MazeGenerator.open_walls(10, grid: grid, pathfinding_graph: pathfinding_graph)
         start_cell = grid.flatten.reject(&:wall).sample
         walls = LevelGeneration::Wall.determine_walls(grid)
+		
         level = {
           cell_size: CELL_SIZE,
           bounds: { x: 0, y: 0, w: grid.size * CELL_SIZE, h: grid.size * CELL_SIZE },
@@ -47,7 +48,7 @@ module Level
           },
           pathfinding_graph: pathfinding_graph
         }
-        level[:spawn_locations] = LevelGeneration::SpawnLocations.calculate(level)
+        #level[:spawn_locations] = LevelGeneration::SpawnLocations.calculate(level)
         level
       end
     end
