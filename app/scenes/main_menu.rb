@@ -27,7 +27,7 @@ module Scene
         title.upcase, x: args.grid.w / 2, y: args.grid.top - 100,
         size: SIZE_LG, align: ALIGN_CENTER, font: FONT_BOLD_ITALIC)
       labels << label(
-        "#{text(:made_by)} #{CREDITS.join(', ')}",
+        "#{text(:made_by)} #{(CREDITS-[CREDITS.last]).join(', ')}, and #{CREDITS.last}",
         x: args.grid.left + 24, y: 48,
         size: SIZE_XS, align: ALIGN_LEFT)
       labels << label(

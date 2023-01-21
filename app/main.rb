@@ -5,6 +5,7 @@
 CREDITS = [
   "Brett Chalupa",
   "Jae Donley",
+  "Jonas Grandt",
   "Kevin Fischer"
 ].shuffle
 

@@ -51,11 +51,11 @@ end
 # returns a new angle from the og `angle` one summed with the `diff`
 # degrees! of course
 def add_to_angle(angle, diff)
-  ((angle + diff) % 360).abs
+  (angle + diff) % 360
 end
 
 def deg_to_rad(deg)
-  (deg * Math::PI / 180).round(4)
+  deg * Math::PI / 180
 end
 
 # Returns degrees
