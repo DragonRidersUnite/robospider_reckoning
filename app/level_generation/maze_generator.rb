@@ -90,7 +90,7 @@ module LevelGeneration
     def initialize_grid
       Array.new(@size) { |x|
         Array.new(@size) { |y|
-          { x: x, y: y, wall: (x == 0 || x == @size-1) || (y == 0 || y == @size-1) || rand < 1 }
+          { x: x, y: y, wall: true}
         }
       }
     end

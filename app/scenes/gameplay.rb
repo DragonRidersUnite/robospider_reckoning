@@ -21,7 +21,7 @@ module Scene
 
       # spawns enemies faster when player level is higher;
       # starts at every 60 ticks
-      Timer.update_period(enemy_spawn_timer, 60 - 4 * player.level)
+      Timer.update_period(enemy_spawn_timer, [60 - 5 * player.level, 20].max)
 
       Timer.tick(enemy_spawn_timer)
       if Timer.active?(enemy_spawn_timer)
