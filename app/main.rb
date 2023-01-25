@@ -5,8 +5,8 @@
 CREDITS = [
   "Brett Chalupa",
   "Jae Donley",
+  "Kevin Fischer",
   "Jonas Grandt",
-  "Kevin Fischer"
 ].shuffle
 
 require "app/input.rb"
@@ -18,6 +18,7 @@ require "app/collision.rb"
 require "app/enemy.rb"
 require "app/exp_chip.rb"
 require "app/familiar.rb"
+require "app/artifact.rb"
 require "app/level.rb"
 require "app/level_generation/maze_generator.rb"
 require "app/level_generation/pathfinding_graph.rb"

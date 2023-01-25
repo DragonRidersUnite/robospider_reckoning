@@ -1,7 +1,7 @@
 module Minimap
   FACTOR = 32
   class << self
-    def draw(args, level:, player:, enemies:)
+    def draw(args, level:, player:, artifact:, enemies:)
       w = level.bounds.w / FACTOR
       h = level.bounds.h / FACTOR
       minimap = args.outputs[:minimap]
@@ -14,18 +14,19 @@ module Minimap
           path: :pixel
         }.sprite!(WHITE)
       end
-      minimap.primitives << {
-        x: (player.x / FACTOR) - 1, y: (player.y / FACTOR) - 1, w: 3, h: 3, path: :pixel,
-        r: 0, g: 255, b: 0
-      }.sprite!
+      minimap.primitives << draw_helper(player, 3, MINI_GREEN)
+      minimap.primitives << draw_helper(artifact, 5, MINI_BLUE)
       enemies.each do |enemy|
-        minimap.primitives << {
-          x: (enemy.x / FACTOR) - 1, y: (enemy.y / FACTOR) - 1, w: 3, h: 3, path: :pixel,
-          r: 255, g: 0, b: 0
-        }.sprite!
-      end
+        minimap.primitives << draw_helper(enemy, 3, MINI_RED)
+      end if debug?
 
       args.outputs.primitives << { x: 10, y: 10, w: w, h: h, path: :minimap, a: 192 }.sprite!
     end
+	
+	def draw_helper(entity, size, color)
+	  {
+	    x: (entity.x / FACTOR) - (size/2).floor, y: (entity.y / FACTOR) - (size/2).floor, w: size, h: size, path: :pixel,
+      }.sprite!(color)
+	end
   end
 end

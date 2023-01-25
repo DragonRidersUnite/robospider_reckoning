@@ -16,11 +16,8 @@ end
 # utility, math, and misc methods below
 
 # returns random val between min & max, inclusive
-# needs integers, use rand if you don't need min/max and don't care much
 def random(min, max)
-  min = Integer(min)
-  max = Integer(max)
-  rand((max + 1) - min) + min
+  min + rand * (max - min)
 end
 
 # strips away the junk added by GTK::OpenEntity
@@ -34,7 +31,7 @@ def percent_chance?(percent)
   error("percent param (#{percent}) can't be above 100!") if percent > 100.0
   return false if percent == 0.0
   return true if percent == 100.0
-  rand() < (percent / 100.0)
+  rand < (percent / 100.0)
 end
 
 # +angle+ is expected to be in degrees with 0 being facing right

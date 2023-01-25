@@ -18,6 +18,9 @@ DARK_GOLD = { r: 120, g: 97, b: 7 }
 DARK_GREEN = { r: 5, g: 84, b: 12 }
 DARK_BLUE = { r: 22, g: 122, b: 188 }
 DARK_PURPLE = { r: 66, g: 12, b: 109 }
+MINI_RED = { r: 255, g: 0, b: 0 }
+MINI_GREEN = { r: 0, g: 255, b: 0 }
+MINI_BLUE = { r: 0, g: 192, b: 255 }
 
 DIR_DOWN = :down
 DIR_UP = :up

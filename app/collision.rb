@@ -8,10 +8,8 @@ module Collision
 
       col1.each do |i|
         col2.each do |j|
-          if !i.dead && !j.dead
-            if i.intersect_rect?(j)
-              yield(i, j)
-            end
+          if !i.dead && !j.dead && i.intersect_rect?(j)
+            yield(i, j)
           end
         end
       end

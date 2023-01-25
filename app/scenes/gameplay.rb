@@ -1,17 +1,16 @@
 module Scene
   class << self
+    MAXIMUM_ENEMIES = 80
     def tick_gameplay(args)
       level = args.state.level
-      args.state.player ||= Player.create(args, x: level[:start_position][:x], y: level[:start_position][:y])
-      player = args.state.player
-      args.state.camera ||= Camera.build
-      camera = args.state.camera
-      args.state.enemies ||= []
-      enemies = args.state.enemies
+      player = args.state.player ||= Player.create(args, x: level[:start_position][:x], y: level[:start_position][:y])
+      artifact = args.state.artifact ||= Artifact.create(args)
+      camera = args.state.camera ||= Camera.build
+      enemies = args.state.enemies ||= []
       args.state.enemies_destroyed ||= 0
       args.state.exp_chips ||= []
-      args.state.enemy_spawn_timer ||= Timer.every(60)
-      enemy_spawn_timer = args.state.enemy_spawn_timer
+      enemy_spawn_timer = args.state.enemy_spawn_timer ||= Timer.every(60)
+
 
       if Input.window_out_of_focus?(args.inputs) || Input.pause?(args.inputs)
         play_sfx(args, :select)
@@ -22,18 +21,17 @@ module Scene
 
       # spawns enemies faster when player level is higher;
       # starts at every 60 ticks
-      Timer.update_period enemy_spawn_timer, 60 - (player.level * 2)
+      Timer.update_period(enemy_spawn_timer, 60 - 4 * player.level)
 
       Timer.tick(enemy_spawn_timer)
       if Timer.active?(enemy_spawn_timer)
-        Enemy.spawn(args)
-
-        # double spawn at higher levels
-        Enemy.spawn(args) if player.level >= 12
+        if (enemies.length / MAXIMUM_ENEMIES) < rand
+          Enemy.spawn(args)
+        end
       end
 
       Player.tick(args, player, camera)
-      enemies.each { |e| Enemy.tick(args, e)  }
+      enemies.each { |e| Enemy.tick(args, e, player, level)  }
       args.state.exp_chips.each { |c| ExpChip.tick(args, c)  }
 
       # TODO: Use some kind of spatial hash (quadtree?) to speed this up?
@@ -67,6 +65,7 @@ module Scene
         if familiar.cooldown_countdown <= 0
           Enemy.damage(args, enemy, familiar, sfx: :enemy_hit_by_familiar)
           familiar.cooldown_countdown = familiar.cooldown_ticks
+          familiar.health -= 1
         end
       end
 
@@ -75,9 +74,15 @@ module Scene
         Player.absorb_exp(args, player, exp_chip)
         play_sfx(args, :exp_chip)
       end
+	  
+      Collision.detect(player, artifact) do |player, _|
+        Player.level_up(args, player)
+        args.state.artifact = nil
+      end
 
       enemies.reject! { |e| e.dead }
       args.state.exp_chips.reject! { |e| e.dead }
+      player.familiars.reject! { |e| e.dead }
 
       if player.dead?
         play_sfx(args, :player_death)
@@ -89,18 +94,21 @@ module Scene
       draw_bg(args, BLACK)
       Level.draw(args, level, camera: camera)
       args.outputs.sprites << [
+        Camera.translate(camera, artifact),
         Camera.translate(camera, args.state.exp_chips),
         Camera.translate(camera, args.state.player.bullets),
         Camera.translate(camera, player),
         Camera.translate(camera, enemies),
         Camera.translate(camera, args.state.player.familiars)
       ]
-      Minimap.draw(args, level: level, player: player, enemies: enemies) if args.state.render_minimap
+      Minimap.draw(args, level: level, player: player, artifact: artifact, enemies: enemies) if args.state.render_minimap
 
       labels = []
       labels << label("#{text(:health)}: #{player.health}", x: 40, y: args.grid.top - 40, size: SIZE_SM, font: FONT_BOLD)
-      labels << label("#{text(:level)}: #{player.level}", x: args.grid.right - 40, y: args.grid.top - 40, size: SIZE_SM, align: ALIGN_RIGHT, font: FONT_BOLD)
-      labels << label("#{text(:exp_to_next_level)}: #{player.exp_to_next_level}", x: args.grid.right - 40, y: args.grid.top - 88, size: SIZE_XS, align: ALIGN_RIGHT, font: FONT_BOLD)
+      labels << label("#{text(:mana)}: #{player.mana}/#{player.max_mana}", x: 40, y: args.grid.top - 80, size: SIZE_SM, font: FONT_BOLD)
+      labels << label("Spell: #{player.spell + 1}", x: 40, y: args.grid.top - 120, size: SIZE_XS, font: FONT_BOLD)
+    #  labels << label("#{text(:level)}: #{player.level}", x: args.grid.right - 40, y: args.grid.top - 40, size: SIZE_SM, align: ALIGN_RIGHT, font: FONT_BOLD)
+    #  labels << label("#{text(:exp_to_next_level)}: #{player.exp_to_next_level}", x: args.grid.right - 40, y: args.grid.top - 88, size: SIZE_XS, align: ALIGN_RIGHT, font: FONT_BOLD)
       args.outputs.labels << labels
     end
 
