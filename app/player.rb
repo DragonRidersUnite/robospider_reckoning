@@ -10,7 +10,7 @@ module Player
       p = {
         x: x,
         y: y,
-        w: W,    
+        w: W,
         h: H,
         health: 6,
         max_health: 6,
