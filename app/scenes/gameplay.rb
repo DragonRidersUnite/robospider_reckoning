@@ -1,16 +1,18 @@
 module Scene
+  MAXIMUM_ENEMIES = 80
   class << self
-    MAXIMUM_ENEMIES = 80
     def tick_gameplay(args)
       level = args.state.level
       player = args.state.player ||= Player.create(args, x: level[:start_position][:x], y: level[:start_position][:y])
       artifact = args.state.artifact ||= Artifact.create(args)
+      cards = args.state.cards ||= Cards.create(args)
       camera = args.state.camera ||= Camera.build
       enemies = args.state.enemies ||= []
       args.state.enemies_destroyed ||= 0
       args.state.exp_chips ||= []
       enemy_spawn_timer = args.state.enemy_spawn_timer ||= Timer.every(60)
 
+      Cards.tick(cards, player)
 
       if Input.window_out_of_focus?(args.inputs) || Input.pause?(args.inputs)
         play_sfx(args, :select)
@@ -103,18 +105,23 @@ module Scene
       ]
       Minimap.draw(args, level: level, player: player, artifact: artifact, enemies: enemies) if args.state.render_minimap
 
+      # draw the magic cards
+      args.outputs.sprites << Cards.draw(cards, player)
+
       labels = []
       labels << label("#{text(:health)}: #{player.health}", x: 40, y: args.grid.top - 40, size: SIZE_SM, font: FONT_BOLD)
       labels << label("#{text(:mana)}: #{player.mana}/#{player.max_mana}", x: 40, y: args.grid.top - 80, size: SIZE_SM, font: FONT_BOLD)
       labels << label("Spell: #{player.spell + 1}", x: 40, y: args.grid.top - 120, size: SIZE_XS, font: FONT_BOLD)
-    #  labels << label("#{text(:level)}: #{player.level}", x: args.grid.right - 40, y: args.grid.top - 40, size: SIZE_SM, align: ALIGN_RIGHT, font: FONT_BOLD)
-    #  labels << label("#{text(:exp_to_next_level)}: #{player.exp_to_next_level}", x: args.grid.right - 40, y: args.grid.top - 88, size: SIZE_XS, align: ALIGN_RIGHT, font: FONT_BOLD)
+      # labels << label("#{text(:level)}: #{player.level}", x: args.grid.right - 40, y: args.grid.top - 40, size: SIZE_SM, align: ALIGN_RIGHT, font: FONT_BOLD)
+      # labels << label("#{text(:exp_to_next_level)}: #{player.exp_to_next_level}", x: args.grid.right - 40, y: args.grid.top - 88, size: SIZE_XS, align: ALIGN_RIGHT, font: FONT_BOLD)
       args.outputs.labels << labels
     end
 
     def reset_gameplay(args)
       args.state.camera = nil
       args.state.player = nil
+      args.state.artifact = nil
+      args.state.cards = nil
       args.state.enemies = nil
       args.state.enemies_destroyed = nil
       args.state.exp_chips = nil

@@ -3,13 +3,19 @@ module Sprite
   # nice to define a different way
   SPRITES = {
     artifact: "sprites/artifact.png",
-    bullet: "sprites/bullet.png",
-    enemy: "sprites/enemy/basic.png",
-    enemy_king: "sprites/enemy/king.png",
-    enemy_super: "sprites/enemy/super.png",
-    exp_chip: "sprites/exp_chip.png",
-    familiar: "sprites/familiar.png",
     player: "sprites/player.png",
+    bullet: "sprites/bullet.png",
+    familiar: "sprites/familiar.png",
+	bomb: "sprites/bomb.png",
+	bullet_card: "sprites/card/bullet.png",
+	familiar_card: "sprites/card/familiar.png",
+	heal_card: "sprites/card/heal.png",
+	bomb_card: "sprites/card/bomb.png",
+	joker_card: "sprites/card/joker.png",
+    exp_chip: "sprites/exp_chip.png",
+    enemy: "sprites/enemy/basic.png",
+    enemy_super: "sprites/enemy/super.png",
+    enemy_king: "sprites/enemy/king.png",
   }
 
   class << self

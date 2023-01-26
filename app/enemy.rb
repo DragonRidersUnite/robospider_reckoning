@@ -134,6 +134,7 @@ module Enemy
     def tick(args, enemy, player, level)
 
       # (stop doing calculations if we're out of sight)
+      dist = 0
       if not (enemy.type == :king)
         dist = [(enemy.x - player.x).abs, (enemy.y - player.y).abs].max
       end

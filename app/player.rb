@@ -21,7 +21,7 @@ module Player
         max_mana: 20,
         spell: 0,
         spell_count: 1,
-        spell_cost: [1, 5, 10, 50],
+        spell_cost: [1, 5, 10, 10],
         spell_delay: [20, 30, 60, 30],
         spell_delay_counter: 0,
         bullets: [],
@@ -45,7 +45,7 @@ module Player
     end
 
     def tick(args, player, camera)
-      firing = Input.fire?(args.inputs)
+      firing = player.firing = Input.fire?(args.inputs)
 
       move = Input.movement?(args.inputs)
 
@@ -73,16 +73,30 @@ module Player
 
       SPELLCAST[player.spell].call(args, player, firing)
 
+      # tick for bullets
+	  temp = []
       player.bullets.each do |b|
         x_vel, y_vel = vel_from_angle(b.angle, b.speed)
         b.x += x_vel
         b.y += y_vel
 
+        putz b
+
         b.life -= 1
-        if out_of_bounds?(camera, b) || b.life <= 0
+        if b.life <= 0 || b.dead
           b.dead = true
+          if b.bomb
+            bullets = []
+			i = 0
+            b.bullet_lifetime = 600
+			while i < 36
+              temp << bullet(b, 10 * i, false)
+              i += 1
+            end
+          end
         end
       end
+      player.bullets.concat(temp) 
 
       player.bullets.reject! { |b| b.dead }
 
@@ -103,7 +117,22 @@ module Player
       debug_label(args, position_on_screen.x, position_on_screen.y - 54, "bullet delay: #{player.bullet_delay}")
     end
 
-    def bullet(player, angle)
+    def bullet(player, angle, bomb = false)
+      if bomb
+      {
+        x: player.x + player.w / 2 - 10 / 2,
+        y: player.y + player.h / 2 - 10 / 2,
+        w: 20,
+        h: 20,
+        angle: angle,
+        speed: 0,
+        power: 10,
+        life: 1200,
+		bomb: bomb,
+        dead: false,
+        path: Sprite.for(bomb ? :bomb : :bullet),
+      }.merge(WHITE)
+      else
       {
         x: player.x + player.w / 2 - BULLET_SIZE / 2,
         y: player.y + player.h / 2 - BULLET_SIZE / 2,
@@ -113,9 +142,11 @@ module Player
         speed: 12,
         power: 1,
         life: player.bullet_lifetime,
+		bomb: bomb,
         dead: false,
         path: Sprite.for(:bullet),
       }.merge(WHITE)
+      end
     end
 
     def absorb_exp(args, player, exp_chip)
@@ -124,13 +155,14 @@ module Player
 
     def level_up(args, player)
       player.level += 1
-      level_up = LEVEL_PROG[player.level] || { exp_diff: 100, on_reach: -> (_, _) {} } # just weird fallback
+      level_up = LEVEL_PROG[player.level] || {on_reach: -> (args, player) { 
+        player.health += 2
+        player.max_health += 2
+        player.max_mana += 5
+        player.familiar_limit += 1} } # post-game rewards for collecting further artifacts
       play_sfx(args, :level_up)
       level_up[:on_reach].call(args, player)
-
-      if player.level >= 10
-        Enemy.spawn(args, :king)
-      end
+      Enemy.spawn(args, :king)
     end
   end
 
@@ -146,15 +178,16 @@ module Player
           bullets << bullet(player, player.angle)
         when FP_TRI
           bullets << bullet(player, player.angle)
-          bullets << bullet(player, add_to_angle(player.angle, -15))
-          bullets << bullet(player, add_to_angle(player.angle, 15))
+          bullets << bullet(player, add_to_angle(player.angle, -10))
+          bullets << bullet(player, add_to_angle(player.angle, 10))
         end
 
         player.mana -= player.spell_cost[0]
 
         play_sfx(args, :shoot)
-        player.spell_delay_counter = 0
         player.bullets.concat(bullets)
+        player.spell_delay_counter = 0
+        Cards.mock_reload(args.state.cards, player)
       end
     end,
     1 => -> (args, player, firing) do # spawn familiar
@@ -166,6 +199,7 @@ module Player
         Familiar.spawn(player)
         player.mana -= player.spell_cost[1]
         player.spell_delay_counter = 0
+        Cards.mock_reload(args.state.cards, player)
       end
     end,
     2 => -> (args, player, firing) do # heal damage
@@ -177,20 +211,28 @@ module Player
           player.mana -= player.spell_cost[2]
           player.health = [player.health + 1, player.max_health].min
           player.spell_delay_counter = 0
+          Cards.mock_reload(args.state.cards, player)
         end
       else
         player.spell_delay_counter = 0
       end
     end,
     3 => -> (args, player, firing) do # spawn bomb?
-  
+      player.spell_delay_counter += 1
+      return unless (firing && player.mana >= player.spell_cost[3])
+
+      if player.spell_delay_counter >= player.spell_delay[3]
+        player.mana -= player.spell_cost[3]
+        play_sfx(args, :shoot)
+        player.bullets << bullet(player, player.angle, true)
+        player.spell_delay_counter = 0
+        Cards.mock_reload(args.state.cards, player)
+      end
     end,
-    
   }
 
   LEVEL_PROG = {
     2 => {
-      exp_diff: 10,
       on_reach: -> (args, player) do
         player.max_mana += 10
         player.spell_count = 2
@@ -198,77 +240,33 @@ module Player
       end
     },
     3 => {
-      exp_diff: 20,
       on_reach: -> (args, player) do
+        player.exp_chip_magnetic_dist *= 2
         player.health += 4
         player.max_health += 4
-        player.max_mana += 10
-        player.familiar_speed += 3
-        player.familiar_limit += 1
-        player.spell_count = 3
-      end
-    },
-    4 => {
-      exp_diff: 22,
-      on_reach: -> (args, player) do
-        player.health += 5
-        player.max_health += 5
         player.max_mana += 10
         player.spell_count = 3
         player.bullet_lifetime += 10
         player.familiar_limit += 1
       end
     },
-    5 => {
-      exp_diff: 25,
-      on_reach: -> (args, player) do
-        player.health += 5
-        player.max_health += 5
-        player.max_mana += 10
-        player.spell_count = 4
-        player.familiar_limit += 1
-      end
-    },
-
-
-
-
-
-
-    6 => {
-      exp_diff: 26,
-      on_reach: -> (args, player) do
-        player.exp_chip_magnetic_dist *= 2
-        player.familiar_limit += 1
-      end
-    },
-    7 => {
-      exp_diff: 30,
-      on_reach: -> (args, player) do
-        player.speed += 2
-        player.familiar_limit += 1
-        args.gtk.notify!(text(:lu_player_speed_increased))
-      end
-    },
-    8 => {
-      exp_diff: 33,
+    4 => {
       on_reach: -> (args, player) do
         player.fire_pattern = FP_TRI
+        player.speed += 1
+        player.max_mana += 10
+        player.spell_count = 3
         player.familiar_limit += 1
-        args.gtk.notify!(text(:lu_fp_tri_shot))
+        player.familiar_speed += 3
       end
     },
-    9 => {
-      exp_diff: 35,
+    5 => {
       on_reach: -> (args, player) do
+        player.health += 10
+        player.max_health += 10
+        player.max_mana += 10
+        player.spell_count = 4
         player.spell_delay[0] -= 5
-        player.familiar_limit += 1
-        args.gtk.notify!(text(:lu_player_fire_rate_increased))
-      end
-    },
-    10 => {
-      exp_diff: 38,
-      on_reach: -> (args, player) do
         player.familiar_limit += 1
       end
     },
