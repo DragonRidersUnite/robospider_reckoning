@@ -1,6 +1,7 @@
 module Cards
   SIZE = 80
-  WIDTH = 2.5 * SIZE
+  MARGIN = 1.5 * SIZE
+  WIDTH  = 2.5 * SIZE
   HEIGHT = 3.5 * SIZE
   CARDTYPES = [:bullet_card, :familiar_card, :heal_card, :bomb_card, :joker_card]
 
@@ -44,14 +45,21 @@ module Cards
       cards.each_with_index do |card, i|
         spot = spots[i]
 
+        # this right here is very invasive towards the Player lmao
         if player.mana >= player.spell_cost[i]
           if player.spell == i && player.firing
-            card.x += random(-3, 3)
-            card.y += random(-3, 3)
-            card.angle += random(-1, 1)
+            p = player.spell_delay_counter / 60
+            card.x += random(-4*p, 4*p)
+            card.y += random(-4*p, 4*p)
+            card.angle += random(-2*p, 2*p)
+          end
+          if i == 1 && player.familiar_limit <= player.familiars.length
+            spot.y -= MARGIN
+          elsif i == 2 && player.max_health <= player.health 
+            spot.y -= MARGIN
           end
         else
-          spot.y -= 150
+          spot.y -= MARGIN
         end
 
         card.x = card.x * (1-speed) + spot.x * speed
@@ -80,7 +88,7 @@ module Cards
     end
 
     def mock_reload(cards, player)
-      cards[player.spell].y -= 300
+      cards[player.spell].y -= SIZE * 4
     end
 
     def draw(deck, player)

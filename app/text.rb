@@ -33,11 +33,13 @@ TEXT = {
   paused: "Paused",
   quit: "Quit",
   restart: "Shoot to Restart",
+  retry: "Shoot to Play Again",
   resume: "Resume",
   return_to_main_menu: "Return to Main Menu",
   settings: "Settings",
   sfx: "Sound Effects",
   start: "Start",
+  win: "You Win!",
 }
 
 # Gets the text for the passed in `key`. Raises if it does not exist. We don't

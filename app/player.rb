@@ -21,8 +21,8 @@ module Player
         max_mana: 20,
         spell: 0,
         spell_count: 1,
-        spell_cost: [1, 5, 10, 10],
-        spell_delay: [20, 30, 60, 30],
+        spell_cost: [1, 5, 10, 10, 100],
+        spell_delay: [20, 30, 60, 30, 180],
         spell_delay_counter: 0,
         bullets: [],
         fire_pattern: FP_SINGLE,
@@ -107,13 +107,14 @@ module Player
 
       if player.health == 1
         player.merge!(RED)
+      elsif not player.flashing
+        reset_color(player)
       end
 
       position_on_screen = Camera.translate(args.state.camera, player)
       debug_label(args, position_on_screen.x, position_on_screen.y, "dir: #{player.direction}")
       debug_label(args, position_on_screen.x, position_on_screen.y - 14, "angle: #{player.angle}")
       debug_label(args, position_on_screen.x, position_on_screen.y - 28, "bullets: #{player.bullets.length}")
-      debug_label(args, position_on_screen.x, position_on_screen.y - 42, "exp 2 nxt lvl: #{player.exp_to_next_level}")
       debug_label(args, position_on_screen.x, position_on_screen.y - 54, "bullet delay: #{player.bullet_delay}")
     end
 
@@ -126,8 +127,8 @@ module Player
         h: 20,
         angle: angle,
         speed: 0,
-        power: 10,
-        life: 1200,
+        power: 5,
+        life: 300,
 		bomb: bomb,
         dead: false,
         path: Sprite.for(bomb ? :bomb : :bullet),
@@ -217,7 +218,7 @@ module Player
         player.spell_delay_counter = 0
       end
     end,
-    3 => -> (args, player, firing) do # spawn bomb?
+    3 => -> (args, player, firing) do # spawn bomb
       player.spell_delay_counter += 1
       return unless (firing && player.mana >= player.spell_cost[3])
 
@@ -229,6 +230,18 @@ module Player
         Cards.mock_reload(args.state.cards, player)
       end
     end,
+    4 => -> (args, player, firing) do # joker card
+
+      return unless (firing && player.mana >= player.spell_cost[4])
+      player.spell_delay_counter += 1
+
+      if player.spell_delay_counter >= player.spell_delay[4]
+        player.mana -= player.spell_cost[4]
+        player.complete = true
+        player.spell_delay_counter = 0
+        Cards.mock_reload(args.state.cards, player)
+      end
+    end
   }
 
   LEVEL_PROG = {
@@ -268,6 +281,15 @@ module Player
         player.spell_count = 4
         player.spell_delay[0] -= 5
         player.familiar_limit += 1
+      end
+    },
+    8 => {
+      on_reach: -> (args, player) do
+	    player.health = 30
+        player.max_health = 30
+        player.max_mana = 100
+        player.familiar_limit = 12
+        player.spell_count = 5
       end
     },
   }

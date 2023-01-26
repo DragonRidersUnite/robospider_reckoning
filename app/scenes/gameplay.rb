@@ -90,6 +90,10 @@ module Scene
         play_sfx(args, :player_death)
         return Scene.switch(args, :game_over)
       end
+      if player.complete
+        play_sfx(args, :level_up)
+        return Scene.switch(args, :win)
+      end
 
       Camera.follow(camera, target: player, bounds: level[:bounds])
 
@@ -109,9 +113,9 @@ module Scene
       args.outputs.sprites << Cards.draw(cards, player)
 
       labels = []
-      labels << label("#{text(:health)}: #{player.health}", x: 40, y: args.grid.top - 40, size: SIZE_SM, font: FONT_BOLD)
+      labels << label("#{text(:health)}: #{player.health}/#{player.max_health}", x: 40, y: args.grid.top - 40, size: SIZE_SM, font: FONT_BOLD)
       labels << label("#{text(:mana)}: #{player.mana}/#{player.max_mana}", x: 40, y: args.grid.top - 80, size: SIZE_SM, font: FONT_BOLD)
-      labels << label("Spell: #{player.spell + 1}", x: 40, y: args.grid.top - 120, size: SIZE_XS, font: FONT_BOLD)
+      # labels << label("Spell: #{player.spell + 1}", x: 40, y: args.grid.top - 120, size: SIZE_XS, font: FONT_BOLD)
       # labels << label("#{text(:level)}: #{player.level}", x: args.grid.right - 40, y: args.grid.top - 40, size: SIZE_SM, align: ALIGN_RIGHT, font: FONT_BOLD)
       # labels << label("#{text(:exp_to_next_level)}: #{player.exp_to_next_level}", x: args.grid.right - 40, y: args.grid.top - 88, size: SIZE_XS, align: ALIGN_RIGHT, font: FONT_BOLD)
       args.outputs.labels << labels

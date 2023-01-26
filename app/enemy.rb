@@ -29,7 +29,7 @@ module Enemy
     speed: 4,
     min_exp_drop: 3,
     max_exp_drop: 10,
-    body_power: 2,
+    body_power: 3,
   }
   ENEMY_KING = {
     type: :king,
@@ -41,7 +41,7 @@ module Enemy
     speed: 2,
     min_exp_drop: 20,
     max_exp_drop: 30,
-    body_power: 3,
+    body_power: 10,
   }
 
   class << self
