@@ -32,7 +32,7 @@ module Cards
 	  }
     end
 
-    def tick(cards, player)
+    def tick(args, cards, player)
 
       if cards.length < player.spell_count
         last = ideal_card_spots(cards.length + 1, player).last
@@ -45,13 +45,14 @@ module Cards
       cards.each_with_index do |card, i|
         spot = spots[i]
 
-        # this right here is very invasive towards the Player lmao
+        # this right here is very invasive towards the Player object lmao
         if player.mana >= player.spell_cost[i]
           if player.spell == i && player.firing
             p = player.spell_delay_counter / 60
             card.x += random(-4*p, 4*p)
             card.y += random(-4*p, 4*p)
             card.angle += random(-2*p, 2*p)
+            play_extended_sound(args, :magic, p) if player.spell_delay[i] >= 30
           end
           if i == 1 && player.familiar_limit <= player.familiars.length
             spot.y -= MARGIN
@@ -68,6 +69,7 @@ module Cards
         card.angle = card.angle * (1-speed) + spot.angle * speed
 
       end
+      exterminate_sound(args, :magic) unless player.firing
     end
 
     def ideal_card_spots(total, player)

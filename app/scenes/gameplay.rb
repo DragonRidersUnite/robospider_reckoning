@@ -12,8 +12,6 @@ module Scene
       args.state.exp_chips ||= []
       enemy_spawn_timer = args.state.enemy_spawn_timer ||= Timer.every(60)
 
-      Cards.tick(cards, player)
-
       if Input.window_out_of_focus?(args.inputs) || Input.pause?(args.inputs)
         play_sfx(args, :select)
         return Scene.switch(args, :paused, reset: true)
@@ -31,6 +29,8 @@ module Scene
           Enemy.spawn(args)
         end
       end
+
+      Cards.tick(args, cards, player)
 
       Player.tick(args, player, camera)
       enemies.each { |e| Enemy.tick(args, e, player, level)  }
@@ -91,6 +91,7 @@ module Scene
         return Scene.switch(args, :game_over)
       end
       if player.complete
+        exterminate_sound(args, :magic)
         play_sfx(args, :level_up)
         return Scene.switch(args, :win)
       end

@@ -232,7 +232,10 @@ module Player
     end,
     4 => -> (args, player, firing) do # joker card
 
-      return unless (firing && player.mana >= player.spell_cost[4])
+      unless (firing && player.mana >= player.spell_cost[4])
+        player.spell_delay_counter = 0
+        return
+      end
       player.spell_delay_counter += 1
 
       if player.spell_delay_counter >= player.spell_delay[4]
