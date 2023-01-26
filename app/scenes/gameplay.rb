@@ -19,9 +19,7 @@ module Scene
 
       args.state.render_minimap = !args.state.render_minimap if Input.toggle_minimap?(args.inputs)
 
-      # spawns enemies faster when player level is higher;
-      # starts at every 60 ticks
-      Timer.update_period(enemy_spawn_timer, [60 - 5 * player.level, 20].max)
+      Timer.update_period(enemy_spawn_timer, 60)
 
       Timer.tick(enemy_spawn_timer)
       if Timer.active?(enemy_spawn_timer)
@@ -87,11 +85,13 @@ module Scene
       player.familiars.reject! { |e| e.dead }
 
       if player.dead?
+        exterminate_sounds(args)
         play_sfx(args, :player_death)
         return Scene.switch(args, :game_over)
       end
+
       if player.complete
-        exterminate_sound(args, :magic)
+        exterminate_sounds(args)
         play_sfx(args, :level_up)
         return Scene.switch(args, :win)
       end

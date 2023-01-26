@@ -48,7 +48,7 @@ module Cards
         # this right here is very invasive towards the Player object lmao
         if player.mana >= player.spell_cost[i]
           if player.spell == i && player.firing
-            p = player.spell_delay_counter / 60
+            p = player.spell_delay_counter / 90
             card.x += random(-4*p, 4*p)
             card.y += random(-4*p, 4*p)
             card.angle += random(-2*p, 2*p)
@@ -62,6 +62,9 @@ module Cards
         else
           spot.y -= MARGIN
         end
+        if !player.firing || (player.spell == i && player.mana < player.spell_cost[i])
+          exterminate_sound(args, :magic)
+        end
 
         card.x = card.x * (1-speed) + spot.x * speed
         card.y = card.y * (1-speed) + spot.y * speed
@@ -69,7 +72,6 @@ module Cards
         card.angle = card.angle * (1-speed) + spot.angle * speed
 
       end
-      exterminate_sound(args, :magic) unless player.firing
     end
 
     def ideal_card_spots(total, player)

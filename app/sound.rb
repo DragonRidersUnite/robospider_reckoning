@@ -11,10 +11,22 @@ def play_extended_sound(args, key, vol)
       looping: true
     }
     args.audio[key].gain = vol
+    if vol > 0
+      args.state.sounds ||= {}
+      args.state.sounds[key] = true
+    else
+      args.audio[key] = false
+    end
   end
-  args.audio[key] = false if vol <= 0
 end
 
 def exterminate_sound(args, key)
   args.audio[key] = false
+end
+
+def exterminate_sounds(args)
+  args.state.sounds.each do |key|
+    args.audio[key[0]] = false
+  end
+  args.state.sounds = {}
 end

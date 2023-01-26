@@ -192,15 +192,17 @@ module Player
       end
     end,
     1 => -> (args, player, firing) do # spawn familiar
-      return unless firing && player.mana >= player.spell_cost[1]
-      return if player.familiars.length >= player.familiar_limit
-      player.spell_delay_counter += 1
-      if player.spell_delay_counter >= player.spell_delay[1]
-        play_sfx(args, :level_up)
-        Familiar.spawn(player)
-        player.mana -= player.spell_cost[1]
+      if firing && player.mana >= player.spell_cost[1] && player.familiars.length < player.familiar_limit
+        player.spell_delay_counter += 1
+        if player.spell_delay_counter >= player.spell_delay[1]
+          play_sfx(args, :level_up)
+          Familiar.spawn(player)
+          player.mana -= player.spell_cost[1]
+          player.spell_delay_counter = 0
+          Cards.mock_reload(args.state.cards, player)
+        end
+      else
         player.spell_delay_counter = 0
-        Cards.mock_reload(args.state.cards, player)
       end
     end,
     2 => -> (args, player, firing) do # heal damage
