@@ -46,7 +46,7 @@ module Artifact
     end
 
     def tick(args, player, familiar, index)
-      #no-op for now
+      # no-op for now
     end
   end
 end
