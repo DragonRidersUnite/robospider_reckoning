@@ -7,6 +7,7 @@ module Player
   class << self
     # returns a new player data structure
     def create(args, x:, y:)
+      legged_creature = LeggedCreature.create(args, x: x, y: y)
       p = {
         x: x,
         y: y,
@@ -14,7 +15,7 @@ module Player
         h: H,
         health: 6,
         max_health: 6,
-        speed: 4,
+        speed: 1,
         level: 1,
         path: Sprite.for(:player),
         mana: 10,
@@ -25,17 +26,18 @@ module Player
         spell_delay: [20, 30, 60, 30, 180],
         spell_delay_counter: 0,
         bullets: [],
+        bullet_offset: 5,
         fire_pattern: FP_SINGLE,
         familiars: [],
         familiar_limit: 0,
-        familiar_speed: 1,
+        familiar_speed: 1.5,
         familiar_angle: 0,
         exp_chip_magnetic_dist: 50,
         bullet_lifetime: BULLET_LIFE,
         body_power: 10,
         direction: DIR_UP,
         invincible: false,
-      }.merge(WHITE)
+      }.merge(WHITE).merge(legged_creature)
 
       p.define_singleton_method(:dead?) do
         health <= 0
@@ -61,8 +63,8 @@ module Player
         end
       end
 
-      player.x += player.speed * move.x
-      player.y += player.speed * move.y
+      lin_vel = [player.speed * move.x, player.speed * move.y]
+      LeggedCreature.update(args, player, lin_vel, firing)
 
       player.angle = angle_for_dir(player.direction)
 
@@ -119,10 +121,12 @@ module Player
     end
 
     def bullet(player, angle, bomb = false)
+      x = player.x + player.w / 2 + Math.cos(player.turret_th) * player.bullet_offset
+      y = player.y + player.h / 2 + Math.sin(player.turret_th) * player.bullet_offset
       if bomb
       {
-        x: player.x + player.w / 2 - 10 / 2,
-        y: player.y + player.h / 2 - 10 / 2,
+        x: x - 10 / 2,
+        y: y - 10 / 2,
         w: 20,
         h: 20,
         angle: angle,
@@ -135,8 +139,8 @@ module Player
       }.merge(WHITE)
       else
       {
-        x: player.x + player.w / 2 - BULLET_SIZE / 2,
-        y: player.y + player.h / 2 - BULLET_SIZE / 2,
+        x: x - BULLET_SIZE / 2,
+        y: y - BULLET_SIZE / 2,
         w: BULLET_SIZE,
         h: BULLET_SIZE,
         angle: angle,
@@ -172,15 +176,16 @@ module Player
       player.spell_delay_counter += 1
       return unless (firing && player.mana >= player.spell_cost[0])
 
+      turret_angle = player.turret_th * 180 / Math::PI
       if player.spell_delay_counter >= player.spell_delay[0]
         bullets = []
         case player.fire_pattern
         when FP_SINGLE
-          bullets << bullet(player, player.angle)
+          bullets << bullet(player, turret_angle)
         when FP_TRI
-          bullets << bullet(player, player.angle)
-          bullets << bullet(player, add_to_angle(player.angle, -10))
-          bullets << bullet(player, add_to_angle(player.angle, 10))
+          bullets << bullet(player, turret_angle)
+          bullets << bullet(player, add_to_angle(turret_angle, -10))
+          bullets << bullet(player, add_to_angle(turret_angle, 10))
         end
 
         player.mana -= player.spell_cost[0]
@@ -227,7 +232,7 @@ module Player
       if player.spell_delay_counter >= player.spell_delay[3]
         player.mana -= player.spell_cost[3]
         play_sfx(args, :shoot)
-        player.bullets << bullet(player, player.angle, true)
+        player.bullets << bullet(player, player.turret_th * 180 / Math::PI, true)
         player.spell_delay_counter = 0
         Cards.mock_reload(args.state.cards, player)
       end

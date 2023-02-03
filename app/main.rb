@@ -7,6 +7,7 @@ CREDITS = [
   "Jae Donley",
   "Kevin Fischer",
   "Jonas Grandt",
+  "kota",
 ].shuffle
 
 require "app/input.rb"
@@ -30,6 +31,7 @@ require "app/menu.rb"
 require "app/minimap.rb"
 require "app/pathfinding.rb"
 require "app/player.rb"
+require "app/legged_creature.rb"
 require "app/scene.rb"
 require "app/game_setting.rb"
 require "app/sound.rb"

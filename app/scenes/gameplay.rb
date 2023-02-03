@@ -104,10 +104,10 @@ module Scene
         Camera.translate(camera, artifact),
         Camera.translate(camera, args.state.exp_chips),
         Camera.translate(camera, args.state.player.bullets),
-        Camera.translate(camera, player),
         Camera.translate(camera, enemies),
         Camera.translate(camera, args.state.player.familiars)
       ]
+      LeggedCreature.render(args, player, camera)
       Minimap.draw(args, level: level, player: player, artifact: artifact, enemies: enemies) if args.state.render_minimap
 
       # draw the magic cards

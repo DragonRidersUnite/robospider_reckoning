@@ -42,12 +42,24 @@ module Collision
       case move_direction
       when :up
         object[:y] = collider.top
+        if object.include?(:c_y)
+          object[:c_y] = collider.top + object[:h] / 2
+        end
       when :down
         object[:y] = collider.bottom - object[:h]
+        if object.include?(:c_y)
+          object[:c_y] = collider.bottom - object[:h] / 2
+        end
       when :left
         object[:x] = collider.left - object[:w]
+        if object.include?(:c_y)
+          object[:c_x] = collider.left - object[:w] / 2
+        end
       when :right
         object[:x] = collider.right
+        if object.include?(:c_x)
+          object[:c_x] = collider.right + object[:w] / 2
+        end
       end
     end
   end
