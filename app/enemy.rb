@@ -12,6 +12,7 @@ module Enemy
     w: 24,
     h: 24,
     health: 1,
+    base_health: 1,
     max_health: 1,
     path: Sprite.for(:enemy),
     min_mana_drop: 1,
@@ -26,7 +27,8 @@ module Enemy
     w: 32,
     h: 32,
     health: 3,
-    max_health: 3,
+    base_health: 3,
+    max_health: 5,
     speed: 4,
     min_mana_drop: 3,
     max_mana_drop: 10,
@@ -39,7 +41,8 @@ module Enemy
     w: 64,
     h: 64,
     health: 32,
-    max_health: 32,
+    base_health: 32,
+    max_health: 100,
     speed: 2,
     min_mana_drop: 20,
     max_mana_drop: 30,
@@ -66,16 +69,14 @@ module Enemy
       when :super
         enemy.merge!(ENEMY_SUPER)
       when :king
-        enemy.merge!(ENEMY_KING).merge({ health: player.level * 4 })
+        enemy.merge!(ENEMY_KING)
       else # the default algorithm
-        super_chance = 5
-        super_chance = 25 if player.level >= 5
-        super_chance = 50 if player.level >= 8
-        if percent_chance?(super_chance)
-          enemy.merge!(ENEMY_SUPER)
-        end
+        super_chance = 10 * player.level
+        enemy.merge!(ENEMY_SUPER) if percent_chance?(super_chance)
       end
 
+      health = [(enemy.base_health * player.level * rand).ceil, enemy.max_health].min
+      enemy.merge!({ health: health, max_health: health })
       args.state.enemies << enemy
       enemy
     end

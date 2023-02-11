@@ -55,7 +55,7 @@ module Scene
       end
 
       Collision.detect(enemies, player) do |enemy, _|
-        player.health -= enemy.body_power unless player.invincible
+        player.health -= [enemy.body_power, enemy.health].min unless player.invincible
         flash(player, RED, 12)
         Enemy.damage(args, enemy, player, sfx: nil)
         play_sfx(args, :hurt)
@@ -84,7 +84,7 @@ module Scene
       args.state.mana_chips.reject!(&:dead)
       player.familiars.reject!(&:dead)
 
-      Player.level_up(args, player) if player.xp > player.xp_needed
+      Player.level_up(args, player) if player.xp >= player.xp_needed
 
       if player.dead?
         exterminate_sounds(args)

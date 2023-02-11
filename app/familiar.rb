@@ -10,7 +10,7 @@ module Familiar
         cooldown_countdown: 0,
         cooldown_ticks: 10,
         health: 3,
-        dist_from_player: 40,
+        dist_from_player: 60,
         angle: 0,
         path: Sprite.for(:familiar),
       }

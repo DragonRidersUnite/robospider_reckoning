@@ -272,7 +272,7 @@ module Player
         player.spell_count = 3
         player.bullet_lifetime += 10
         player.familiar_limit += 1
-        player.xp_needed *= 3
+        player.xp_needed *= 2
       end
     },
     4 => {
@@ -283,7 +283,7 @@ module Player
         player.spell_count = 3
         player.familiar_limit += 1
         player.familiar_speed += 3
-        player.xp_needed *= 3
+        player.xp_needed *= 2
       end
     },
     5 => {
@@ -294,7 +294,7 @@ module Player
         player.spell_count = 4
         player.spell_delay[0] -= 5
         player.familiar_limit += 1
-        player.xp_needed *= 3
+        player.xp_needed *= 2
       end
     },
     8 => {
@@ -304,7 +304,7 @@ module Player
         player.max_mana = 100
         player.familiar_limit = 12
         player.spell_count = 5
-        player.xp_needed *= 4
+        player.xp_needed *= 3
       end
     },
     default: {
