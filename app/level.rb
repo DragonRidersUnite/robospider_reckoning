@@ -55,7 +55,7 @@ module Level
       end
     end
 
-    def draw(args, level, camera:)
+    def draw(args, level, camera)
       level[:walls].each do |wall|
         next unless wall.intersect_rect? camera
 

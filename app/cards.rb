@@ -1,5 +1,5 @@
 module Cards
-  SIZE = 80
+  SIZE = 40
   MARGIN = 1.5 * SIZE
   WIDTH  = 2.5 * SIZE
   HEIGHT = 3.5 * SIZE
@@ -15,7 +15,7 @@ module Cards
           angle: 0,
           w: WIDTH,
           h: HEIGHT,
-          path: Sprite.for(CARDTYPES[0]), 
+          path: Sprite.for(CARDTYPES[0]),
         },
       ]
     end
@@ -28,7 +28,7 @@ module Cards
         angle: angle,
         w: WIDTH,
         h: HEIGHT,
-        path: Sprite.for(type), 
+        path: Sprite.for(type),
 	  }
     end
 
@@ -56,7 +56,7 @@ module Cards
           end
           if i == 1 && player.familiar_limit <= player.familiars.length
             spot.y -= MARGIN
-          elsif i == 2 && player.max_health <= player.health 
+          elsif i == 2 && player.max_health <= player.health
             spot.y -= MARGIN
           end
         else
@@ -98,20 +98,18 @@ module Cards
     def draw(deck, player)
       cards = deck.sort_by{|c| c.z}
 
-      to_render = []
-      cards.each do |card|
-        to_render << {
-          x: card.x - card.w/2,
+      cards.map do |card|
+        {
+          x: card.x - card.w / 2,
           y: card.y,
           w: card.w,
           h: card.h,
           angle: card.angle,
           angle_anchor_x: 0.5,
           path: card.path,
-		  a: 220,
+    		  a: 220,
         }
       end
-      return to_render
     end
   end
 end

@@ -151,7 +151,7 @@ def debug_label(args, x, y, text)
   return unless debug?
   return unless args.state.render_debug_details
 
-  args.outputs.debug << { x: x, y: y, text: text }.merge(WHITE).label!
+  args.outputs.debug << { x: x, y: y, text: text }.label!(WHITE)
 end
 
 # sets the passed in entity's color for the specified number of ticks

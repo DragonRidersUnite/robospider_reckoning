@@ -1,19 +1,20 @@
 module Artifact
   class << self
-    def create(args)
+    SIZE = 32
 
+    def create(args, type)
       pos = spawn_location(args)
 
       artifact = {
-        x: pos.x - 30,
-        y: pos.y - 30,
-        w: 60,
-        h: 60,
-        path: Sprite.for(:artifact),
+        x: pos.x - SIZE / 2,
+        y: pos.y - SIZE / 2,
+        w: SIZE,
+        h: SIZE,
+        path: Sprite.for(type)
       }
       artifact if pos
     end
-    
+
     def spawn_location(args)
       level = args.state.level
       grid = level.grid.flatten.reject(&:wall).shuffle
@@ -26,7 +27,7 @@ module Artifact
       attempts = 0
       while true
         attempts += 1
-        
+
         pos = grid.pop
 
         dist = [(pos.x-player.x).abs, (pos.y-player.y).abs].max
