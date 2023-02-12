@@ -48,6 +48,7 @@ module Enemy
     max_mana_drop: 30,
     body_power: 10,
     xp: 20,
+    mode: :hunting
   }
 
   class << self
@@ -146,9 +147,12 @@ module Enemy
         enemy.delay_counter += 1
         if enemy.delay_counter >= enemy.delay_time
           case enemy.mode
+          when :hunting
+            enemy.target = player
           when :chasing
             if sees_player
               enemy.attention_counter = 0
+              enemy.mode = :hunting if rand(100) == 0
             else
               enemy.attention_counter += 1
               if enemy.attention_counter >= enemy.attention_span && rand(30) == 0
@@ -184,10 +188,24 @@ module Enemy
           end
 
           if enemy.target
+            if enemy.mode == :hunting
+              path = Pathfinding.find_path(
+                level[:pathfinding_graph],
+                start: { x: (enemy.x / level.cell_size).floor, y: (enemy.y / level.cell_size).floor },
+                goal: { x: (player.x / level.cell_size).floor, y: (player.y / level.cell_size).floor }
+              )
+              if path.length > 1
+                next_cell = path[1]
+                enemy.target = { x: (next_cell.x + 0.5) * level.cell_size, y: (next_cell.y + 0.5) * level.cell_size }
+              else
+                enemy.target = player
+              end
+            end
+
             enemy.angle = args.geometry.angle_to(enemy, enemy.target)
             enemy.x_vel, enemy.y_vel = vel_from_angle(enemy.angle, enemy.speed)
             dist_to_target = (enemy.x - enemy.target.x) ** 2 + (enemy.y - enemy.target.y) ** 2
-            if dist_to_target > enemy.speed ** 2
+            if dist_to_target > enemy.speed ** 2 || enemy.mode == :hunting
               enemy.x += enemy.x_vel
               enemy.y += enemy.y_vel
             else
