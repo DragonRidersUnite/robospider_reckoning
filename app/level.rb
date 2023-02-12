@@ -2,6 +2,19 @@ module Level
   CELL_SIZE = 128
   MAZE_SIZE = 21
 
+  NAMES = [
+    'Storage',
+    'Computer Lab',
+    'Analysis',
+    'Archive',
+    'Fabrication',
+    'Robotics',
+    'Genetic Engineering',
+    'Containment',
+    'Hazardous Waste',
+    'Power Plant',
+  ]
+
   module Grid
     class << self
       def get_four_neighbors(grid, cell, distance: 1)

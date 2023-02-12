@@ -143,8 +143,13 @@ module Scene
       player.xp += 10
       player.key_found = false
       player.bullets = []
-      args.state.next_level = true
-      Scene.switch(args, :level_generation)
+      args.state.current_level += 1
+      if args.state.current_level == 10
+        Scene.switch(args, :win)
+      else
+        args.state.next_level = true
+        Scene.switch(args, :level_generation)
+      end
     end
   end
 end

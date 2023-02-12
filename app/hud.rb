@@ -15,43 +15,48 @@ module Hud
 
   def self.draw(args, player, level, key, door, enemies, cards)
     args.outputs.sprites << [{
-      x: BAR_X,
-      y: HEALTH_BAR_Y - BAR_H,
-      w: BAR_W,
-      h: BAR_H
-    }.solid!(HEALTH_BAR_BG), {
-      x: BAR_X,
-      y: HEALTH_BAR_Y - BAR_H,
-      w: (player.health / player.max_health * BAR_W).ceil,
-      h: BAR_H
-    }.solid!(HEALTH_BAR_COLOR), {
-      x: BAR_X,
-      y: ENERGY_BAR_Y - BAR_H,
-      w: BAR_W,
-      h: BAR_H
-    }.solid!(ENERGY_BAR_BG), {
-      x: BAR_X,
-      y: ENERGY_BAR_Y - BAR_H,
-      w: (player.mana / player.max_mana * BAR_W).ceil,
-      h: BAR_H
-    }.solid!(ENERGY_BAR_COLOR), {
-      x: BAR_X,
-      y: XP_BAR_Y - BAR_H,
-      w: BAR_W,
-      h: BAR_H
-    }.solid!(XP_BAR_BG), {
-      x: BAR_X,
-      y: XP_BAR_Y - BAR_H,
-      w: (player.xp / player.xp_needed * BAR_W).ceil,
-      h: BAR_H
-    }.solid!(XP_BAR_COLOR), {
-      x: 0,
-      y: 0,
-      w: 1280,
-      h: 80,
-      path: Sprite.for(:hud)
-    }]
+        x: BAR_X,
+        y: HEALTH_BAR_Y - BAR_H,
+        w: BAR_W,
+        h: BAR_H
+      }.solid!(HEALTH_BAR_BG), {
+        x: BAR_X,
+        y: HEALTH_BAR_Y - BAR_H,
+        w: (player.health / player.max_health * BAR_W).ceil,
+        h: BAR_H
+      }.solid!(HEALTH_BAR_COLOR), {
+        x: BAR_X,
+        y: ENERGY_BAR_Y - BAR_H,
+        w: BAR_W,
+        h: BAR_H
+      }.solid!(ENERGY_BAR_BG), {
+        x: BAR_X,
+        y: ENERGY_BAR_Y - BAR_H,
+        w: (player.mana / player.max_mana * BAR_W).ceil,
+        h: BAR_H
+      }.solid!(ENERGY_BAR_COLOR), {
+        x: BAR_X,
+        y: XP_BAR_Y - BAR_H,
+        w: BAR_W,
+        h: BAR_H
+      }.solid!(XP_BAR_BG), {
+        x: BAR_X,
+        y: XP_BAR_Y - BAR_H,
+        w: (player.xp / player.xp_needed * BAR_W).ceil,
+        h: BAR_H
+      }.solid!(XP_BAR_COLOR), {
+        x: 0,
+        y: 0,
+        w: 1280,
+        h: 80,
+        path: Sprite.for(:hud)
+      },
+      Cards.draw(cards, player)
+    ]
     Minimap.draw(args, level: level, player: player, artifact: player.key_found ? door : key, enemies: enemies)
-    args.outputs.sprites << Cards.draw(cards, player)
+    args.outputs.labels << [
+      label("Sublevel X#{args.state.current_level + 1}", x: 1168, y: 72, color: WHITE, align: ALIGN_RIGHT),
+      label(Level::NAMES[args.state.current_level], x: 1168, y: 48, size: SIZE_LG, font: FONT_BOLD, color: WHITE, align: ALIGN_RIGHT)
+    ]
   end
 end

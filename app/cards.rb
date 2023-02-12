@@ -1,6 +1,6 @@
 module Cards
   SIZE = 40
-  MARGIN = 1.5 * SIZE
+  MARGIN = 0.6 * SIZE
   WIDTH  = 2.5 * SIZE
   HEIGHT = 3.5 * SIZE
   CARDTYPES = [:bullet_card, :familiar_card, :heal_card, :bomb_card, :joker_card]

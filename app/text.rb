@@ -61,18 +61,12 @@ FONT_BOLD_ITALIC = "fonts/Atkinson-Hyperlegible-BoldItalic-102.ttf"
 # Friendly method with sensible defaults for creating DRGTK label data
 # structures.
 def label(value_or_key, x:, y:, align: ALIGN_LEFT, size: SIZE_MD, color: WHITE, font: FONT_REGULAR)
-  text = if value_or_key.is_a?(Symbol)
-           text(value_or_key)
-         else
-           value_or_key
-         end
-
   {
-    text: text,
+    text: value_or_key.is_a?(Symbol) ? text(value_or_key) : value_or_key,
     x: x,
     y: y,
     alignment_enum: align,
     size_enum: size,
     font: font,
-  }.merge(color)
+  }.label!(color)
 end
