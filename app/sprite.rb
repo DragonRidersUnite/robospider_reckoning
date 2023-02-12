@@ -17,8 +17,7 @@ module Sprite
     enemy: "sprites/enemy/basic.png",
     enemy_super: "sprites/enemy/super.png",
     enemy_king: "sprites/enemy/king.png",
-    health: "sprites/health.png",
-    mana: "sprites/mana.png",
+    hud: "sprites/hud.png",
   }
 
   class << self

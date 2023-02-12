@@ -78,7 +78,7 @@ module Scene
       end
 
       Collision.detect(player, key) { |player, _| open_door(args, player) } unless player.key_found
-      Collision.detect(player, door) { |player, _| return next_map(args, player) } if player.key_found
+      Collision.detect(player, door.merge(y: door.y - 2)) { |player, _| return next_map(args, player) } if player.key_found
 
       enemies.reject!(&:dead)
       args.state.mana_chips.reject!(&:dead)
@@ -106,24 +106,31 @@ module Scene
         Camera.translate(camera, args.state.mana_chips),
         Camera.translate(camera, args.state.player.bullets),
         Camera.translate(camera, enemies),
-        Camera.translate(camera, args.state.player.familiars)
+        Camera.translate(camera, args.state.player.familiars),
+        Camera.translate(camera, door)
       ]
       args.outputs.sprites << Camera.translate(camera, key) unless player.key_found
-      args.outputs.sprites << Camera.translate(camera, door) if player.key_found
       LeggedCreature.render(args, player, camera)
 
       Hud.draw(args, player, level, key, door, enemies, cards)
     end
 
     def reset_gameplay(args)
-      args.state.camera = nil
-      args.state.player = nil
+      if args.state.next_level
+        args.state.player.x = args.state.level[:start_position][:x]
+        args.state.player.y = args.state.level[:start_position][:y]
+      else
+        args.state.camera = nil
+        args.state.player = nil
+        args.state.cards = nil
+        args.state.enemies_destroyed = nil
+      end
+
+      args.state.enemies = nil
       args.state.key = nil
       args.state.door = nil
-      args.state.cards = nil
-      args.state.enemies = nil
-      args.state.enemies_destroyed = nil
       args.state.mana_chips = nil
+      args.state.next_level = false
     end
 
     def open_door(args, player)
@@ -136,11 +143,8 @@ module Scene
       player.xp += 10
       player.key_found = false
       player.bullets = []
-      args.state.enemies = nil
-      args.state.key = nil
-      args.state.door = nil
-      args.state.mana_chips = nil
-      Scene.switch(args, :level_generation, reset: false)
+      args.state.next_level = true
+      Scene.switch(args, :level_generation)
     end
   end
 end

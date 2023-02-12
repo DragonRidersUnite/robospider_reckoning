@@ -5,14 +5,29 @@ module Artifact
     def create(args, type)
       pos = spawn_location(args)
 
-      artifact = {
-        x: pos.x - SIZE / 2,
-        y: pos.y - SIZE / 2,
-        w: SIZE,
-        h: SIZE,
-        path: Sprite.for(type)
-      }
-      artifact if pos
+      if type == :door
+        wall = args.state.level.walls.select do |w|
+          w.x < pos.x && w.x + w.w > pos.x && w.y > pos.y
+        end.sort_by { |w| w.y }.first
+        artifact = {
+          x: pos.x - SIZE / 2,
+          y: wall.y,
+          w: SIZE,
+          h: SIZE,
+          path: Sprite.for(type)
+        }
+        artifact if pos
+      else
+        artifact = {
+          x: pos.x - SIZE / 2,
+          y: pos.y - SIZE / 2,
+          w: SIZE,
+          h: SIZE,
+          path: Sprite.for(type)
+        }
+        artifact if pos
+      end
+
     end
 
     def spawn_location(args)
@@ -20,8 +35,8 @@ module Artifact
       grid = level.grid.flatten.reject(&:wall).shuffle
       min_dist = level.grid.size * 0.45
       player = {
-        x: args.state.player.x/level.cell_size,
-        y: args.state.player.y/level.cell_size
+        x: args.state.player.x / level.cell_size,
+        y: args.state.player.y / level.cell_size
       }
 
       attempts = 0

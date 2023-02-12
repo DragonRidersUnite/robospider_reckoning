@@ -10,12 +10,7 @@ module Scene
       if result
         args.state.level_generation = nil
         args.state.level = result
-        reset = args.state.player ? args.state.player.dead? : true
-        if reset
-          args.state.player.x = result[:start_position][:x]
-          args.state.player.y = result[:start_position][:y]
-        end
-        Scene.switch(args, :gameplay, reset: reset)
+        Scene.switch(args, :gameplay, reset: true)
         return
       end
 
