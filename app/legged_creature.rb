@@ -100,7 +100,6 @@ module LeggedCreature
            (dist([leg.c_x, leg.c_y], [neut_x, neut_y]) > ALLOWED_LEG_OFFSET) && (dot_prod > 0)
          end
 
-        stop_outer = false
         p.legs.each do |leg|
           leg.grounded = !leg.grounded
         end

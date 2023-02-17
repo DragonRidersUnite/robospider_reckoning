@@ -10,6 +10,7 @@ module Pathfinding
       until frontier.empty?
         current = frontier.pop
         break if current == goal
+        return [] if graph[current].nil?
 
         graph[current].each do |neighbor|
           cost_to_neighbor = 1 # or special cost for this edge

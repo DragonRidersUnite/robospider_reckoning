@@ -10,8 +10,8 @@ module Familiar
         cooldown_countdown: 0,
         cooldown_ticks: 10,
         health: 3,
-        dist_from_player: 40,
-		angle: 0,
+        dist_from_player: 60,
+        angle: 0,
         path: Sprite.for(:familiar),
       }
       player.familiars << familiar
@@ -19,30 +19,20 @@ module Familiar
     end
 
     def tick(args, player, familiar, index)
-	
       desired_angle = (player.familiar_angle + index * (360 / player.familiars.length)) % 360
-	  discrepancy = (desired_angle - familiar.angle + 180) % 360 - 180
-	  
-	  move_speed = 0.1 * discrepancy
-	  
+      discrepancy = (desired_angle - familiar.angle + 180) % 360 - 180
+
+      move_speed = 0.1 * discrepancy
+
       familiar.angle = (familiar.angle + move_speed) % 360
-	  
-	  #familiar.angle = desired_angle
-	
+
       rotator = -familiar.angle * Math::PI / 180
       familiar.x = player.x + player.w / 2 - familiar.w / 2 + Math.sin(rotator) * familiar.dist_from_player
       familiar.y = player.y + player.h / 2 - familiar.h / 2 + Math.cos(rotator) * familiar.dist_from_player
-      if familiar.cooldown_countdown > 0
-        familiar.a = 255 / 2
-      else
-        familiar.a = nil
-      end
+      familiar.a = familiar.cooldown_countdown > 0 ? 128 : 255
       familiar.cooldown_countdown -= 1
-	  
-	  if familiar.health <= 0
-	    familiar.dead = true
-	  end
-	  
+      familiar.dead = true if familiar.health <= 0
+
       familiar
     end
   end

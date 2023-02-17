@@ -7,17 +7,19 @@ module Enemy
     mode: :idle,
     attention_span: 40,
     attention_counter: 0,
-	delay_time: 20,
+    delay_time: 20,
     delay_counter: 0,
     w: 24,
     h: 24,
     health: 1,
+    base_health: 1,
     max_health: 1,
     path: Sprite.for(:enemy),
-    min_exp_drop: 1,
-    max_exp_drop: 4,
+    min_mana_drop: 1,
+    max_mana_drop: 4,
     speed: 3,
     body_power: 1,
+    xp: 1,
   }
   ENEMY_SUPER = {
     type: :super,
@@ -25,11 +27,13 @@ module Enemy
     w: 32,
     h: 32,
     health: 3,
-    max_health: 3,
+    base_health: 3,
+    max_health: 5,
     speed: 4,
-    min_exp_drop: 3,
-    max_exp_drop: 10,
+    min_mana_drop: 3,
+    max_mana_drop: 10,
     body_power: 3,
+    xp: 5,
   }
   ENEMY_KING = {
     type: :king,
@@ -37,11 +41,14 @@ module Enemy
     w: 64,
     h: 64,
     health: 32,
-    max_health: 32,
+    base_health: 32,
+    max_health: 100,
     speed: 2,
-    min_exp_drop: 20,
-    max_exp_drop: 30,
+    min_mana_drop: 20,
+    max_mana_drop: 30,
     body_power: 10,
+    xp: 20,
+    mode: :hunting
   }
 
   class << self
@@ -51,7 +58,6 @@ module Enemy
     # - :king
     def spawn(args, type = nil)
       player = args.state.player
-      level = args.state.level
       spot = spawn_location(args)
 
       return unless spot
@@ -66,14 +72,12 @@ module Enemy
       when :king
         enemy.merge!(ENEMY_KING)
       else # the default algorithm
-        super_chance = 5
-        super_chance = 25 if player.level >= 5
-        super_chance = 50 if player.level >= 8
-        if percent_chance?(super_chance)
-          enemy.merge!(ENEMY_SUPER)
-        end
+        super_chance = 10 * player.level
+        enemy.merge!(ENEMY_SUPER) if percent_chance?(super_chance)
       end
 
+      health = [(enemy.base_health * player.level * rand).ceil, enemy.max_health].min
+      enemy.merge!({ health: health, max_health: health })
       args.state.enemies << enemy
       enemy
     end
@@ -87,10 +91,8 @@ module Enemy
         y: args.state.player.y/level.cell_size
       }
 
-      attempts = 20
-      while attempts > 0
-        attempts -= 1
-
+      attempts = -1
+      while (attempts += 1) < 20
         pos = grid.sample
 
         dist = [(pos.x-player.x).abs, (pos.y-player.y).abs].max * level.cell_size
@@ -99,7 +101,7 @@ module Enemy
             x: (pos.x + random(0.2, 0.8)) * level.cell_size,
             y: (pos.y + random(0.2, 0.8)) * level.cell_size,
           }
-          putz "Took #{20 - attempts} attempts to spawn enemy." if debug?
+          putz "Took #{attempts} attempts to spawn enemy." if debug?
           return pos
         end
       end
@@ -109,15 +111,15 @@ module Enemy
 
     def line_of_sight(level, enemy, player)
       # maze is mostly corridors, so it is a very fair assumption that
-	  # enemy will not ever see the player if they don't share at least one axis
+      # enemy will not ever see the player if they don't share at least one axis
       if enemy.x == player.x
         lower, higher = [enemy.y, player.y].sort
-		same = enemy.x
+        same = enemy.x
         i = lower
         v = true
       elsif enemy.y == player.y
         lower, higher = [enemy.x, player.x].sort
-		same = enemy.y
+        same = enemy.y
         i = lower
       else
         return false
@@ -132,13 +134,9 @@ module Enemy
     end
 
     def tick(args, enemy, player, level)
-
-      # (stop doing calculations if we're out of sight)
-      dist = 0
-      if not (enemy.type == :king)
-        dist = [(enemy.x - player.x).abs, (enemy.y - player.y).abs].max
-      end
-      if dist > DESPAWN_RANGE 
+      # Stop doing calculations if we're out of sight, except for kings
+      dist = enemy.type == :king ? 0 : [(enemy.x - player.x).abs, (enemy.y - player.y).abs].max
+      if dist > DESPAWN_RANGE
         despawn(enemy)
       elsif dist < 640
         enemy_pos = {x: enemy.x.idiv(level.cell_size), y: enemy.y.idiv(level.cell_size)}
@@ -149,9 +147,12 @@ module Enemy
         enemy.delay_counter += 1
         if enemy.delay_counter >= enemy.delay_time
           case enemy.mode
+          when :hunting
+            enemy.target = player
           when :chasing
             if sees_player
               enemy.attention_counter = 0
+              enemy.mode = :hunting if rand(100) == 0
             else
               enemy.attention_counter += 1
               if enemy.attention_counter >= enemy.attention_span && rand(30) == 0
@@ -187,10 +188,24 @@ module Enemy
           end
 
           if enemy.target
+            if enemy.mode == :hunting
+              path = Pathfinding.find_path(
+                level[:pathfinding_graph],
+                start: { x: (enemy.x / level.cell_size).floor, y: (enemy.y / level.cell_size).floor },
+                goal: { x: (player.x / level.cell_size).floor, y: (player.y / level.cell_size).floor }
+              )
+              if path.length > 1
+                next_cell = path[1]
+                enemy.target = { x: (next_cell.x + 0.5) * level.cell_size, y: (next_cell.y + 0.5) * level.cell_size }
+              else
+                enemy.target = player
+              end
+            end
+
             enemy.angle = args.geometry.angle_to(enemy, enemy.target)
             enemy.x_vel, enemy.y_vel = vel_from_angle(enemy.angle, enemy.speed)
             dist_to_target = (enemy.x - enemy.target.x) ** 2 + (enemy.y - enemy.target.y) ** 2
-            if dist_to_target > enemy.speed ** 2
+            if dist_to_target > enemy.speed ** 2 || enemy.mode == :hunting
               enemy.x += enemy.x_vel
               enemy.y += enemy.y_vel
             else
@@ -202,7 +217,6 @@ module Enemy
             end
           end
         end
-
 
         tick_flasher(enemy)
 
@@ -219,17 +233,15 @@ module Enemy
       enemy.health -= entity.power || entity.body_power
       flash(enemy, RED, 12)
       play_sfx(args, sfx) if sfx
-      if enemy.health <= 0
-        destroy(args, enemy)
-      end
+      destroy(args, enemy) if enemy.health <= 0
     end
 
     def destroy(args, enemy)
       despawn(enemy)
       args.state.enemies_destroyed += 1
 
-      random(enemy.min_exp_drop, enemy.max_exp_drop).round.times do
-        args.state.exp_chips << ExpChip.create(enemy)
+      random(enemy.min_mana_drop, enemy.max_mana_drop).round.times do
+        args.state.mana_chips << ManaChip.create(enemy)
       end
     end
 

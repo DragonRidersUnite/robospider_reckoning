@@ -15,7 +15,7 @@ module Player
         h: H,
         health: 6,
         max_health: 6,
-        speed: 1,
+        speed: 2,
         level: 1,
         path: Sprite.for(:player),
         mana: 10,
@@ -32,11 +32,14 @@ module Player
         familiar_limit: 0,
         familiar_speed: 1.5,
         familiar_angle: 0,
-        exp_chip_magnetic_dist: 50,
+        mana_chip_magnetic_dist: 50,
         bullet_lifetime: BULLET_LIFE,
         body_power: 10,
         direction: DIR_UP,
         invincible: false,
+        xp: 0,
+        xp_needed: 20,
+        key_found: false
       }.merge(WHITE).merge(legged_creature)
 
       p.define_singleton_method(:dead?) do
@@ -53,13 +56,13 @@ module Player
 
       unless firing
         if move.x == -1
-            player.direction = DIR_LEFT
+          player.direction = DIR_LEFT
         elsif move.x == 1
-            player.direction = DIR_RIGHT
+          player.direction = DIR_RIGHT
         elsif move.y == -1
-            player.direction = DIR_DOWN
+          player.direction = DIR_DOWN
         elsif move.y == 1
-            player.direction = DIR_UP
+          player.direction = DIR_UP
         end
       end
 
@@ -76,30 +79,25 @@ module Player
       SPELLCAST[player.spell].call(args, player, firing)
 
       # tick for bullets
-	  temp = []
+      temp = []
       player.bullets.each do |b|
         x_vel, y_vel = vel_from_angle(b.angle, b.speed)
         b.x += x_vel
         b.y += y_vel
-
-        putz b
-
         b.life -= 1
+
         if b.life <= 0 || b.dead
           b.dead = true
           if b.bomb
-            bullets = []
-			i = 0
             b.bullet_lifetime = 600
-			while i < 36
-              temp << bullet(b, 10 * i, false)
-              i += 1
+            i = -1
+            while (i += 1) < 36
+              temp << bullet(b, 10 * i)
             end
           end
         end
       end
-      player.bullets.concat(temp) 
-
+      player.bullets.concat(temp)
       player.bullets.reject! { |b| b.dead }
 
       player.familiar_angle = (player.familiar_angle + player.familiar_speed) % 360
@@ -120,24 +118,14 @@ module Player
       debug_label(args, position_on_screen.x, position_on_screen.y - 54, "bullet delay: #{player.bullet_delay}")
     end
 
-    def bullet(player, angle, bomb = false)
-      x = player.x + player.w / 2 + Math.cos(player.turret_th) * player.bullet_offset
-      y = player.y + player.h / 2 + Math.sin(player.turret_th) * player.bullet_offset
-      if bomb
-      {
-        x: x - 10 / 2,
-        y: y - 10 / 2,
-        w: 20,
-        h: 20,
-        angle: angle,
-        speed: 0,
-        power: 5,
-        life: 300,
-		bomb: bomb,
-        dead: false,
-        path: Sprite.for(bomb ? :bomb : :bullet),
-      }.merge(WHITE)
-      else
+    def bullet(source, angle)
+      x = source.x + source.w / 2
+      y = source.y + source.h / 2
+      unless source.bomb
+        x += Math.cos(source.turret_th) * source.bullet_offset
+        y += Math.sin(source.turret_th) * source.bullet_offset
+      end
+
       {
         x: x - BULLET_SIZE / 2,
         y: y - BULLET_SIZE / 2,
@@ -146,27 +134,40 @@ module Player
         angle: angle,
         speed: 12,
         power: 1,
-        life: player.bullet_lifetime,
-		bomb: bomb,
+        life: source.bullet_lifetime,
+        bomb: false,
         dead: false,
         path: Sprite.for(:bullet),
       }.merge(WHITE)
-      end
     end
 
-    def absorb_exp(args, player, exp_chip)
-      player.mana = [player.mana + exp_chip.exp_amount, player.max_mana].min
+    def bomb(player, angle)
+      x = player.x + player.w / 2 + Math.cos(player.turret_th) * player.bullet_offset
+      y = player.y + player.h / 2 + Math.sin(player.turret_th) * player.bullet_offset
+      {
+        x: x - BULLET_SIZE / 2,
+        y: y - BULLET_SIZE / 2,
+        w: BULLET_SIZE,
+        h: BULLET_SIZE,
+        angle: angle,
+        speed: 0,
+        power: 5,
+        life: 300,
+        bomb: true,
+        dead: false,
+        path: Sprite.for(:bomb),
+      }.merge(WHITE)
+    end
+
+    def absorb_mana(args, player, mana_chip)
+      player.mana = [player.mana + mana_chip.exp_amount, player.max_mana].min
     end
 
     def level_up(args, player)
       player.level += 1
-      level_up = LEVEL_PROG[player.level] || {on_reach: -> (args, player) { 
-        player.health += 2
-        player.max_health += 2
-        player.max_mana += 5
-        player.familiar_limit += 1} } # post-game rewards for collecting further artifacts
       play_sfx(args, :level_up)
-      level_up[:on_reach].call(args, player)
+      new_level = LEVEL_PROG[player.level] || LEVEL_PROG[:default]
+      new_level[:on_reach].call(args, player)
       Enemy.spawn(args, :king)
     end
   end
@@ -232,13 +233,12 @@ module Player
       if player.spell_delay_counter >= player.spell_delay[3]
         player.mana -= player.spell_cost[3]
         play_sfx(args, :shoot)
-        player.bullets << bullet(player, player.turret_th * 180 / Math::PI, true)
+        player.bullets << bomb(player, player.turret_th * 180 / Math::PI)
         player.spell_delay_counter = 0
         Cards.mock_reload(args.state.cards, player)
       end
     end,
     4 => -> (args, player, firing) do # joker card
-
       unless (firing && player.mana >= player.spell_cost[4])
         player.spell_delay_counter = 0
         return
@@ -260,17 +260,19 @@ module Player
         player.max_mana += 10
         player.spell_count = 2
         player.familiar_limit = 3
+        player.xp_needed *= 2
       end
     },
     3 => {
       on_reach: -> (args, player) do
-        player.exp_chip_magnetic_dist *= 2
+        player.mana_chip_magnetic_dist *= 2
         player.health += 4
         player.max_health += 4
         player.max_mana += 10
         player.spell_count = 3
         player.bullet_lifetime += 10
         player.familiar_limit += 1
+        player.xp_needed *= 2
       end
     },
     4 => {
@@ -281,6 +283,7 @@ module Player
         player.spell_count = 3
         player.familiar_limit += 1
         player.familiar_speed += 3
+        player.xp_needed *= 2
       end
     },
     5 => {
@@ -291,16 +294,27 @@ module Player
         player.spell_count = 4
         player.spell_delay[0] -= 5
         player.familiar_limit += 1
+        player.xp_needed *= 2
       end
     },
     8 => {
       on_reach: -> (args, player) do
-	    player.health = 30
+        player.health = 30
         player.max_health = 30
         player.max_mana = 100
         player.familiar_limit = 12
         player.spell_count = 5
+        player.xp_needed *= 3
       end
     },
+    default: {
+      on_reach: -> (args, player) do
+        player.health += 2
+        player.max_health += 2
+        player.max_mana += 5
+        player.familiar_limit += 1
+        player.xp_needed *= 2
+      end
+    } # post-game rewards for collecting further artifacts
   }
 end

@@ -8,6 +8,7 @@ CREDITS = [
   "Kevin Fischer",
   "Jonas Grandt",
   "kota",
+  "marc"
 ].shuffle
 
 require "app/input.rb"
@@ -19,7 +20,7 @@ require "app/cards.rb"
 require "app/collision.rb"
 require "app/constants.rb"
 require "app/enemy.rb"
-require "app/exp_chip.rb"
+require "app/mana_chip.rb"
 require "app/familiar.rb"
 require "app/level.rb"
 require "app/level_generation/maze_generator.rb"
@@ -37,6 +38,7 @@ require "app/game_setting.rb"
 require "app/sound.rb"
 require "app/text.rb"
 require "app/timer.rb"
+require "app/hud.rb"
 
 require "app/scenes/game_over.rb"
 require "app/scenes/gameplay.rb"

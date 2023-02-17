@@ -12,7 +12,7 @@ module Scene
       labels << label(:restart, x: args.grid.w / 2, y: args.grid.top - 480, align: ALIGN_CENTER, size: SIZE_SM).merge(a: args.state.tick_count % 155 + 100)
 
       if Input.confirm?(args.inputs)
-        return Scene.switch(args, :level_generation)
+        return Scene.switch(args, :level_generation, reset: true)
       end
 
       args.outputs.labels << labels
