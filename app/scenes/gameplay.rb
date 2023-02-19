@@ -112,6 +112,7 @@ module Scene
       args.outputs.sprites << Camera.translate(camera, key) unless player.key_found
       LeggedCreature.render(args, player, camera)
 
+      Hud.tick(args)
       Hud.draw(args, player, level, key, door, enemies, cards)
     end
 
