@@ -13,7 +13,7 @@ module Input
     def cancel?(inputs)
       SECONDARY_KEYS.any? { |k| inputs.keyboard.key_down.send(k) } ||
         inputs.controller_one.key_down&.b
-	end
+    end
 
     def fire?(inputs)
       PRIMARY_KEYS.any? { |k| inputs.keyboard.key_down.send(k) } ||

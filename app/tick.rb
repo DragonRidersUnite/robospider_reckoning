@@ -80,6 +80,10 @@ def out_of_bounds?(container, rect)
     rect.y + rect.h < container.bottom
 end
 
+def lerp(a, b, t)
+  a + (b - a) * t
+end
+
 def error(msg)
   raise StandardError.new(msg)
 end
@@ -152,6 +156,18 @@ def debug_label(args, x, y, text)
   return unless args.state.render_debug_details
 
   args.outputs.debug << { x: x, y: y, text: text }.label!(WHITE)
+end
+
+def debug_border(args, x, y, w, h, color)
+  return unless debug?
+  return unless args.state.render_debug_details
+
+  args.outputs.debug << { x: x, y: y, w: w, h: h }.border!(color)
+end
+
+# If you have a lot of debug statements together, helps reduce unneccessary calculations in production
+def debug_block &block
+  block.call if debug?
 end
 
 # sets the passed in entity's color for the specified number of ticks

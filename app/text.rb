@@ -27,7 +27,7 @@ TEXT = {
   lu_player_exp_magnetism_increased: "Experience pick up distance increased!",
   lu_player_fire_rate_increased: "Player fire rate increased!",
   lu_player_speed_increased: "Player speed increased!",
-  made_by: "A game by",
+  made_by: "A game by:",
   off: "OFF",
   on: "ON",
   paused: "Paused",

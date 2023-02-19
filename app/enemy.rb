@@ -191,8 +191,10 @@ module Enemy
             if enemy.mode == :hunting
               path = Pathfinding.find_path(
                 level[:pathfinding_graph],
-                start: { x: (enemy.x / level.cell_size).floor, y: (enemy.y / level.cell_size).floor },
-                goal: { x: (player.x / level.cell_size).floor, y: (player.y / level.cell_size).floor }
+                start: { x: ((enemy.x + enemy.w / 2) / level.cell_size).floor,
+                         y: ((enemy.y + enemy.h / 2) / level.cell_size).floor },
+                goal: { x: ((player.x + player.w / 2) / level.cell_size).floor,
+                        y: ((player.y + player.h / 2) / level.cell_size).floor }
               )
               if path.length > 1
                 next_cell = path[1]
