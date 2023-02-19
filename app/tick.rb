@@ -138,13 +138,19 @@ def debug_tick(args)
       player.invincible = !player.invincible
       args.gtk.notify!("Player invincibility toggled")
     end
+
     if player.invincible && args.state.scene == :gameplay
-      args.outputs.labels << label("inv", x: player.x + player.w / 2, y: player.y + player.h + 16, align: ALIGN_CENTER, size: SIZE_XS)
+      debug_label(args, 0, args.grid.top, "GODMODE")
     end
 
     if args.inputs.keyboard.key_down.three
       args.state.enemies_pass_walls = !args.state.enemies_pass_walls
       args.gtk.notify!("Enemies pass walls: #{args.state.enemies_pass_walls}")
+    end
+
+    if args.inputs.keyboard.key_down.four
+      play_sfx(args, :select)
+      player.mana = player.max_mana
     end
   end
 end

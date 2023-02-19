@@ -50,6 +50,7 @@ There following debug-only shortcuts can be used to help make developing easier:
 - <kbd>0</kbd> -- render debug details
 - <kbd>1</kbd> -- level up player
 - <kbd>2</kbd> -- toggle player invincibility
+- <kbd>3</kbd> -- max mana
 
 ### Tests
 
