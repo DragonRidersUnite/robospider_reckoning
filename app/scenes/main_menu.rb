@@ -27,9 +27,15 @@ module Scene
         title.upcase, x: args.grid.w / 2, y: args.grid.top - 100,
         size: SIZE_LG, align: ALIGN_CENTER, font: FONT_BOLD_ITALIC)
       labels << label(
-        "#{text(:made_by)} #{(CREDITS-[CREDITS.last]).join(', ')}, and #{CREDITS.last}",
-        x: args.grid.left + 24, y: 48,
-        size: SIZE_XS, align: ALIGN_LEFT)
+        :made_by,
+        x: args.grid.left + 24, y: args.grid.top - 24,
+        size: SIZE_SM, align: ALIGN_LEFT)
+      labels << CREDITS.map_with_index do |name, i|
+        label(
+          name,
+          x: args.grid.left + 48, y: args.grid.top - 50 - 25*i,
+          size: SIZE_SM, align: ALIGN_LEFT)
+      end
       labels << label(
         :controls_title,
         x: args.grid.right - 24, y: 112,
