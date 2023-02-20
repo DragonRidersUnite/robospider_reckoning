@@ -22,6 +22,14 @@ module Input
         inputs.controller_one.key_held&.a
     end
 
+    def rush?(inputs)
+      SECONDARY_KEYS.any? { |k|
+        inputs.keyboard.key_down.send(k) ||
+        inputs.keyboard.key_held.send(k) } ||
+        inputs.controller_one.key_down&.b ||
+        inputs.controller_one.key_held&.b
+    end
+
     def movement?(inputs)
       {x: inputs.left_right, y: inputs.up_down}
     end

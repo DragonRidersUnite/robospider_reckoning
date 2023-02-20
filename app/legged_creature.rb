@@ -1,7 +1,7 @@
 # handles the logic for a legged creature. currently really only designed for the player character;
 # could be expanded to be used for other creatures.
 module LeggedCreature
-  ALLOWED_LEG_OFFSET = 10
+  ALLOWED_LEG_OFFSET = 15
   class << self
     def create(args, x:, y:)
       p = { c_x: x, c_y: y, w: 40, h: 20, lin_vel: 0, ang_vel: 0, th: 0, path: :body,
@@ -49,7 +49,7 @@ module LeggedCreature
       [x, y]
     end
 
-    def update args, p, lin_vel_vec, shooting
+    def update args, p, lin_vel_vec, shooting, rushing
       dx = lin_vel_vec[0]
       dy = lin_vel_vec[1]
       desired_th = Math.atan2(dy, dx)
@@ -103,6 +103,8 @@ module LeggedCreature
         p.legs.each do |leg|
           leg.grounded = !leg.grounded
         end
+
+        play_sfx(args, :pop)
       end
 
       p.legs.each do |leg|
@@ -143,7 +145,7 @@ module LeggedCreature
 
       p.x = p.c_x - p.w / 2
       p.y = p.c_y - p.h / 2
-      p.angle = p.th * 180 / Math::PI
+      p.angle = (p.th * 180 / Math::PI) % 360 unless rushing
     end
 
     def render_legs args, p, camera

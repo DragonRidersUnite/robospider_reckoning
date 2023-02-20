@@ -84,6 +84,14 @@ def lerp(a, b, t)
   a + (b - a) * t
 end
 
+def max(a, b)
+  a > b ? a : b
+end
+
+def min(a, b)
+  a < b ? a : b
+end
+
 def error(msg)
   raise StandardError.new(msg)
 end

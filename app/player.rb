@@ -27,11 +27,14 @@ module Player
         spell_delay_counter: 0,
         bullets: [],
         bullet_offset: 5,
+        firing: false,
         fire_pattern: FP_SINGLE,
         familiars: [],
         familiar_limit: 0,
         familiar_speed: 1.5,
         familiar_angle: 0,
+        rushing: false,
+        rush_mana_cost: 0.05,
         mana_chip_magnetic_dist: 50,
         bullet_lifetime: BULLET_LIFE,
         body_power: 10,
@@ -41,6 +44,10 @@ module Player
         xp_needed: 20,
         key_found: false
       }.merge(WHITE).merge(legged_creature)
+
+      p.define_singleton_method(:rush_speed) do
+        speed * 2
+      end
 
       p.define_singleton_method(:dead?) do
         health <= 0
@@ -66,10 +73,20 @@ module Player
         end
       end
 
-      lin_vel = [player.speed * move.x, player.speed * move.y]
-      LeggedCreature.update(args, player, lin_vel, firing)
+      if Input.rush?(args.inputs) && player.mana > player.rush_mana_cost
+        player.mana -= player.rush_mana_cost
+        player.rushing = true
 
-      player.angle = angle_for_dir(player.direction)
+        lin_vel = vel_from_angle(player.angle + 180, player.rush_speed)
+      else
+        player.rushing = false
+
+        lin_vel = [player.speed * move.x, player.speed * move.y]
+      end
+
+      # Player position/movement is handled here
+      LeggedCreature.update(args, player, lin_vel, firing, player.rushing)
+      # player.angle = angle_for_dir(player.direction)
 
       if (move = Input.secondary_navigation?(args.inputs)) != 0
         player.spell = (player.spell + move) % player.spell_count
@@ -164,7 +181,7 @@ module Player
     end
 
     def absorb_mana(args, player, mana_chip)
-      player.mana = [player.mana + mana_chip.exp_amount, player.max_mana].min
+      player.mana = min(player.mana + mana_chip.exp_amount, player.max_mana)
     end
 
     def level_up(args, player)
@@ -265,6 +282,7 @@ module Player
         player.spell_count = 2
         player.familiar_limit = 3
         player.xp_needed *= 2
+        player.rush_mana_cost -= 0.01
       end
     },
     3 => {
@@ -277,6 +295,7 @@ module Player
         player.bullet_lifetime += 10
         player.familiar_limit += 1
         player.xp_needed *= 2
+        player.rush_mana_cost -= 0.01
       end
     },
     4 => {
@@ -288,6 +307,7 @@ module Player
         player.familiar_limit += 1
         player.familiar_speed += 3
         player.xp_needed *= 2
+        player.rush_mana_cost -= 0.01
       end
     },
     5 => {
@@ -299,6 +319,7 @@ module Player
         player.spell_delay[0] -= 5
         player.familiar_limit += 1
         player.xp_needed *= 2
+        player.rush_mana_cost -= 0.005
       end
     },
     8 => {
@@ -309,6 +330,7 @@ module Player
         player.familiar_limit = 12
         player.spell_count = 5
         player.xp_needed *= 3
+        player.rush_mana_cost -= 0.005
       end
     },
     default: {

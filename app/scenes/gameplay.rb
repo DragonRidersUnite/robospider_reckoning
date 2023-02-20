@@ -30,6 +30,7 @@ module Scene
       Cards.tick(args, cards, player)
 
       Player.tick(args, player, camera)
+
       enemies.each { |e| Enemy.tick(args, e, player, level)  }
       args.state.mana_chips.each { |c| ManaChip.tick(args, c)  }
 
