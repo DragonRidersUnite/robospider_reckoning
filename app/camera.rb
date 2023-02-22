@@ -12,7 +12,13 @@ module Camera
 
     # Returns a copy of the object with its x and y coordinates translated
     def translate(camera, object)
-      return object.map { |o| translate(camera, o) } if object.is_a?(Array)
+      return object.map do |o|
+        if sprite = o[:sprite]
+          translate(camera, sprite)
+        else
+          translate(camera, o)
+        end
+      end if object.is_a?(Array)
 
       object.merge(
         x: object.x - camera.x,

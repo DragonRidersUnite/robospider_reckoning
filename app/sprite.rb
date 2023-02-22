@@ -14,10 +14,55 @@ module Sprite
     bomb_card: "sprites/card/bomb.png",
     joker_card: "sprites/card/joker.png",
     mana_chip: "sprites/mana_chip.png",
-    enemy: "sprites/enemy/basic.png",
-    enemy_super: "sprites/enemy/super.png",
-    enemy_king: "sprites/enemy/king.png",
+    enemy: "sprites/enemy/basic-sheet.png",
+    enemy_super: "sprites/enemy/super-sheet.png",
+    enemy_king: "sprites/enemy/king-sheet.png",
     hud: "sprites/hud.png",
+  }
+
+  INFO = {
+    SPRITES[:enemy] => {
+      idle: {
+        loop: false,
+        frames: 1,
+        duration: 1,
+        x: 0, y: 0, w: 32, h: 96 },
+      flying: {
+        loop: true,
+        frames: 2,
+        duration: 1,
+        x: 32, y: 0, w: 32, h: 96 },
+      w: 96,
+      h: 96
+    },
+    SPRITES[:enemy_super] => {
+      idle: {
+        loop: false,
+        frames: 1,
+        duration: 1,
+        x: 0, y: 0, w: 32, h: 96 },
+      flying: {
+        loop: true,
+        frames: 2,
+        duration: 1,
+        x: 32, y: 0, w: 32, h: 96 },
+      w: 96,
+      h: 96
+    },
+    SPRITES[:enemy_king] => {
+      idle: {
+        loop: false,
+        frames: 1,
+        duration: 1,
+        x: 0, y: 0, w: 32, h: 96 },
+      flying: {
+        loop: true,
+        frames: 2,
+        duration: 1,
+        x: 32, y: 0, w: 32, h: 96 },
+      w: 96,
+      h: 96
+    }
   }
 
   class << self
@@ -27,6 +72,10 @@ module Sprite
 
     def for(key)
       SPRITES.fetch(key)
+    end
+
+    def info(key)
+      INFO.fetch(key)
     end
   end
 end

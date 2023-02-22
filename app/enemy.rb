@@ -21,6 +21,7 @@ module Enemy
     speed: 3,
     body_power: 1,
     xp: 1,
+    sprite: nil,
   }
   ENEMY_SUPER = {
     type: :super,
@@ -155,12 +156,33 @@ module Enemy
       return true
     end
 
+    # For basic animation, it'll do
+    def render(args, enemy, anim_state, anim_start: 0)
+      info = Sprite.info(enemy.path)
+      anim = info[anim_state]
+
+      spr = enemy[:sprite] ||= { path: enemy.path }
+
+      spr.x = enemy.x
+      spr.y = enemy.y - enemy.h
+      spr.w = enemy.w
+      spr.h = enemy.h * 3
+      spr.angle = enemy.angle
+
+      spr.source_x = anim.x + anim.w * (anim_start.frame_index(anim.frames, anim.duration, anim.loop) || 0)
+      spr.source_y = anim.y
+      spr.source_w = anim.w
+      spr.source_h = anim.h
+    end
+
     def tick(args, enemy, player, level)
       # Stop doing calculations if we're out of sight, except for kings
       dist = enemy.type == :king ? 0 : max((enemy.x - player.x).abs, (enemy.y - player.y).abs)
       if dist > DESPAWN_RANGE
         despawn(enemy)
-      elsif dist < UPDATE_RANGE
+      elsif dist > UPDATE_RANGE
+        enemy.mode = :idle
+      else
         send(enemy.mode, args, enemy, player, level)
         enemy.delay_counter += 1
 
@@ -170,10 +192,13 @@ module Enemy
         debug_block do
           screen = Camera.translate(args.state.camera, enemy)
 
+          debug_border(args, screen.x, screen.y, enemy.w, enemy.h, WHITE)
           debug_label(args, screen.x, screen.y, "health: #{enemy.health}")
           debug_label(args, screen.x, screen.y - 14, "speed: #{enemy.mode}")
         end
       end
+
+      render(args, enemy, enemy.mode == :idle ? :idle : :flying)
     end
 
     # BEHAVIORS

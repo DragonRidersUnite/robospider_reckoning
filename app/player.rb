@@ -131,11 +131,16 @@ module Player
       debug_block do
         position_on_screen = Camera.translate(args.state.camera, player)
         debug_border(args, position_on_screen.x, position_on_screen.y, player.w, player.h, WHITE)
-        debug_label(args, position_on_screen.x, position_on_screen.y + player.h, "x: #{player.x}, y: #{player.y}")
-        debug_label(args, position_on_screen.x, position_on_screen.y, "dir: #{player.direction}")
-        debug_label(args, position_on_screen.x, position_on_screen.y - 14, "angle: #{player.angle}")
-        debug_label(args, position_on_screen.x, position_on_screen.y - 28, "bullets: #{player.bullets.length}")
-        debug_label(args, position_on_screen.x, position_on_screen.y - 54, "bullet delay: #{player.bullet_delay}")
+
+        [ "x: #{player.x.to_sf}",
+          "y: #{player.y.to_sf}",
+          "dir: #{player.direction}",
+          "angle: #{player.angle.to_sf}",
+          "bullets: #{player.bullets.length}",
+          "bullet delay: #{player.bullet_delay}"
+        ].each_with_index do |text, i|
+          debug_label(args, position_on_screen.x, position_on_screen.y - 20*i, text)
+        end
       end
     end
 
