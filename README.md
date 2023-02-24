@@ -76,3 +76,4 @@ These are the steps for Brett at the end of each participant's week:
 8. Let them know they're up!
 9. Update the [spreadsheet](https://docs.google.com/spreadsheets/d/1mYuRJ8Y6dVQJDy_0MaMyJSEselNp7LXFXM0fKSjbJqw/edit)
 10. Add collaborator to itch.io
+11. Check in with the person on deck
