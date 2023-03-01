@@ -90,6 +90,7 @@ module Scene
       if player.dead?
         exterminate_sounds(args)
         play_sfx(args, :player_death)
+        player.death_pause = player.pause_length
         return Scene.switch(args, :game_over)
       end
 

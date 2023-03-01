@@ -9,7 +9,8 @@ CREDITS = [
   "Jonas Grandt",
   "kota",
   "marc",
-  "HIRO-R-B"
+  "HIRO-R-B",
+  "Vlevo",
 ].shuffle
 
 require "app/input.rb"

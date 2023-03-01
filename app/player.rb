@@ -42,7 +42,9 @@ module Player
         invincible: false,
         xp: 0,
         xp_needed: 20,
-        key_found: false
+        key_found: false,
+        death_pause: 0,
+        pause_length: 60,
       }.merge(WHITE).merge(legged_creature)
 
       p.define_singleton_method(:rush_speed) do
