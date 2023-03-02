@@ -74,7 +74,7 @@ module Enemy
       when :king
         enemy.merge!(ENEMY_KING)
       else # the default algorithm
-        super_chance = 10 * player.level
+        super_chance = (10 * player.level).clamp(1,100)
         enemy.merge!(ENEMY_SUPER) if percent_chance?(super_chance)
       end
 
