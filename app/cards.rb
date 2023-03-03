@@ -47,6 +47,7 @@ module Cards
 
         # this right here is very invasive towards the Player object lmao
         if player.mana >= player.spell_cost[i]
+          card.merge!({r:nil,g:nil,b:nil})
           if player.spell == i && player.firing
             p = player.spell_delay_counter / 90
             card.x += random(-4*p, 4*p)
@@ -56,11 +57,14 @@ module Cards
           end
           if i == 1 && player.familiar_limit <= player.familiars.length
             spot.y -= MARGIN
+            card.merge!({r:130,g:130,b:130})
           elsif i == 2 && player.max_health <= player.health
             spot.y -= MARGIN
+            card.merge!({r:130,g:130,b:130})
           end
         else
           spot.y -= MARGIN
+          card.merge!({r:130,g:130,b:130})
         end
         if !player.firing || (player.spell == i && player.mana < player.spell_cost[i])
           exterminate_sound(args, :magic)
@@ -107,7 +111,10 @@ module Cards
           angle: card.angle,
           angle_anchor_x: 0.5,
           path: card.path,
-    		  a: 220,
+          a: 220,
+          r: card.r,
+          g: card.g,
+          b: card.b,
         }
       end
     end
