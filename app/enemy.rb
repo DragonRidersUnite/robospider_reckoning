@@ -195,6 +195,7 @@ module Enemy
           debug_border(args, screen.x, screen.y, enemy.w, enemy.h, WHITE)
           debug_label(args, screen.x, screen.y, "health: #{enemy.health}")
           debug_label(args, screen.x, screen.y - 14, "speed: #{enemy.mode}")
+          debug_label(args, screen.x, screen.y - 28, "angle: #{enemy.angle}")
         end
       end
 

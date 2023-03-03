@@ -57,6 +57,7 @@ module Scene
 
       Collision.detect(enemies, player) do |enemy, _|
         player.health -= [enemy.body_power, enemy.health].min unless player.invincible
+        Player.knockback(args, player, enemy)
         flash(player, RED, 12)
         Enemy.damage(args, enemy, player, sfx: nil)
         play_sfx(args, :hurt)
