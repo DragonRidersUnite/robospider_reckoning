@@ -45,6 +45,8 @@ module Player
         key_found: false,
         contemplating: 0,
         contemplation: 120,
+        mana_regen: false,
+        mana_rate: 250,
       }.merge(WHITE).merge(legged_creature)
 
       p.define_singleton_method(:rush_speed) do
@@ -130,6 +132,8 @@ module Player
         reset_color(player)
       end
 
+      player.mana += 1 if player.mana_regen && args.tick_count.mod_zero?(player.mana_rate)
+
       debug_block do
         position_on_screen = Camera.translate(args.state.camera, player)
         debug_border(args, position_on_screen.x, position_on_screen.y, player.w, player.h, WHITE)
@@ -196,6 +200,7 @@ module Player
       play_sfx(args, :level_up)
       new_level = LEVEL_PROG[player.level] || LEVEL_PROG[:default]
       new_level[:on_reach].call(args, player)
+      (player.mana_rate -= 10).clamp(30) if player.mana_regen
       Enemy.spawn(args, :king)
     end
 
@@ -298,6 +303,7 @@ module Player
         player.familiar_limit = 3
         player.xp_needed *= 2
         player.rush_mana_cost -= 0.01
+        player.mana_regen = true
       end
     },
     3 => {
