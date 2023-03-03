@@ -43,8 +43,8 @@ module Player
         xp: 0,
         xp_needed: 20,
         key_found: false,
-        death_pause: 0,
-        pause_length: 120,
+        contemplating: 0,
+        contemplation: 120,
       }.merge(WHITE).merge(legged_creature)
 
       p.define_singleton_method(:rush_speed) do
@@ -201,6 +201,7 @@ module Player
 
     def knockback(args, player, enemy)
       push = (enemy.body_power + enemy.speed * 2).clamp(5, 20)
+      push /= 2 if player.invincible
       vel_x, vel_y = vel_from_angle(enemy.angle, push)
       player.body_shift_x += vel_x
       player.body_shift_y += vel_y

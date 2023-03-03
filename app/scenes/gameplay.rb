@@ -91,7 +91,7 @@ module Scene
       if player.dead?
         exterminate_sounds(args)
         play_sfx(args, :player_death)
-        player.death_pause = player.pause_length
+        player.contemplating = player.contemplation
         return Scene.switch(args, :game_over)
       end
 
@@ -149,6 +149,7 @@ module Scene
       player.bullets = []
       args.state.current_level += 1
       if args.state.current_level == 10
+        player.contemplating = player.contemplation
         Scene.switch(args, :win)
       else
         args.state.next_level = true

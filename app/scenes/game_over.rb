@@ -11,7 +11,7 @@ module Scene
       labels << label("#{text(:level)}: #{player.level}", x: args.grid.w / 2, y: args.grid.top - 320, size: SIZE_SM, align: ALIGN_CENTER)
       labels << label("#{text(:enemies_destroyed)}: #{args.state.enemies_destroyed}", x: args.grid.w / 2, y: args.grid.top - 380, size: SIZE_SM, align: ALIGN_CENTER)
 
-      if (player.death_pause-=1) < 0
+      if (player.contemplating-=1) < 0
         labels << label(:restart, x: args.grid.w / 2, y: args.grid.top - 480, align: ALIGN_CENTER, size: SIZE_SM).merge(a: args.state.tick_count % 155 + 100)
 
         if Input.confirm?(args.inputs)
