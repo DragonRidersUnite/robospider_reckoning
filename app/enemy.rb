@@ -114,7 +114,7 @@ module Enemy
     # the `entity` that damages the enemy _must_ have `power` or `body_power`
     def damage(args, enemy, entity, sfx: :enemy_hit)
       enemy.health -= entity.power || entity.body_power
-      flash(enemy, RED, 12)
+      flash(enemy[:sprite], RED, 12)
       play_sfx(args, sfx) if sfx
       destroy(args, enemy) if enemy.health <= 0
     end
@@ -186,8 +186,12 @@ module Enemy
         send(enemy.mode, args, enemy, player, level)
         enemy.delay_counter += 1
 
-        tick_flasher(enemy)
-        enemy.merge!(RED) if enemy.health == 1 && enemy.max_health > 1
+        
+        tick_flasher(enemy[:sprite]) if !enemy[:sprite].nil?
+        if enemy.health == 1 && enemy.max_health > 1
+          enemy.merge!(RED)
+          enemy[:sprite].merge!(RED) if !enemy[:sprite].nil?
+        end
 
         debug_block do
           screen = Camera.translate(args.state.camera, enemy)
