@@ -2,18 +2,19 @@ module Scene
   MAXIMUM_ENEMIES = 80
   class << self
     def tick_gameplay(args)
-      level = args.state.level
-      player = args.state.player ||= Player.create(args, x: level[:start_position][:x], y: level[:start_position][:y])
-      key = args.state.key ||= Artifact.create(args, :key)
-      door = args.state.door ||= Artifact.create(args, :door)
-      cards = args.state.cards ||= Cards.create(args)
-      camera = args.state.camera ||= Camera.build
-      enemies = args.state.enemies ||= []
-      boss = args.state.boss ||= {}
-      boss = Boss.create(args, player) if boss.empty? && args.state.current_level == Level::BOSS_LEVEL
-      args.state.enemies_destroyed ||= 0
-      args.state.mana_chips ||= []
-      enemy_spawn_timer = args.state.enemy_spawn_timer ||= Timer.every(60)
+      a_s = args.state
+      level = a_s.level
+      player = a_s.player ||= Player.create(args, x: level[:start_position][:x], y: level[:start_position][:y])
+      key = a_s.key ||= Artifact.create(args, :key)
+      door = a_s.door ||= Artifact.create(args, :door)
+      cards = a_s.cards ||= Cards.create(args)
+      camera = a_s.camera ||= Camera.build
+      enemies = a_s.enemies ||= []
+      boss = a_s.boss ||= {}
+      boss = Boss.create(args, player) if boss.empty? && a_s.current_level == Level::BOSS_LEVEL
+      a_s.enemies_destroyed ||= 0
+      a_s.mana_chips ||= []
+      enemy_spawn_timer = a_s.enemy_spawn_timer ||= Timer.every(60)
 
       if Input.window_out_of_focus?(args.inputs) || Input.pause?(args.inputs)
         play_sfx(args, :select)
@@ -34,7 +35,7 @@ module Scene
       Player.tick(args, player, camera)
 
       enemies.each { |e| Enemy.tick(args, e, player, level)  }
-      args.state.mana_chips.each { |c| ManaChip.tick(args, c)  }
+      a_s.mana_chips.each { |c| ManaChip.tick(args, c)  }
 
       # TODO: Use some kind of spatial hash (quadtree?) to speed this up?
       Collision.detect(player, level[:walls]) do |player, wall|
@@ -45,7 +46,7 @@ module Scene
         bullet.dead = true
       end
 
-      unless args.state.enemies_pass_walls
+      unless a_s.enemies_pass_walls
         Collision.detect(level[:walls], enemies) do |wall, enemy|
           Collision.move_out_of_collider(enemy, wall)
         end
@@ -75,7 +76,7 @@ module Scene
         end
       end
 
-      Collision.detect(args.state.mana_chips, player) do |mana_chip, _|
+      Collision.detect(a_s.mana_chips, player) do |mana_chip, _|
         mana_chip.dead = true
         Player.absorb_mana(args, player, mana_chip)
         play_sfx(args, :mana_chip)
@@ -85,7 +86,7 @@ module Scene
       Collision.detect(player, door.merge(y: door.y - 2)) { |player, _| return next_map(args, player) } if player.key_found
 
       enemies.reject!(&:dead)
-      args.state.mana_chips.reject!(&:dead)
+      a_s.mana_chips.reject!(&:dead)
       player.familiars.reject!(&:dead)
 
       if !boss.empty?
@@ -127,7 +128,7 @@ module Scene
           end
         end
 
-        Collision.detect(args.state.mana_chips, boss) do |mana_chip, boss|
+        Collision.detect(a_s.mana_chips, boss) do |mana_chip, boss|
           mana_chip.dead = true
           Boss.absorb_mana(args, boss, mana_chip)
           #play_sfx(args, :mana_chip)
@@ -155,10 +156,10 @@ module Scene
       draw_bg(args, BLACK)
       Level.draw(args, level, camera)
       args.outputs.sprites << [
-        Camera.translate(camera, args.state.mana_chips),
-        Camera.translate(camera, args.state.player.bullets),
+        Camera.translate(camera, a_s.mana_chips),
+        Camera.translate(camera, a_s.player.bullets),
         Camera.translate(camera, enemies),
-        Camera.translate(camera, args.state.player.familiars),
+        Camera.translate(camera, a_s.player.familiars),
         Camera.translate(camera, door)
       ]
       args.outputs.sprites << Camera.translate(camera, boss) if !boss.empty?
@@ -170,21 +171,22 @@ module Scene
     end
 
     def reset_gameplay(args)
-      if args.state.next_level
-        args.state.player.x = args.state.level[:start_position][:x]
-        args.state.player.y = args.state.level[:start_position][:y]
+      a_s = args.state
+      if a_s.next_level
+        a_s.player.x = a_s.level[:start_position][:x]
+        a_s.player.y = a_s.level[:start_position][:y]
       else
-        args.state.camera = nil
-        args.state.player = nil
-        args.state.cards = nil
-        args.state.enemies_destroyed = nil
+        a_s.camera = nil
+        a_s.player = nil
+        a_s.cards = nil
+        a_s.enemies_destroyed = nil
       end
 
-      args.state.enemies = nil
-      args.state.key = nil
-      args.state.door = nil
-      args.state.mana_chips = nil
-      args.state.next_level = false
+      a_s.enemies = nil
+      a_s.key = nil
+      a_s.door = nil
+      a_s.mana_chips = nil
+      a_s.next_level = false
     end
 
     def open_door(args, player)
@@ -194,15 +196,16 @@ module Scene
     end
 
     def next_map(args, player)
+      a_s = args.state
       player.xp += 10
       player.key_found = false
       player.bullets = []
-      args.state.current_level += 1
-      if args.state.current_level == Level::MAX_LEVEL
+      a_s.current_level += 1
+      if a_s.current_level == Level::MAX_LEVEL
         player.contemplating = player.contemplation
         Scene.switch(args, :win)
       else
-        args.state.next_level = true
+        a_s.next_level = true
         Scene.switch(args, :level_generation)
       end
     end

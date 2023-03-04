@@ -2,15 +2,16 @@ module Scene
   class << self
     def tick_settings(args)
       draw_bg(args, DARK_GREEN)
+      a_s = args.state
 
       options = [
         {
           key: :sfx,
           kind: :toggle,
-          setting_val: args.state.setting.sfx,
+          setting_val: a_s.setting.sfx,
           on_select: -> (args) do
             GameSetting.save_after(args) do |args|
-              args.state.setting.sfx = !args.state.setting.sfx
+              a_s.setting.sfx = !a_s.setting.sfx
             end
           end
         },
@@ -24,11 +25,11 @@ module Scene
         options.insert(options.length - 1, {
           key: :fullscreen,
           kind: :toggle,
-          setting_val: args.state.setting.fullscreen,
+          setting_val: a_s.setting.fullscreen,
           on_select: -> (args) do
             GameSetting.save_after(args) do |args|
-              args.state.setting.fullscreen = !args.state.setting.fullscreen
-              args.gtk.set_window_fullscreen(args.state.setting.fullscreen)
+              a_s.setting.fullscreen = !a_s.setting.fullscreen
+              args.gtk.set_window_fullscreen(a_s.setting.fullscreen)
             end
           end
         })
