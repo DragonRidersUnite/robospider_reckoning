@@ -9,6 +9,7 @@ module Scene
       cards = args.state.cards ||= Cards.create(args)
       camera = args.state.camera ||= Camera.build
       enemies = args.state.enemies ||= []
+      boss = args.state.boss ||= {}
       args.state.enemies_destroyed ||= 0
       args.state.mana_chips ||= []
       enemy_spawn_timer = args.state.enemy_spawn_timer ||= Timer.every(60)
@@ -85,6 +86,56 @@ module Scene
       enemies.reject!(&:dead)
       args.state.mana_chips.reject!(&:dead)
       player.familiars.reject!(&:dead)
+
+      if !boss.empty?
+        Boss.tick(args, boss, boss, player)
+
+        unless args.state.boss_pass_walls
+          Collision.detect(level[:walls], boss) do |wall, b|
+            Collision.move_out_of_collider(b, wall)
+          end
+        end
+
+        Collision.detect(player.bullets, boss) do |bullet, b|
+          bullet.dead = true
+          Boss.damage(args, b, bullet)
+          player.xp += b.xp if b.dead
+        end
+
+        Collision.detect(boss, player) do |b, _|
+          player.health -= [b.body_power, b.health].min unless player.invincible
+          Player.knockback(args, player, b)
+          flash(player, RED, 12)
+          Boss.damage(args, b, player, sfx: nil)
+          play_sfx(args, :hurt)
+          player.xp += b.xp if b.dead
+        end
+
+        Collision.detect(enemies, boss) do |enemy, b|
+          boss.health += enemy.base_health.div(2)
+          enemy.base_health -= enemy.base_health.div(2)
+          flash(boss[:sprite], MINI_GREEN, 6)
+          Enemy.damage(args, enemy, boss, sfx: nil)
+          play_sfx(args, :hurt)
+          boss.health += enemy.base_health if enemy.dead
+        end
+
+        Collision.detect(boss, player.familiars) do |b, familiar|
+          if familiar.cooldown_countdown <= 0
+            Boss.damage(args, b, familiar, sfx: :enemy_hit_by_familiar)
+            player.xp += b.xp if b.dead
+            familiar.cooldown_countdown = familiar.cooldown_ticks
+            familiar.health -= 2
+          end
+        end
+
+        Collision.detect(args.state.mana_chips, boss) do |mana_chip, boss|
+          mana_chip.dead = true
+          Boss.absorb_mana(args, boss, mana_chip)
+          #play_sfx(args, :mana_chip)
+      end
+
+      end
 
       Player.level_up(args, player) if player.xp >= player.xp_needed
 
