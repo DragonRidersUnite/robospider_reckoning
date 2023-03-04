@@ -10,6 +10,7 @@ module Scene
       camera = args.state.camera ||= Camera.build
       enemies = args.state.enemies ||= []
       boss = args.state.boss ||= {}
+      boss = Boss.create(args, player) if boss.empty? && args.state.current_level == Level::BOSS_LEVEL
       args.state.enemies_destroyed ||= 0
       args.state.mana_chips ||= []
       enemy_spawn_timer = args.state.enemy_spawn_timer ||= Timer.every(60)
@@ -90,7 +91,7 @@ module Scene
       if !boss.empty?
         Boss.tick(args, boss, boss, player)
 
-        unless args.state.boss_pass_walls
+        unless boss.pass_walls
           Collision.detect(level[:walls], boss) do |wall, b|
             Collision.move_out_of_collider(b, wall)
           end
@@ -112,12 +113,9 @@ module Scene
         end
 
         Collision.detect(enemies, boss) do |enemy, b|
-          boss.health += enemy.base_health.div(2)
-          enemy.base_health -= enemy.base_health.div(2)
+          Boss.drain_life(boss, enemy)
           flash(boss[:sprite], MINI_GREEN, 6)
           Enemy.damage(args, enemy, boss, sfx: nil)
-          play_sfx(args, :hurt)
-          boss.health += enemy.base_health if enemy.dead
         end
 
         Collision.detect(boss, player.familiars) do |b, familiar|
@@ -133,7 +131,7 @@ module Scene
           mana_chip.dead = true
           Boss.absorb_mana(args, boss, mana_chip)
           #play_sfx(args, :mana_chip)
-      end
+        end
 
       end
 
@@ -163,6 +161,7 @@ module Scene
         Camera.translate(camera, args.state.player.familiars),
         Camera.translate(camera, door)
       ]
+      args.outputs.sprites << Camera.translate(camera, boss) if !boss.empty?
       args.outputs.sprites << Camera.translate(camera, key) unless player.key_found
       LeggedCreature.render(args, player, camera)
 
@@ -199,7 +198,7 @@ module Scene
       player.key_found = false
       player.bullets = []
       args.state.current_level += 1
-      if args.state.current_level == 10
+      if args.state.current_level == Level::MAX_LEVEL
         player.contemplating = player.contemplation
         Scene.switch(args, :win)
       else

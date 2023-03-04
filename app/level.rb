@@ -15,6 +15,9 @@ module Level
     'Power Plant',
   ]
 
+  MAX_LEVEL = NAMES.length
+  BOSS_LEVEL = MAX_LEVEL - 1
+
   module Grid
     class << self
       def get_four_neighbors(grid, cell, distance: 1)
