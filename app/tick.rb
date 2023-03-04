@@ -5,7 +5,7 @@ def init(args)
 end
 
 def tick(args)
-  init(args) if args.state.tick_count == 0
+  init(args) if args.tick_count == 0
 
   Scene.send("tick_#{args.state.scene}", args)
 

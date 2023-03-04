@@ -11,7 +11,7 @@ module Scene
       camera = a_s.camera ||= Camera.build
       enemies = a_s.enemies ||= []
       boss = a_s.boss ||= {}
-      boss = Boss.create(args, player) if boss.empty? && a_s.current_level == Level::BOSS_LEVEL
+      boss.merge!(Boss.create(args, player)) if boss.empty? && a_s.current_level == Level::BOSS_LEVEL
       a_s.enemies_destroyed ||= 0
       a_s.mana_chips ||= []
       enemy_spawn_timer = a_s.enemy_spawn_timer ||= Timer.every(60)
@@ -90,7 +90,7 @@ module Scene
       player.familiars.reject!(&:dead)
 
       if !boss.empty?
-        Boss.tick(args, boss, boss, player)
+        Boss.tick(args, boss, enemies, player)
 
         unless boss.pass_walls
           Collision.detect(level[:walls], boss) do |wall, b|
@@ -146,9 +146,11 @@ module Scene
       end
 
       if player.complete
+        player.complete = false
         exterminate_sounds(args)
         play_sfx(args, :level_up)
-        return Scene.switch(args, :win)
+        a_s.current_level = Level::BOSS_LEVEL - 1
+        next_map(args, player)
       end
 
       Camera.follow(camera, target: player, bounds: level[:bounds])
@@ -162,7 +164,7 @@ module Scene
         Camera.translate(camera, a_s.player.familiars),
         Camera.translate(camera, door)
       ]
-      args.outputs.sprites << Camera.translate(camera, boss) if !boss.empty?
+      args.outputs.sprites << Camera.translate(camera, boss[:sprite]) if !boss.empty?
       args.outputs.sprites << Camera.translate(camera, key) unless player.key_found
       LeggedCreature.render(args, player, camera)
 

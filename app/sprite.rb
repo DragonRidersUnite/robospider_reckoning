@@ -17,6 +17,7 @@ module Sprite
     enemy: "sprites/enemy/basic-sheet.png",
     enemy_super: "sprites/enemy/super-sheet.png",
     enemy_king: "sprites/enemy/king-sheet.png",
+    boss: "sprites/enemy/boss-sheet.png",
     hud: "sprites/hud.png",
   }
 

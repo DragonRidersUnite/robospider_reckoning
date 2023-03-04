@@ -1,28 +1,32 @@
 module Boss
   X_OFFSET = 30  # (sprite.w - body.w) / 2    for now
   Y_OFFSET = 18  # (sprite.h - body.h) / 2    for now
-  40x64
+
   class << self
     def create(args, player)
       lo = Level::CELL_SIZE
       hi = (Level::MAZE_SIZE-1) * lo
-      x = (player.x + (player.x < hi/2 ? hi : lo)) / 2
-      y = (player.y + (player.y < hi/2 ? hi : lo)) / 2
+      x = (((player.x + (player.x < hi/2 ? hi : lo)) / 2) / lo).to_i * lo
+      y = (((player.y + (player.y < hi/2 ? hi : lo)) / 2) / lo).to_i * lo
 
       b = {
-        x: x,
-        y: y,
+        x: x + X_OFFSET,
+        y: y + Y_OFFSET,
         w: 40,
         h: 64,      # body as hitbox
         angle: 0,
         path: Sprite.for(:boss),
         sprite: {
-          x: x - X_OFFSET,
-          y: y - Y_OFFSET,
-          w: 100,
-          h: 100,
+          x: x,
+          y: y,
+          w: 99,
+          h: 99,
           path: Sprite.for(:boss),
           angle: 0,
+          tile_x:0,
+          tile_y:0,
+          tile_w:99,
+          tile_h:99,
         },         # display 
 
         dead: false,
@@ -40,12 +44,17 @@ module Boss
         speed: 3,
         body_power: 30,
         xp: 100,
-        pass_walls: true,
+        pass_walls: false,
       }
+      Collision.detect(b, args.state.level[:walls]) do |entity, wall|
+        Collision.move_out_of_collider(entity, wall)
+      end
+      Collision.detect(b, args.state.level[:walls]) { |entity, wall| Collision.move_out_of_collider(entity, wall); }
+
       b
     end
 
-    def tick(args, boss)
+    def tick(args, boss, enemies, player)
       # Ideas: use or make up own, its your call.
       #   if < half health hunt for bugs to eat
       #   if can't see player hunt for bugs to eat, unless > 90% health
@@ -58,7 +67,7 @@ module Boss
       #   if can't see player && health > 90% then idle
     end
 
-    def drain_life(args, boss, enemy)
+    def drain_life(boss, enemy)
       boss.health += enemy.base_health
       enemy.health -= enemy.base_health
       boss.health += enemy.health if enemy.health <= boss.body_power

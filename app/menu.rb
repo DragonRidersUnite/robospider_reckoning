@@ -34,7 +34,7 @@ module Menu
         labels << label
         if menu_state.current_option_i == i
           args.outputs.solids << {
-            x: label.x - (label_size[0] / 1.4) - 24 + (Math.sin(args.state.tick_count / 8) * 4),
+            x: label.x - (label_size[0] / 1.4) - 24 + (Math.sin(args.tick_count / 8) * 4),
             y: label.y - 22,
             w: 16,
             h: 16,

@@ -42,6 +42,7 @@ require "app/text.rb"
 require "app/timer.rb"
 require "app/hud.rb"
 require "app/fireworks.rb"
+require "app/boss.rb"
 
 require "app/scenes/game_over.rb"
 require "app/scenes/gameplay.rb"

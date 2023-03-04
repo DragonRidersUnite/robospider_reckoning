@@ -200,7 +200,7 @@ module Player
       play_sfx(args, :level_up)
       new_level = LEVEL_PROG[player.level] || LEVEL_PROG[:default]
       new_level[:on_reach].call(args, player)
-      (player.mana_rate -= 10).clamp(30) if player.mana_regen
+      player.mana_rate = (player.mana_rate - 10).clamp(30) if player.mana_regen
       Enemy.spawn(args, :king)
     end
 
