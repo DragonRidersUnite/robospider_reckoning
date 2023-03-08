@@ -1,0 +1,22 @@
+[project]
+# The name of your game's executable. This should only contain a-z, A-Z, 0-9, _ or -.
+name = "exquisite-corps"
+# The game's title. This will show up in the tile bar of your executable.
+title = "Exquisite Corps"
+version = "0.0.0"
+authors = ["Dragon Riders Community"]
+icon = "metadata/icon.png"
+compile_ruby = false
+
+[dragonruby]
+version = "4.4"
+edition = "standard"
+
+[dependencies]
+
+[itch]
+# The Project URL you set when you created the game on Itch.io. https://my-username.itch.io/my-game.
+# This will also be the name of your build files, so fill it out even if you aren't uploading to Itch.io.
+url = "exquisite-corps"
+# Your username on Itch.io.
+username = "dragonridersunite"

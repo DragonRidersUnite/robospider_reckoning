@@ -1,6 +1,6 @@
 module Player
   BULLET_SIZE = 10
-  BULLET_LIFE = 10
+  BULLET_LIFE = 15
   W = 32
   H = 32
 
@@ -34,7 +34,7 @@ module Player
         familiar_speed: 1.5,
         familiar_angle: 0,
         rushing: false,
-        rush_mana_cost: 0.05,
+        rush_mana_cost: 0.01,
         mana_chip_magnetic_dist: 50,
         bullet_lifetime: BULLET_LIFE,
         body_power: 10,
