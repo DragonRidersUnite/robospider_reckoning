@@ -16,12 +16,13 @@ module ManaChip
     
     def animate(args, mana_chip)
       mana_chip.angle += 1
-      mana_chip.w = 12 + 1 * Math.sin(args.state.tick_count / 15)
-      mana_chip.h = 12 + 1 * Math.sin(args.state.tick_count / 15)
+      mana_chip.w = 12 + 2 * Math.sin(args.state.tick_count / 20)
+      mana_chip.h = 12 + 2 * Math.sin(args.state.tick_count / 20)
     end
 
     def tick(args, mana_chip)
       animate(args, mana_chip)
+      
       player = args.state.player
       if args.geometry.distance(mana_chip, player) <= player.mana_chip_magnetic_dist
         mana_chip.angle = args.geometry.angle_to(mana_chip, player)

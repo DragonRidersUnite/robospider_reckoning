@@ -60,7 +60,8 @@ module Scene
 
       Collision.detect(enemies, player) do |enemy, _|
         player.health -= [enemy.body_power, enemy.health].min unless player.invincible
-        Player.knockback(args, player, enemy)
+        Player.enemy_knockback(args, player, enemy)
+        camera.shake
         flash(player, RED, 12)
         Enemy.damage(args, enemy, player, sfx: nil)
         play_sfx(args, :hurt)
@@ -106,7 +107,7 @@ module Scene
 
         Collision.detect(boss, player) do |b, _|
           player.health -= [b.body_power, b.health].min unless player.invincible
-          Player.knockback(args, player, b)
+          Player.enemy_knockback(args, player, b)
           flash(player, RED, 12)
           Boss.damage(args, b, player, sfx: nil)
           play_sfx(args, :hurt)
@@ -157,12 +158,14 @@ module Scene
 
       draw_bg(args, BLACK)
       Level.draw(args, level, camera)
+
       args.outputs.sprites << [
         Camera.translate(camera, a_s.mana_chips),
         Camera.translate(camera, a_s.player.bullets),
         Camera.translate(camera, enemies),
         Camera.translate(camera, a_s.player.familiars),
-        Camera.translate(camera, door)
+        Camera.translate(camera, door),
+        Camera.translate(camera, a_s.player.effects.flat_map { _1.particles })
       ]
       args.outputs.sprites << Camera.translate(camera, boss[:sprite]) if !boss.empty?
       args.outputs.sprites << Camera.translate(camera, key) unless player.key_found
