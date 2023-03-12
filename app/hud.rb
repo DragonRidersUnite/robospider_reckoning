@@ -8,8 +8,8 @@ module Hud
   BAR_W = 334 - BAR_X
   HEALTH_BAR_COLOR = { r: 106, g: 190, b: 48 }
   HEALTH_BAR_BG = { r: 172, g: 50, b: 50 }
-  ENERGY_BAR_COLOR = { r: 95, g: 205, b: 228 }
-  ENERGY_BAR_BG = { r: 89, g: 86, b: 82 }
+  ENERGY_BAR_COLOR = { r: 129, g: 192, b: 249 }
+  ENERGY_BAR_BG = { r: 77, g: 132, b: 234 }
   XP_BAR_COLOR = { r: 223, g: 113, b: 38 }
   XP_BAR_BG = { r: 69, g: 40, b: 60 }
 

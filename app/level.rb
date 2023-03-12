@@ -1,6 +1,6 @@
 module Level
-  CELL_SIZE = 128
-  MAZE_SIZE = 21
+  CELL_SIZE = 114
+  MAZE_SIZE = 20
 
   NAMES = [
     'Storage',
