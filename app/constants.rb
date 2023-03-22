@@ -32,3 +32,5 @@ FP_SINGLE = :single
 FP_DUAL = :dual
 FP_TRI = :tri
 FP_QUAD = :quad
+
+DIFFICULTY = [:easy, :normal, :hard]

@@ -6,6 +6,18 @@ module Scene
 
       options = [
         {
+          key: :difficulty,
+          kind: :toggle,
+          setting_val: a_s.setting.difficulty,
+          on_select: -> (args) do
+            current_index = DIFFICULTY.index(a_s.setting.difficulty)
+            current_index = (current_index + 1) % DIFFICULTY.length
+            GameSetting.save_after(args) do |args|
+              a_s.setting.difficulty = DIFFICULTY[current_index]
+            end
+          end
+        },
+        {
           key: :sfx,
           kind: :toggle,
           setting_val: a_s.setting.sfx,

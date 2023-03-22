@@ -6,3 +6,5 @@ run
 publish
 
 logs/
+
+.DS_Store

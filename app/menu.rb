@@ -99,7 +99,7 @@ module Menu
       when false
         text(:off)
       else
-        val
+        text(val) || val
       end
     end
   end

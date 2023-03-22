@@ -40,6 +40,10 @@ TEXT = {
   sfx: "Sound Effects",
   start: "Start",
   win: "You Win!",
+  difficulty: "Difficulty",
+  easy: "Grandma's House",
+  normal: "The Real World",
+  hard: "The Hunger Games",
 }
 
 # Gets the text for the passed in `key`. Raises if it does not exist. We don't
