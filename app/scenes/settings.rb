@@ -10,8 +10,10 @@ module Scene
           kind: :toggle,
           setting_val: a_s.setting.difficulty,
           on_select: -> (args) do
-            GameSetting.save_after(args) do |args|
-              a_s.setting.difficulty = DIFFICULTY[(DIFFICULTY.index(a_s.setting.difficulty) + 1) % DIFFICULTY.length]
+            unless a_s.paused.current_option_i
+              GameSetting.save_after(args) do |args|
+                a_s.setting.difficulty = DIFFICULTY[(DIFFICULTY.index(a_s.setting.difficulty) + 1) % DIFFICULTY.length]
+              end
             end
           end
         },
