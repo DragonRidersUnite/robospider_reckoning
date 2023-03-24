@@ -33,21 +33,10 @@ module Scene
       labels << CREDITS.map_with_index do |name, i|
         label(
           name,
-          x: args.grid.left + 48, y: args.grid.top - 50 - 25*i,
-          size: SIZE_SM, align: ALIGN_LEFT)
+          x: args.grid.left + 48, y: args.grid.top - 70 - 25*i,
+          size: SIZE_XS, align: ALIGN_LEFT, a: 200)
       end
-      labels << label(
-        :controls_title,
-        x: args.grid.right - 24, y: 112,
-        size: SIZE_SM, align: ALIGN_RIGHT)
-      labels << label(
-        args.inputs.controller_one.connected ? :controls_gamepad : :controls_keyboard,
-        x: args.grid.right - 24, y: 76,
-        size: SIZE_XS, align: ALIGN_RIGHT)
-      labels << label(
-        args.inputs.controller_one.connected ? :controls2_gamepad : :controls2_keyboard,
-        x: args.grid.right - 24, y: 48,
-        size: SIZE_XS, align: ALIGN_RIGHT)
+      labels << Labels.controls(args)
     end
 
     def reset_main_menu(args)

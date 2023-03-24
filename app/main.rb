@@ -12,16 +12,17 @@ CREDITS = [
   "HIRO-R-B",
   "Vlevo",
   "F-3r",
+  "Elwampa",
 ].shuffle
 
 require "app/input.rb"
 require "app/sprite.rb"
 
 require "app/artifact.rb"
+require "app/boss.rb"
 require "app/camera.rb"
 require "app/cards.rb"
 require "app/collision.rb"
-require "app/boss.rb"
 require "app/constants.rb"
 require "app/difficulty.rb"
 require "app/enemy.rb"
@@ -29,6 +30,7 @@ require "app/familiar.rb"
 require "app/fireworks.rb"
 require "app/game_setting.rb"
 require "app/hud.rb"
+require "app/labels.rb"
 require "app/legged_creature.rb"
 require "app/level.rb"
 require "app/level_generation/maze_generator.rb"
