@@ -1,7 +1,7 @@
 module Timer
   class << self
     def every(period)
-      { period: period, elapsed: 0, active: true }
+      {period: period, elapsed: 0, active: true}
     end
 
     def tick(timer)

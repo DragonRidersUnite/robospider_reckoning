@@ -2,18 +2,20 @@
 # like fullscreen on/off, sfx on/off, etc.
 module GameSetting
   class << self
-    # returns a string of a hash of settings in the following format:
-    # key1=val1,key2=val2
-    # `settings` should be a hash of keys and vals to be saved
+  # returns a string of a hash of settings in the following format:
+  # key1=val1,key2=val2
+  # `settings` should be a hash of keys and vals to be saved
     def settings_for_save(settings)
-      settings.map do |k, v|
-        "#{k}:#{v}"
-      end.join(",")
+      settings
+        .map do |k, v|
+          "#{k}:#{v}"
+        end
+        .join(",")
     end
 
     # we don't want to accidentally ship our debug preferences to our players
     def settings_file
-      "settings#{ debug? ? '-debug' : nil}.txt"
+      "settings#{debug? ? "-debug" : nil}.txt"
     end
 
     # useful when wanting to save settings after the code in the block is
@@ -36,6 +38,7 @@ module GameSetting
           else
             v = v.to_sym
           end
+
           args.state.setting[k.to_sym] = v
         end
       else

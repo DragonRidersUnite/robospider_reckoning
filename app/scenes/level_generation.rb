@@ -8,16 +8,25 @@ module Scene
       a_s.level_generation ||= Level.generate_calculation
 
       if a_s.level
-        args.outputs.labels << [
-          label("Entering Sublevel X#{a_s.current_level + 1}", x: args.grid.w / 2, y: 512, color: WHITE, align: ALIGN_CENTER),
-          label(Level::NAMES[a_s.current_level], x: args.grid.w / 2, y: 480, size: SIZE_LG, font: FONT_BOLD, color: WHITE, align: ALIGN_CENTER)
-        ]
+        args.outputs.labels <<
+          [
+            label("Entering Sublevel X#{a_s.current_level + 1}", x: args.grid.w / 2, y: 512, color: WHITE, align: ALIGN_CENTER),
+            label(
+              Level::NAMES[a_s.current_level],
+              x: args.grid.w / 2,
+              y: 480,
+              size: SIZE_LG,
+              font: FONT_BOLD,
+              color: WHITE,
+              align: ALIGN_CENTER
+            )
+          ]
 
         options = [
           {
             key: :start,
             on_select: -> (args) { Scene.switch(args, :gameplay, reset: true) }
-          },
+          }
         ]
         Menu.tick(args, :main_menu, options)
       else
@@ -31,10 +40,20 @@ module Scene
             return
           end
         end
-        args.outputs.labels << [
-          label(:generating_level, x: args.grid.w / 2, y: 512, color: WHITE, align: ALIGN_CENTER),
-          label("." * (a_s.tick_count.idiv(20) % 4), x: args.grid.w / 2, y: 480, size: SIZE_LG, font: FONT_BOLD, color: WHITE, align: ALIGN_CENTER)
-        ]
+
+        args.outputs.labels <<
+          [
+            label(:generating_level, x: args.grid.w / 2, y: 512, color: WHITE, align: ALIGN_CENTER),
+            label(
+              "." * (a_s.tick_count.idiv(20) % 4),
+              x: args.grid.w / 2,
+              y: 480,
+              size: SIZE_LG,
+              font: FONT_BOLD,
+              color: WHITE,
+              align: ALIGN_CENTER
+            )
+          ]
       end
     end
 

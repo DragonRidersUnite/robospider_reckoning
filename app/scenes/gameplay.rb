@@ -34,8 +34,8 @@ module Scene
 
       Player.tick(args, player, camera)
 
-      enemies.each { |e| Enemy.tick(args, e, player, level)  }
-      a_s.mana_chips.each { |c| ManaChip.tick(args, c)  }
+      enemies.each { |e| Enemy.tick(args, e, player, level) }
+      a_s.mana_chips.each { |c| ManaChip.tick(args, c) }
 
       # TODO: Use some kind of spatial hash (quadtree?) to speed this up?
       Collision.detect(player, level[:walls]) do |player, wall|
@@ -134,7 +134,6 @@ module Scene
           Boss.absorb_mana(args, boss, mana_chip)
           #play_sfx(args, :mana_chip)
         end
-
       end
 
       Player.level_up(args, player) if player.xp >= player.xp_needed
@@ -159,14 +158,15 @@ module Scene
       draw_bg(args, BLACK)
       Level.draw(args, level, camera)
 
-      args.outputs.sprites << [
-        Camera.translate(camera, a_s.mana_chips),
-        Camera.translate(camera, a_s.player.bullets),
-        Camera.translate(camera, enemies),
-        Camera.translate(camera, a_s.player.familiars),
-        Camera.translate(camera, door),
-        Camera.translate(camera, a_s.player.effects.flat_map { _1.particles })
-      ]
+      args.outputs.sprites <<
+        [
+          Camera.translate(camera, a_s.mana_chips),
+          Camera.translate(camera, a_s.player.bullets),
+          Camera.translate(camera, enemies),
+          Camera.translate(camera, a_s.player.familiars),
+          Camera.translate(camera, door),
+          Camera.translate(camera, a_s.player.effects.flat_map { _1.particles })
+        ]
       args.outputs.sprites << Camera.translate(camera, boss[:sprite]) if !boss.empty?
       args.outputs.sprites << Camera.translate(camera, key) unless player.key_found
       LeggedCreature.render(args, player, camera)

@@ -13,13 +13,13 @@ def run_tests
   $gtk.tests&.passed.clear
   $gtk.tests&.inconclusive.clear
   $gtk.tests&.failed.clear
-  puts "running tests"
-  $gtk.reset 100
+  puts("running tests")
+  $gtk.reset(100)
   $gtk.log_level = :on
   $gtk.tests.start
 
   if $gtk.tests.failed.any?
-    puts "🙀 tests failed!"
+    puts("🙀 tests failed!")
     failures = $gtk.tests.failed.uniq.map do |failure|
       "🔴 ##{failure[:m]} - #{failure[:e]}"
     end
@@ -29,7 +29,7 @@ def run_tests
       exit(1)
     end
   else
-    puts "🪩 tests passed!"
+    puts("🪩 tests passed!")
   end
 end
 
@@ -58,32 +58,32 @@ def test(method)
   end
 end
 
-test :menu_text_for_setting_val do |args, assert|
+test(:menu_text_for_setting_val) do |args, assert|
   assert.equal!(Menu.text_for_setting_val(true), "ON")
   assert.equal!(Menu.text_for_setting_val(false), "OFF")
   assert.equal!(Menu.text_for_setting_val("other"), "other")
 end
 
-test :out_of_bounds do |args, assert|
+test(:out_of_bounds) do |args, assert|
   grid = {
     x: 0,
     y: 0,
     w: 1280,
-    h: 720,
+    h: 720
   }
-  assert.true!(out_of_bounds?(grid, { x: -30, y: 30, w: 24, h: 24 }))
-  assert.true!(out_of_bounds?(grid, { x: 30, y: -50, w: 24, h: 24 }))
-  assert.false!(out_of_bounds?(grid, { x: 30, y: 30, w: 24, h: 24 }))
+  assert.true!(out_of_bounds?(grid, {x: -30, y: 30, w: 24, h: 24}))
+  assert.true!(out_of_bounds?(grid, {x: 30, y: -50, w: 24, h: 24}))
+  assert.false!(out_of_bounds?(grid, {x: 30, y: 30, w: 24, h: 24}))
 end
 
-test :angle_for_dir do |args, assert|
+test(:angle_for_dir) do |args, assert|
   assert.equal!(angle_for_dir(DIR_RIGHT), 0)
   assert.equal!(angle_for_dir(DIR_LEFT), 180)
   assert.equal!(angle_for_dir(DIR_UP), 90)
   assert.equal!(angle_for_dir(DIR_DOWN), 270)
 end
 
-test :vel_from_angle do |args, assert|
+test(:vel_from_angle) do |args, assert|
   it "calculates core four angles properly" do
     assert.equal!(vel_from_angle(0, 5), [5.0, 0.0])
     assert.equal!(vel_from_angle(90, 5).map { |v| v.round(2) }, [0.0, 5.0])
@@ -96,21 +96,21 @@ test :vel_from_angle do |args, assert|
   end
 end
 
-test :open_entity_to_hash do |args, assert|
+test(:open_entity_to_hash) do |args, assert|
   it "strips OpenEntity keys" do
     args.state.foo.bar = true
     args.state.foo.biz = false
-    assert.equal!(open_entity_to_hash(args.state.foo), { bar: true, biz: false })
+    assert.equal!(open_entity_to_hash(args.state.foo), {bar: true, biz: false})
   end
 end
 
-test :game_setting_settings_for_save do |args, assert|
+test(:game_setting_settings_for_save) do |args, assert|
   it "joins hash keys and values" do
-    assert.equal!(GameSetting.settings_for_save({ fullscreen: true, sfx: false}), "fullscreen:true,sfx:false")
+    assert.equal!(GameSetting.settings_for_save({fullscreen: true, sfx: false}), "fullscreen:true,sfx:false")
   end
 end
 
-test :text do |args, assert|
+test(:text) do |args, assert|
   it "returns the value for the passed in key" do
     assert.equal!(text(:game_over), "Game Over")
   end
@@ -120,7 +120,7 @@ test :text do |args, assert|
   end
 end
 
-test :opposite_angle do |args, assert|
+test(:opposite_angle) do |args, assert|
   it "returns the diametrically opposed angle" do
     assert.equal!(opposite_angle(0), 180)
     assert.equal!(opposite_angle(180), 0)
@@ -130,7 +130,7 @@ test :opposite_angle do |args, assert|
   end
 end
 
-test :add_to_angle do |args, assert|
+test(:add_to_angle) do |args, assert|
   it "returns the new angle on the circle" do
     assert.equal!(add_to_angle(0, 30), 30)
     assert.equal!(add_to_angle(0, -30), 330)
@@ -140,7 +140,7 @@ test :add_to_angle do |args, assert|
   end
 end
 
-test :percent_chance? do |args, assert|
+test(:percent_chance?) do |args, assert|
   it "returns false if the percent is 0" do
     assert.false!(percent_chance?(0))
   end
@@ -151,226 +151,267 @@ test :percent_chance? do |args, assert|
 end
 
 def build_grid_from_map(map)
-  converted_map = map.split("\n").map { |row|
-    row[1..-2].chars.map { |char|
-      { wall: char == "X" }
-    }
-  }
-  converted_map.reverse   # reverse the rows since y goes upwards
-               .transpose # grids are stored as columns since you access them as grid[x][y]
+  converted_map = map.split("\n").map { |row| row[1..-2].chars.map { |char| {wall: char == "X"} } }
+  # reverse the rows since y goes upwards
+  converted_map
+    .reverse
+    # grids are stored as columns since you access them as grid[x][y]
+    .transpose
 end
 
-test :level_generation_wall_determine_vertical_walls do |_args, assert|
-  grid = build_grid_from_map <<~MAP
-    |X XX|
-    |XX  |
-    |XX  |
-  MAP
+test(:level_generation_wall_determine_vertical_walls) do |_args, assert|
+  grid = build_grid_from_map(
+    <<~MAP
+      |X XX|
+      |XX  |
+      |XX  |
+    MAP
+  )
 
+  walls = LevelGeneration::Wall.determine_vertical_walls(grid)
 
-  walls = LevelGeneration::Wall.determine_vertical_walls grid
-
-  assert.equal! walls, [
-    { x: 0, y: 0, w: 1, h: 3 },
-    { x: 1, y: 0, w: 1, h: 2 },
-    { x: 2, y: 2, w: 1, h: 1 },
-    { x: 3, y: 2, w: 1, h: 1 }
-  ]
+  assert.equal!(
+    walls,
+    [
+      {x: 0, y: 0, w: 1, h: 3},
+      {x: 1, y: 0, w: 1, h: 2},
+      {x: 2, y: 2, w: 1, h: 1},
+      {x: 3, y: 2, w: 1, h: 1}
+    ]
+  )
 end
 
-test :level_generation_wall_determine_horizontal_walls do |_args, assert|
-  grid = build_grid_from_map <<~MAP
-    |X XX|
-    |XX  |
-    |XX  |
-  MAP
+test(:level_generation_wall_determine_horizontal_walls) do |_args, assert|
+  grid = build_grid_from_map(
+    <<~MAP
+      |X XX|
+      |XX  |
+      |XX  |
+    MAP
+  )
 
-  walls = LevelGeneration::Wall.determine_horizontal_walls grid
+  walls = LevelGeneration::Wall.determine_horizontal_walls(grid)
 
-  assert.equal! walls, [
-    { x: 0, y: 0, w: 2, h: 1 },
-    { x: 0, y: 1, w: 2, h: 1 },
-    { x: 0, y: 2, w: 1, h: 1 },
-    { x: 2, y: 2, w: 2, h: 1 }
-  ]
+  assert.equal!(
+    walls,
+    [
+      {x: 0, y: 0, w: 2, h: 1},
+      {x: 0, y: 1, w: 2, h: 1},
+      {x: 0, y: 2, w: 1, h: 1},
+      {x: 2, y: 2, w: 2, h: 1}
+    ]
+  )
 end
 
-test :level_generation_wall_covered_by_wall do |_args, assert|
+test(:level_generation_wall_covered_by_wall) do |_args, assert|
   [
-    [{ x: 0, y: 0, w: 1, h: 1 }, { x: 0, y: 0, w: 1, h: 1 }, true, true],
-    [{ x: 0, y: 0, w: 1, h: 1 }, { x: 0, y: 0, w: 2, h: 1 }, true, false],
-    [{ x: 0, y: 0, w: 1, h: 1 }, { x: 0, y: 0, w: 1, h: 2 }, true, false],
-    [{ x: 1, y: 0, w: 1, h: 1 }, { x: 0, y: 0, w: 2, h: 1 }, true, false],
-    [{ x: 0, y: 1, w: 1, h: 1 }, { x: 0, y: 0, w: 1, h: 2 }, true, false],
-    [{ x: 0, y: 0, w: 1, h: 3 }, { x: 1, y: 0, w: 1, h: 1 }, false, false]
+    [{x: 0, y: 0, w: 1, h: 1}, {x: 0, y: 0, w: 1, h: 1}, true, true],
+    [{x: 0, y: 0, w: 1, h: 1}, {x: 0, y: 0, w: 2, h: 1}, true, false],
+    [{x: 0, y: 0, w: 1, h: 1}, {x: 0, y: 0, w: 1, h: 2}, true, false],
+    [{x: 1, y: 0, w: 1, h: 1}, {x: 0, y: 0, w: 2, h: 1}, true, false],
+    [{x: 0, y: 1, w: 1, h: 1}, {x: 0, y: 0, w: 1, h: 2}, true, false],
+    [{x: 0, y: 0, w: 1, h: 3}, {x: 1, y: 0, w: 1, h: 1}, false, false]
   ].each do |wall, other_wall, expected, opposite_case_expected|
-    assert.equal! LevelGeneration::Wall.covered_by_wall?(wall, other_wall),
-                  expected,
-                  "Expected #{wall} #{expected ? '' : 'not '}to be covered by #{other_wall}"
+    assert.equal!(
+      LevelGeneration::Wall.covered_by_wall?(wall, other_wall),
+      expected,
+      "Expected #{wall} #{expected ? "" : "not "}to be covered by #{other_wall}"
+    )
 
-    assert.equal! LevelGeneration::Wall.covered_by_wall?(other_wall, wall),
-                  opposite_case_expected,
-                  "Expected #{other_wall} #{opposite_case_expected ? '' : 'not '}to be covered by #{wall}"
+    assert.equal!(
+      LevelGeneration::Wall.covered_by_wall?(other_wall, wall),
+      opposite_case_expected,
+      "Expected #{other_wall} #{opposite_case_expected ? "" : "not "}to be covered by #{wall}"
+    )
   end
 end
 
-test :level_generation_wall_coordinates do |_args, assert|
-  assert.equal! LevelGeneration::Wall.coordinates({ x: 0, y: 0, w: 2, h: 1 }), [
-    { x: 0, y: 0 },
-    { x: 1, y: 0 }
-  ]
+test(:level_generation_wall_coordinates) do |_args, assert|
+  assert.equal!(
+    LevelGeneration::Wall.coordinates({x: 0, y: 0, w: 2, h: 1}),
+    [
+      {x: 0, y: 0},
+      {x: 1, y: 0}
+    ]
+  )
 end
 
-test :level_generation_wall_covered_by_walls do |_args, assert|
+test(:level_generation_wall_covered_by_walls) do |_args, assert|
   walls = [
-    { x: 0, y: 0, w: 1, h: 2 },
-    { x: 1, y: 0, w: 1, h: 3 }
+    {x: 0, y: 0, w: 1, h: 2},
+    {x: 1, y: 0, w: 1, h: 3}
   ]
 
-  assert.true! LevelGeneration::Wall.covered_by_walls?({ x: 0, y: 0, w: 2, h: 1 }, walls)
-  assert.false! LevelGeneration::Wall.covered_by_walls?({ x: 0, y: 0, w: 3, h: 1 }, walls)
+  assert.true!(LevelGeneration::Wall.covered_by_walls?({x: 0, y: 0, w: 2, h: 1}, walls))
+  assert.false!(LevelGeneration::Wall.covered_by_walls?({x: 0, y: 0, w: 3, h: 1}, walls))
 end
 
-test :level_generation_wall_determine_walls do |_args, assert|
-  grid = build_grid_from_map <<~MAP
-    |X XX|
-    |X   |
-    |XXX |
-  MAP
+test(:level_generation_wall_determine_walls) do |_args, assert|
+  grid = build_grid_from_map(
+    <<~MAP
+      |X XX|
+      |X   |
+      |XXX |
+    MAP
+  )
 
-  walls = LevelGeneration::Wall.determine_walls grid
+  walls = LevelGeneration::Wall.determine_walls(grid)
 
-  assert.equal! walls, [
-    # vertical walls
-    { x: 0, y: 0, w: 1, h: 3 },
-    # horizontal walls
-    { x: 0, y: 0, w: 3, h: 1 },
-    { x: 2, y: 2, w: 2, h: 1 }
-  ]
+  assert.equal!(
+    walls,
+    [
+      # vertical walls
+      {x: 0, y: 0, w: 1, h: 3},
+      # horizontal walls
+      {x: 0, y: 0, w: 3, h: 1},
+      {x: 2, y: 2, w: 2, h: 1}
+    ]
+  )
 end
 
-test :level_generation_pathfinding_graph_generate do |_args, assert|
-  grid = build_grid_from_map <<~MAP
-    |XXXXX|
-    |XX XX|
-    |X   X|
-    |XX XX|
-    |XXXXX|
-  MAP
+test(:level_generation_pathfinding_graph_generate) do |_args, assert|
+  grid = build_grid_from_map(
+    <<~MAP
+      |XXXXX|
+      |XX XX|
+      |X   X|
+      |XX XX|
+      |XXXXX|
+    MAP
+  )
 
-  graph = LevelGeneration::PathfindingGraph.generate grid
+  graph = LevelGeneration::PathfindingGraph.generate(grid)
 
-  assert.equal! graph, {
-    { x: 2, y: 1 } => [{ x: 2, y: 2 }],
-    { x: 2, y: 2 } => [{ x: 2, y: 3 }, { x: 3, y: 2 }, { x: 2, y: 1 }, { x: 1, y: 2 }],
-    { x: 2, y: 3 } => [{ x: 2, y: 2 }],
-    { x: 3, y: 2 } => [{ x: 2, y: 2 }],
-    { x: 1, y: 2 } => [{ x: 2, y: 2 }]
-  }
+  assert.equal!(
+    graph,
+    {
+      {x: 2, y: 1} => [{x: 2, y: 2}],
+      {x: 2, y: 2} => [{x: 2, y: 3}, {x: 3, y: 2}, {x: 2, y: 1}, {x: 1, y: 2}],
+      {x: 2, y: 3} => [{x: 2, y: 2}],
+      {x: 3, y: 2} => [{x: 2, y: 2}],
+      {x: 1, y: 2} => [{x: 2, y: 2}]
+    }
+  )
 end
 
-test :level_generation_pathfinding_graph_remove_wall do |_args, assert|
-  grid = build_grid_from_map <<~MAP
-    |   |
-    | X |
-    | X |
-    | X |
-    |   |
-  MAP
-  graph = LevelGeneration::PathfindingGraph.generate grid
+test(:level_generation_pathfinding_graph_remove_wall) do |_args, assert|
+  grid = build_grid_from_map(
+    <<~MAP
+      |   |
+      | X |
+      | X |
+      | X |
+      |   |
+    MAP
+  )
+  graph = LevelGeneration::PathfindingGraph.generate(grid)
 
-  LevelGeneration::PathfindingGraph.remove_wall graph, { x: 1, y: 2 }
+  LevelGeneration::PathfindingGraph.remove_wall(graph, {x: 1, y: 2})
 
-  assert.equal! graph[{ x: 0, y: 2 }], [{ x: 0, y: 3 }, { x: 0, y: 1 }, { x: 1, y: 2 }]
-  assert.equal! graph[{ x: 1, y: 2 }], [{ x: 2, y: 2 }, { x: 0, y: 2 }]
-  assert.equal! graph[{ x: 2, y: 2 }], [{ x: 2, y: 3 }, { x: 2, y: 1 }, { x: 1, y: 2 }]
+  assert.equal!(graph[{x: 0, y: 2}], [{x: 0, y: 3}, {x: 0, y: 1}, {x: 1, y: 2}])
+  assert.equal!(graph[{x: 1, y: 2}], [{x: 2, y: 2}, {x: 0, y: 2}])
+  assert.equal!(graph[{x: 2, y: 2}], [{x: 2, y: 3}, {x: 2, y: 1}, {x: 1, y: 2}])
 end
 
-test :pathfinding_find_path do |_args, assert|
-  grid = build_grid_from_map <<~MAP
-    |    |
-    | XX |
-    |    |
-  MAP
-  graph = LevelGeneration::PathfindingGraph.generate grid
+test(:pathfinding_find_path) do |_args, assert|
+  grid = build_grid_from_map(
+    <<~MAP
+      |    |
+      | XX |
+      |    |
+    MAP
+  )
+  graph = LevelGeneration::PathfindingGraph.generate(grid)
 
-  path = Pathfinding.find_path graph, start: { x: 0, y: 0 }, goal: { x: 1, y: 2 }
+  path = Pathfinding.find_path(graph, start: {x: 0, y: 0}, goal: {x: 1, y: 2})
 
-  assert.equal! path, [
-    { x: 0, y: 0 },
-    { x: 0, y: 1 },
-    { x: 0, y: 2 },
-    { x: 1, y: 2 }
-  ]
+  assert.equal!(
+    path,
+    [
+      {x: 0, y: 0},
+      {x: 0, y: 1},
+      {x: 0, y: 2},
+      {x: 1, y: 2}
+    ]
+  )
 end
 
-test :collision_move_out_of_collider do |_args, assert|
-  collider = { x: 100, y: 100, w: 100, h: 100 }
+test(:collision_move_out_of_collider) do |_args, assert|
+  collider = {x: 100, y: 100, w: 100, h: 100}
 
   [
-    { before: { x: 195, y: 150, w: 10, h: 10 }, after: { x: 200, y: 150, w: 10, h: 10 } }, # from the right
-    { before: { x: 95, y: 150, w: 10, h: 10 }, after: { x: 90, y: 150, w: 10, h: 10 } },  # from the left
-    { before: { x: 150, y: 195, w: 10, h: 10 }, after: { x: 150, y: 200, w: 10, h: 10 } }, # from the top
-    { before: { x: 150, y: 95, w: 10, h: 10 }, after: { x: 150, y: 90, w: 10, h: 10 } }   # from the bottom
+    # from the right
+    {before: {x: 195, y: 150, w: 10, h: 10}, after: {x: 200, y: 150, w: 10, h: 10}},
+    # from the left
+    {before: {x: 95, y: 150, w: 10, h: 10}, after: {x: 90, y: 150, w: 10, h: 10}},
+    # from the top
+    {before: {x: 150, y: 195, w: 10, h: 10}, after: {x: 150, y: 200, w: 10, h: 10}},
+    # from the bottom
+    {before: {x: 150, y: 95, w: 10, h: 10}, after: {x: 150, y: 90, w: 10, h: 10}}
   ].each do |test_case|
     object = test_case[:before].dup
 
-    Collision.move_out_of_collider object, collider
+    Collision.move_out_of_collider(object, collider)
 
-    assert.equal! object,
-                  test_case[:after],
-                  "Expected #{test_case[:before]} to be moved out of #{collider} to #{test_case[:after]}\nbut got #{object}"
+    assert.equal!(
+      object,
+      test_case[:after],
+      "Expected #{test_case[:before]} to be moved out of #{collider} to #{test_case[:after]}\nbut got #{object}"
+    )
   end
 end
 
-test :long_calculation_basic_behaviour do |_args, assert|
+test(:long_calculation_basic_behaviour) do |_args, assert|
   progress = []
   calculation = LongCalculation.define do
     10.times do |i|
       progress << i
       LongCalculation.finish_step
     end
+
     :finished
   end
 
-  result = calculation.resume 5
+  result = calculation.resume(5)
 
-  assert.equal! progress, [0, 1, 2, 3, 4]
-  assert.nil! result
+  assert.equal!(progress, [0, 1, 2, 3, 4])
+  assert.nil!(result)
 
   result = calculation.resume
 
-  assert.equal! progress, [0, 1, 2, 3, 4, 5]
-  assert.nil! result
+  assert.equal!(progress, [0, 1, 2, 3, 4, 5])
+  assert.nil!(result)
 
-  result = calculation.resume 5
+  result = calculation.resume(5)
 
-  assert.equal! progress, [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
-  assert.equal! result, :finished
+  assert.equal!(progress, [0, 1, 2, 3, 4, 5, 6, 7, 8, 9])
+  assert.equal!(result, :finished)
 end
 
-test :long_calculation_do_nothing_when_finish_step_outside_calculation do |_args, assert|
-  LongCalculation.finish_step # should not raise any error
+test(:long_calculation_do_nothing_when_finish_step_outside_calculation) do |_args, assert|
+  # should not raise any error
+  LongCalculation.finish_step
   assert.ok!
 end
 
-test :long_calculation_calculate_in_one_step do |_args, assert|
+test(:long_calculation_calculate_in_one_step) do |_args, assert|
   progress = []
   calculation = LongCalculation.define do
     10.times do |i|
       progress << i
       LongCalculation.finish_step
     end
+
     :finished
   end
 
   result = calculation.calculate_in_one_step
 
-  assert.equal! progress, [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
-  assert.equal! result, :finished
+  assert.equal!(progress, [0, 1, 2, 3, 4, 5, 6, 7, 8, 9])
+  assert.equal!(result, :finished)
 end
 
-test :long_calculation_nested do |_args, assert|
+test(:long_calculation_nested) do |_args, assert|
   progress = []
   calculation = LongCalculation.define do
     progress << 1
@@ -382,21 +423,22 @@ test :long_calculation_nested do |_args, assert|
       LongCalculation.finish_step
       :sub_finished
     end
+
     sub_calculation.calculate_in_one_step
   end
 
-  result = calculation.resume 2
+  result = calculation.resume(2)
 
-  assert.equal! progress, [1, 2]
-  assert.nil! result
+  assert.equal!(progress, [1, 2])
+  assert.nil!(result)
 
-  result = calculation.resume 2
+  result = calculation.resume(2)
 
-  assert.equal! progress, [1, 2, 3]
-  assert.equal! result, :sub_finished
+  assert.equal!(progress, [1, 2, 3])
+  assert.equal!(result, :sub_finished)
 end
 
-test :long_calculation_run_for_ms do |_args, assert|
+test(:long_calculation_run_for_ms) do |_args, assert|
   calculation = LongCalculation.define do
     loop do
       LongCalculation.finish_step
@@ -408,8 +450,8 @@ test :long_calculation_run_for_ms do |_args, assert|
   end_time = Time.now.to_f
 
   run_time = (end_time - start_time) * 1000
-  assert.true! run_time.between?(5, 10), "Expected fiber to run for rougly 5ms but it ran for #{run_time}ms"
-  assert.nil! result
+  assert.true!(run_time.between?(5, 10), "Expected fiber to run for rougly 5ms but it ran for #{run_time}ms")
+  assert.nil!(result)
 end
 
 run_tests

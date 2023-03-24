@@ -3,16 +3,16 @@ module Level
   MAZE_SIZE = 20
 
   NAMES = [
-    'Storage',
-    'Computer Lab',
-    'Analysis',
-    'Archive',
-    'Fabrication',
-    'Robotics',
-    'Genetic Engineering',
-    'Containment',
-    'Hazardous Waste',
-    'Power Plant',
+    "Storage",
+    "Computer Lab",
+    "Analysis",
+    "Archive",
+    "Fabrication",
+    "Robotics",
+    "Genetic Engineering",
+    "Containment",
+    "Hazardous Waste",
+    "Power Plant"
   ]
 
   MAX_LEVEL = NAMES.length
@@ -23,11 +23,13 @@ module Level
       def get_four_neighbors(grid, cell, distance: 1)
         grid_w = grid.size
         grid_h = grid.first.size
-        [[distance, 0], [0, distance], [-distance, 0], [0, -distance]].map { |(offset_x, offset_y)|
-          x = cell[:x] + offset_x
-          y = cell[:y] + offset_y
-          grid[x][y] if x.between?(0, grid_w - 1) && y.between?(0, grid_h - 1)
-        }.compact
+        [[distance, 0], [0, distance], [-distance, 0], [0, -distance]]
+          .map { |(offset_x, offset_y)|
+            x = cell[:x] + offset_x
+            y = cell[:y] + offset_y
+            grid[x][y] if x.between?(0, grid_w - 1) && y.between?(0, grid_h - 1)
+          }
+          .compact
       end
     end
   end
@@ -49,7 +51,7 @@ module Level
 
         level = {
           cell_size: CELL_SIZE,
-          bounds: { x: 0, y: 0, w: grid.size * CELL_SIZE, h: grid.size * CELL_SIZE },
+          bounds: {x: 0, y: 0, w: grid.size * CELL_SIZE, h: grid.size * CELL_SIZE},
           grid: grid,
           walls: walls.map { |wall|
             {
@@ -73,13 +75,15 @@ module Level
 
     def draw(args, level, camera)
       level[:walls].each do |wall|
-        next unless wall.intersect_rect? camera
+        next unless wall.intersect_rect?(camera)
 
         args.outputs.sprites << wall.to_sprite(
           x: wall.x - camera.x,
           y: wall.y - camera.y,
           path: :pixel,
-          r: 111, g: 111, b: 111
+          r: 111,
+          g: 111,
+          b: 111
         )
       end
     end

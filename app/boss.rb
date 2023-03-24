@@ -1,19 +1,22 @@
 module Boss
-  X_OFFSET = 30  # (sprite.w - body.w) / 2    for now
-  Y_OFFSET = 18  # (sprite.h - body.h) / 2    for now
+  # (sprite.w - body.w) / 2    for now
+  X_OFFSET = 30
+  # (sprite.h - body.h) / 2    for now
+  Y_OFFSET = 18
 
   class << self
     def create(args, player)
       lo = Level::CELL_SIZE
-      hi = (Level::MAZE_SIZE-1) * lo
-      x = (((player.x + (player.x < hi/2 ? hi : lo)) / 2) / lo).to_i * lo
-      y = (((player.y + (player.y < hi/2 ? hi : lo)) / 2) / lo).to_i * lo
+      hi = (Level::MAZE_SIZE - 1) * lo
+      x = (((player.x + (player.x < hi / 2 ? hi : lo)) / 2) / lo).to_i * lo
+      y = (((player.y + (player.y < hi / 2 ? hi : lo)) / 2) / lo).to_i * lo
 
       b = {
         x: x + X_OFFSET,
         y: y + Y_OFFSET,
         w: 40,
-        h: 64,      # body as hitbox
+        # body as hitbox
+        h: 64,
         angle: 0,
         path: Sprite.for(:boss),
         sprite: {
@@ -23,11 +26,12 @@ module Boss
           h: 99,
           path: Sprite.for(:boss),
           angle: 0,
-          tile_x:0,
-          tile_y:0,
-          tile_w:99,
-          tile_h:99,
-        },         # display 
+          tile_x: 0,
+          tile_y: 0,
+          tile_w: 99,
+          tile_h: 99
+          # display
+        },
 
         dead: false,
         target: false,
@@ -36,7 +40,7 @@ module Boss
         attention_counter: 0,
         delay_time: 30,
         delay_counter: 0,
-        health: 64,     
+        health: 64,
         base_health: 64,
         max_health: 150,
         min_mana_drop: 30,
@@ -44,12 +48,13 @@ module Boss
         speed: 3,
         body_power: 30,
         xp: 100,
-        pass_walls: false,
+        pass_walls: false
       }
       Collision.detect(b, args.state.level[:walls]) do |entity, wall|
         Collision.move_out_of_collider(entity, wall)
       end
-      Collision.detect(b, args.state.level[:walls]) { |entity, wall| Collision.move_out_of_collider(entity, wall); }
+
+      Collision.detect(b, args.state.level[:walls]) { |entity, wall| Collision.move_out_of_collider(entity, wall) }
 
       b
     end
@@ -77,7 +82,8 @@ module Boss
       boss.health -= entity.power || entity.body_power
       flash(boss[:sprite], RED, 12)
       play_sfx(args, sfx) if sfx
-      boss.dead = true if boss.health < 0  # boss desperately clings to life
+      # boss desperately clings to life
+      boss.dead = true if boss.health < 0
     end
 
     def absorb_mana(args, boss, m_c)

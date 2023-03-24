@@ -1,11 +1,11 @@
 module Pathfinding
   class << self
-    # A-star pathfinding algorithm.
+  # A-star pathfinding algorithm.
     def find_path(graph, start:, goal:)
       frontier = PriorityQueue.new
-      came_from = { start => nil }
-      cost_so_far = { start => 0 }
-      frontier.insert start, 0
+      came_from = {start => nil}
+      cost_so_far = {start => 0}
+      frontier.insert(start, 0)
 
       until frontier.empty?
         current = frontier.pop
@@ -13,13 +13,14 @@ module Pathfinding
         return [] if graph[current].nil?
 
         graph[current].each do |neighbor|
-          cost_to_neighbor = 1 # or special cost for this edge
+          # or special cost for this edge
+          cost_to_neighbor = 1
           total_cost_to_neighbor = cost_so_far[current] + cost_to_neighbor
           next if cost_so_far.include?(neighbor) && cost_so_far[neighbor] <= total_cost_to_neighbor
 
           heuristic_value = (neighbor[:x] - goal[:x]).abs + (neighbor[:y] - goal[:y]).abs
           priority = total_cost_to_neighbor + heuristic_value
-          frontier.insert neighbor, priority
+          frontier.insert(neighbor, priority)
           came_from[neighbor] = current
           cost_so_far[neighbor] = total_cost_to_neighbor
         end
@@ -28,9 +29,10 @@ module Pathfinding
       result = []
       current = goal
       until current.nil?
-        result.unshift current
+        result.unshift(current)
         current = came_from[current]
       end
+
       result
     end
   end
@@ -41,7 +43,7 @@ module Pathfinding
     end
 
     def insert(element, priority)
-      @data << { element: element, priority: priority }
+      @data << {element: element, priority: priority}
       heapify_up(@data.size - 1)
     end
 
@@ -52,6 +54,7 @@ module Pathfinding
         @data[1] = last_element
         heapify_down(1)
       end
+
       result
     end
 
@@ -68,7 +71,7 @@ module Pathfinding
     def heapify_up(index)
       return if index == 1
 
-      parent_index = index.idiv 2
+      parent_index = index.idiv(2)
       return if @data[index].priority >= @data[parent_index].priority
 
       swap(index, parent_index)

@@ -6,13 +6,11 @@ module Input
 
   class << self
     def confirm?(inputs)
-      PRIMARY_KEYS.any? { |k| inputs.keyboard.key_down.send(k) } ||
-        inputs.controller_one.key_down&.a
+      PRIMARY_KEYS.any? { |k| inputs.keyboard.key_down.send(k) } || inputs.controller_one.key_down&.a
     end
 
     def cancel?(inputs)
-      SECONDARY_KEYS.any? { |k| inputs.keyboard.key_down.send(k) } ||
-        inputs.controller_one.key_down&.b
+      SECONDARY_KEYS.any? { |k| inputs.keyboard.key_down.send(k) } || inputs.controller_one.key_down&.b
     end
 
     def fire?(inputs)
@@ -23,9 +21,7 @@ module Input
     end
 
     def rush?(inputs)
-      SECONDARY_KEYS.any? { |k|
-        inputs.keyboard.key_down.send(k) ||
-        inputs.keyboard.key_held.send(k) } ||
+      SECONDARY_KEYS.any? { |k| inputs.keyboard.key_down.send(k) || inputs.keyboard.key_held.send(k) } ||
         inputs.controller_one.key_down&.b ||
         inputs.controller_one.key_held&.b
     end
@@ -35,7 +31,7 @@ module Input
     end
 
     def secondary_navigation?(inputs)
-        (nav_right?(inputs) ? 1 : 0) - (nav_left?(inputs) ? 1 : 0)
+      (nav_right?(inputs) ? 1 : 0) - (nav_left?(inputs) ? 1 : 0)
     end
 
     def nav_right?(inputs)
@@ -57,8 +53,7 @@ module Input
     end
 
     def pause?(inputs)
-      PAUSE_KEYS.any? { |k| inputs.keyboard.key_down.send(k) } ||
-        inputs.controller_one.key_down&.start
+      PAUSE_KEYS.any? { |k| inputs.keyboard.key_down.send(k) } || inputs.controller_one.key_down&.start
     end
 
     def toggle_minimap?(inputs)
