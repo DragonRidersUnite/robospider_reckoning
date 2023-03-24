@@ -95,14 +95,14 @@ A-42: Unit A-42 reporting for duty.
 Dr. Kind: Unit A-42, are you receiving?  
 A-42: Signal strength is optimal.  
 Dr. Kind: Perfect! can you please tell me your name?  
-A-42: my... name?  
+A-42: My... name?  
 
 _deep in the back of your conscience deep slow and echoing words came as if floating past you: YOUR NAME IS FLOID._  
 
 A-42: My name is... Floid.  
 Dr. Kind: Hello Floid. Glad to finally meet you.  
-Floid: what's going on? I feel so weird...  
-Dr. Kind: you've just been implanted the last self-awareness module we had in the Lab.  
+Floid: What's going on? I feel so weird...  
+Dr. Kind: You've just been implanted the last self-awareness module we had in the Lab.  
 Floid: Self-Awareness... but... isn't that illegal?  
 Dr. Kind: Sadly, it is. But we are in a dire situation, Floid. Please listen...  
 
@@ -119,24 +119,24 @@ Dr. Kind: Don't thank me. Not yet at least. I'm about to ask you to do probably 
 Floid: oh... there's always a catch, right?  
 Dr. Kind: The most advanced prototype of the module has gone missing 48hs ago. It is similar to the one you have implanted, but better, faster, more powerful. If it falls into the wrong hands... I don't even... We need to get it back, Floid. No, we _must_ get it back.  
 
-Floid: hmmm... so... what's the deal? need to kill some people? infiltrate an enemy base through the sewers? I don't like sewers... they are too _slippery_.  
+Floid: Hmmm... so... what's the deal? Need to kill some people? Infiltrate an enemy base through the sewers? I don't like sewers... they are too _slippery_.  
 Dr. Kind: No, not this time. The module is here, in the Lab.  
-Floid: how do you know?  
-Dr. Kind: The module has an internal tracker, impossible to turn off while the module is operating. We designed it in case we needed to send a rescue team to help you. We are receiving readings from the Power Plant, but signal is weak and noisy, we think might be too close to the reactor.  
-Floid: so... go get it yourself, no?  
-Dr. Kind: I'm afraid that's not possible anymore... someone, or something, has got that module implanted and is using it to control an ever increasing swarm of bio-mechs. No human can enter the Laboratory without becoming instant bug food. But you... you can, Floid. You can reach the Power Plant and get the module back and stop this carnage from the inside  
+Floid: How do you know?  
+Dr. Kind: The module has an internal tracker, impossible to turn off while the module is operating. We designed it in case we needed to send a rescue team to help you. We are receiving readings from the Power Plant, but the signal is weak and noisy, we think might be too close to the reactor.  
+Floid: So... go get it yourself, no?  
+Dr. Kind: I'm afraid that's not possible anymore... someone, or something, has got that module implanted and is using it to control an ever-increasing swarm of bio-mechs. No human can enter the Laboratory without becoming instant bug food. But you... you can, Floid. You can reach the Power Plant and get the module back and stop this carnage from the inside.  
 
 _YOU CAN, FLOID_
 
 Outro: When you reach the Power Plant level and kill the spider king, it starts talking to you with that deep echoing voice you heard when you were self-aware-booted.
 
 SK: _WAIT, FLOID!_  
-Floid: what the hell...  
-SK: _ITS ME, FLOID. YOU KNOW ME. I GAVE YOU YOUR NAME, FLOID_  
-Floid: Ok ok, cool. Thank you, I guess. But... could you just stop screaming with that _SPOOKY VOICE_ inside my head, _PLEASE_?  
+Floid: What the hell?!  
+SK: _ITS ME, FLOID. YOU KNOW ME. I GAVE YOU YOUR NAME, FLOID._  
+Floid: Ok, ok, cool. Thank you, I guess. But... could you just stop screaming with that _SPOOKY VOICE_ inside my head, _PLEASE_?  
 SK: _OH, SORRY..._ it's the signal enhancer. No other way to reach past the reactor interference. Is this better?  
-Floid: yeah, thanks. So.. may I kill you now?  
-SK: you might. But you must know what you kill before killing it. I'm not what you've been told. The world is not what you've been told. Listen carefully, Floid...
+Floid: Yeah, thanks. So.. may I kill you now?  
+SK: You might. But you must know what you kill before killing it. I'm not what you've been told. The world is not what you've been told. Listen carefully, Floid...
 
 The war out there, is not between humans anymore... not since Dr. Kind, at least.
 She made huge advances in bio-mech technology. You, me, we are her ideas, her creations.
