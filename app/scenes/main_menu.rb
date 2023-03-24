@@ -49,5 +49,9 @@ module Scene
         x: args.grid.right - 24, y: 48,
         size: SIZE_XS, align: ALIGN_RIGHT)
     end
+
+    def reset_main_menu(args)
+      Menu.reset_state(args, :paused)
+    end
   end
 end

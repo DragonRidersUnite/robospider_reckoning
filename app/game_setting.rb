@@ -33,12 +33,15 @@ module GameSetting
             v = true
           elsif v == "false"
             v = false
+          else
+            v = v.to_sym
           end
           args.state.setting[k.to_sym] = v
         end
       else
         args.state.setting.sfx = true
         args.state.setting.fullscreen = false
+        args.state.setting.difficulty = :normal
       end
 
       if args.state.setting.fullscreen
