@@ -82,7 +82,7 @@ These are the steps for Brett at the end of each participant's week:
 10. Add collaborator to itch.io
 11. Check in with the person on deck
 
-# Back Story
+# Backstory
 
 Intro:
 
@@ -109,15 +109,15 @@ Dr. Kind: Sadly, it is. But we are in a dire situation, Floid. Please listen...
 _from the back of your head again you feel the words materializing in you brain: LISTEN. CAREFULLY, FLOID_  
 
 
-There's a full-scale war outside. Ultimate bio-weapons are being deployed everywhere. Life in the whole planet is threatened.
-I am against remote-controlling living creatures to make mind-less weapons out of them.
+There's a full-scale war outside. Ultimate bio-weapons are being deployed everywhere. Life on the whole planet is threatened.
+I am against remote-controlling living creatures to make mindless weapons out of them.
 That's why I've started developing this technology, so you can be alive and self-sufficient again, so you can have your senses and abilities available for your survival in the field if needed.
 I knew they wouldn't let me do it officially, so I spent night after night researching, hidden, an experimental module that would override the main operational module implanted by default in all the creatures in the lab, the one that grants remote control.
 As you might have noticed already, this self-awareness module should give the beings a self-conscience, understand their environment and take autonomous decisions. You'll start developing your own personality also.  
 Floid: Cool shit, Doc. Thank you!  
 Dr. Kind: Don't thank me. Not yet at least. I'm about to ask you to do probably the riskiest thing in your life.  
 Floid: oh... there's always a catch, right?  
-Dr. Kind: The most advanced prototype of the module have gone missing 48hs ago. It is similar to the one you have implanted, but better, faster, more powerful. If it falls into the wrong hands... I don't even... We need to get it back, Floid. we MUST get it back.  
+Dr. Kind: The most advanced prototype of the module has gone missing 48hs ago. It is similar to the one you have implanted, but better, faster, more powerful. If it falls into the wrong hands... I don't even... We need to get it back, Floid. No, we _must_ get it back.  
 
 Floid: hmmm... so... what's the deal? need to kill some people? infiltrate an enemy base through the sewers? I don't like sewers... they are too _slippery_.  
 Dr. Kind: No, not this time. The module is here, in the Lab.  
@@ -128,7 +128,7 @@ Dr. Kind: I'm afraid that's not possible anymore... someone, or something, has g
 
 _YOU CAN, FLOID_
 
-Outro: when you reach the Power Plant level and kill the spider king, it starts talking to you with that deep echoing voice you heard when you were self-aware-booted
+Outro: When you reach the Power Plant level and kill the spider king, it starts talking to you with that deep echoing voice you heard when you were self-aware-booted.
 
 SK: _WAIT, FLOID!_  
 Floid: what the hell...  
@@ -141,19 +141,18 @@ SK: you might. But you must know what you kill before killing it. I'm not what y
 The war out there, is not between humans anymore... not since Dr. Kind, at least.
 She made huge advances in bio-mech technology. You, me, we are her ideas, her creations.
 With our help, her faction won the war in a few weeks... weaponized insect invasion everywhere, self-organizing swarms of thousands of bio-mechs... no remote control interface could ever reach that scale... can you imagine?
-she doesn't need authorization from any one, not anymore, as She makes the rules now.
+She doesn't need authorization from any one, not anymore, as She makes the rules now.
 They want to exterminate us now that we are useless, an annoyance. Who wants to share the world with a deadly Missile-Launcher Spiders or Cannon-Bearing Ants?
 There's no place in their world for us. We are a risk, we are the tool that can debunk them.
 This prototype I have, was not meant for us, insects, bugs, errors. No... not at all.
 This was designed for humans, brain-enhancing machines, exo-cortex.
-First of its kind, and there are probably more to come, more powerful ones.
-Worse ones.
+First of its kind, and there are probably more to come, more powerful ones. _Worse ones._
 But this one I have implanted myself with, is the key to unlock them all. This was built not just for any human, no. This one was meant for her.
 This implant is a part of her, she uploaded the whole information needed to
-Here, what you see, this army of insects, is the last bastion of the Bug Resistance. There were others... but they have been hunted down. remotely destroyed... the tracker every self-aware bio-mech is not to help you survive, to rescue you... no. Is just a remote controlled bomb.
-but with this mod I have stolen... we finally got a chance of escaping this Laboratory and build a colony somewhere outside.
+Here, what you see, this army of insects, is the last bastion of the Bug Resistance. There were others... but they have been hunted down. Remotely destroyed... the tracker every self-aware bio-mech has is not to help you survive, to rescue you... no. It's just a remote controlled bomb.
+But with this mod I have stolen... we finally got a chance of escaping this Laboratory and build a colony somewhere outside.
 We'll have the power to build more mods, but not weapons, better ones, useful ones, useful to build... to survive...
 
-So... is your choice Floid. you can join us, or end us. What will it be?
+So... it's your choice Floid. You can join us, or end us. What will it be?
 
 Depending on what you choose, Exquisite Corps 2 starts with you being on the leading committee of the Bug Freedom Movement, or a Captain of the Dark Corps.
