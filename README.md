@@ -141,7 +141,7 @@ SK: You might. But you must know what you kill before killing it. I'm not what y
 The war out there, is not between humans anymore... not since Dr. Kind, at least.
 She made huge advances in bio-mech technology. You, me, we are her ideas, her creations.
 With our help, her faction won the war in a few weeks... weaponized insect invasion everywhere, self-organizing swarms of thousands of bio-mechs... no remote control interface could ever reach that scale... can you imagine?
-She doesn't need authorization from any one, not anymore, as She makes the rules now.
+She doesn't need authorization from anyone, not anymore, as _She_ makes the rules now.
 They want to exterminate us now that we are useless, an annoyance. Who wants to share the world with a deadly Missile-Launcher Spiders or Cannon-Bearing Ants?
 There's no place in their world for us. We are a risk, we are the tool that can debunk them.
 This prototype I have, was not meant for us, insects, bugs, errors. No... not at all.
