@@ -15,7 +15,7 @@ module Player
         h: H,
         health: Difficulty.based(args, [12, 6, 4]),
         max_health: Difficulty.based(args, [12, 6, 4]),
-        speed: Difficulty.based(args, [3, 2, 1]),
+        speed: Difficulty.based(args, [4, 3, 2]),
         level: 1,
         path: Sprite.for(:player),
         mana: 10,
