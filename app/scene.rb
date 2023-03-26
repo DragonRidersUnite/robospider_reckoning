@@ -9,10 +9,10 @@
 # `:gameplay`
 module Scene
   class << self
-    # Change the current scene, and optionally reset the scene that's begin
-    # changed to so any data is cleared out
-    # ex:
-    #   Scene.switch(args, :gameplay)
+  # Change the current scene, and optionally reset the scene that's begin
+  # changed to so any data is cleared out
+  # ex:
+  #   Scene.switch(args, :gameplay)
     def switch(args, scene, reset: false, return_to: nil)
       args.state.scene_to_return_to = return_to if return_to
 

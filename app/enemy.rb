@@ -21,7 +21,7 @@ module Enemy
     speed: 3,
     body_power: 1,
     xp: 1,
-    sprite: nil,
+    sprite: nil
   }
   ENEMY_SUPER = {
     type: :super,
@@ -35,7 +35,7 @@ module Enemy
     min_mana_drop: 4,
     max_mana_drop: 10,
     body_power: 3,
-    xp: 5,
+    xp: 5
   }
   ENEMY_KING = {
     type: :king,
@@ -54,10 +54,10 @@ module Enemy
   }
 
   class << self
-    # enemy `type` for overriding default algorithm:
-    # - :basic
-    # - :super
-    # - :king
+  # enemy `type` for overriding default algorithm:
+  # - :basic
+  # - :super
+  # - :king
     def spawn(args, type = nil)
       player = args.state.player
       spot = spawn_location(args)
@@ -73,13 +73,14 @@ module Enemy
         enemy.merge!(ENEMY_SUPER)
       when :king
         enemy.merge!(ENEMY_KING)
-      else # the default algorithm
-        super_chance = (10 * player.level).clamp(1,100)
+        # the default algorithm
+      else
+        super_chance = (10 * player.level).clamp(1, 100)
         enemy.merge!(ENEMY_SUPER) if percent_chance?(super_chance)
       end
 
       health = min((enemy.base_health * player.level * rand).ceil, enemy.max_health)
-      enemy.merge!({ health: health, max_health: health })
+      enemy.merge!({health: health, max_health: health})
       args.state.enemies << enemy
       enemy
     end
@@ -89,25 +90,26 @@ module Enemy
       grid = level.grid.flatten.reject(&:wall)
 
       player = {
-        x: args.state.player.x/level.cell_size,
-        y: args.state.player.y/level.cell_size
+        x: args.state.player.x / level.cell_size,
+        y: args.state.player.y / level.cell_size
       }
 
       attempts = -1
       while (attempts += 1) < 20
         pos = grid.sample
 
-        dist = max((pos.x-player.x).abs, (pos.y-player.y).abs) * level.cell_size
+        dist = max((pos.x - player.x).abs, (pos.y - player.y).abs) * level.cell_size
         if dist > 640 && dist < DESPAWN_RANGE
           pos = {
             x: (pos.x + random(0.2, 0.8)) * level.cell_size,
-            y: (pos.y + random(0.2, 0.8)) * level.cell_size,
+            y: (pos.y + random(0.2, 0.8)) * level.cell_size
           }
-          putz "Took #{attempts} attempts to spawn enemy." if debug?
+          putz("Took #{attempts} attempts to spawn enemy.") if debug?
           return pos
         end
       end
-      putz "Could not spawn enemy." if debug?
+
+      putz("Could not spawn enemy.") if debug?
       return nil
     end
 
@@ -148,11 +150,13 @@ module Enemy
         return false
       end
 
-      return false if (higher - lower > 4) # visual range of enemy down a corridor
+      # visual range of enemy down a corridor
+      return false if (higher - lower > 4)
 
-      while (i+=1) <= higher+1
-        return false if (v ? level[same][i-1][:wall] : level[i-1][same][:wall])
+      while (i += 1) <= higher + 1
+        return false if (v ? level[same][i - 1][:wall] : level[i - 1][same][:wall])
       end
+
       return true
     end
 
@@ -161,7 +165,7 @@ module Enemy
       info = Sprite.info(enemy.path)
       anim = info[anim_state]
 
-      spr = enemy[:sprite] ||= { path: enemy.path }
+      spr = enemy[:sprite] ||= {path: enemy.path}
 
       spr.x = enemy.x
       spr.y = enemy.y - enemy.h
@@ -186,7 +190,6 @@ module Enemy
         send(enemy.mode, args, enemy, player, level)
         enemy.delay_counter += 1
 
-        
         tick_flasher(enemy[:sprite]) if !enemy[:sprite].nil?
         if enemy.health == 1 && enemy.max_health > 1
           enemy.merge!(RED)
@@ -214,12 +217,14 @@ module Enemy
       if see_player?(enemy, player, level)
         enemy.target = player
         return enemy.mode = :chasing
-      elsif enemy.type == :king # This guy always hunts
+        # This guy always hunts
+      elsif enemy.type == :king
         enemy.target = player
         return enemy.mode = :hunting
-      elsif rand(2) == 0 # NOTE: log(0.05)/log(1.0-chance) =~ occurences to get 95% chance of this activating
-                         # log(0.05)/log(1.0-0.5) =~ 4.3 | At 30 delay (2 per/sec) it'll happen before ~2 seconds or at worst, after
-        enemy.target = { x: enemy.x + random(-400, 400), y: enemy.y + random(-400, 400) }
+        # NOTE: log(0.05)/log(1.0-chance) =~ occurences to get 95% chance of this activating
+      elsif rand(2) == 0
+        # log(0.05)/log(1.0-0.5) =~ 4.3 | At 30 delay (2 per/sec) it'll happen before ~2 seconds or at worst, after
+        enemy.target = {x: enemy.x + random(-400, 400), y: enemy.y + random(-400, 400)}
         return enemy.mode = :wandering
       end
     end
@@ -235,7 +240,8 @@ module Enemy
           enemy.attention_counter = 0
           enemy.target = false
           return enemy.mode = :idle
-        elsif rand(40) == 0 # Low chance a wandering enemy will catch your scent!
+          # Low chance a wandering enemy will catch your scent!
+        elsif rand(40) == 0
           return enemy.mode = :hunting
         end
       end
@@ -274,21 +280,29 @@ module Enemy
       elsif pass_delay?(enemy)
         enemy.path_points = Pathfinding.find_path(
           level[:pathfinding_graph],
-          start: { x: ((enemy.x + enemy.w / 2) / level.cell_size).floor,
-                   y: ((enemy.y + enemy.h / 2) / level.cell_size).floor },
-          goal: { x: ((player.x + player.w / 2) / level.cell_size).floor,
-                  y: ((player.y + player.h / 2) / level.cell_size).floor }
+          start: {
+            x: ((enemy.x + enemy.w / 2) / level.cell_size).floor,
+            y: ((enemy.y + enemy.h / 2) / level.cell_size).floor
+          },
+          goal: {
+            x: ((player.x + player.w / 2) / level.cell_size).floor,
+            y: ((player.y + player.h / 2) / level.cell_size).floor
+          }
         )
-        enemy.path_points.shift # First point is redundant?
-        enemy.delay_counter = -3.seconds # Don't need to update the path a lot
+        # First point is redundant?
+        enemy.path_points.shift
+        # Don't need to update the path a lot
+        enemy.delay_counter = -3.seconds
         enemy.target = false
       end
 
       unless do_chase(args, enemy)
         if enemy.path_points && !enemy.path_points.empty?
           next_cell = enemy.path_points.shift
-          enemy.target = { x: (next_cell.x + 0.5) * level.cell_size,
-                           y: (next_cell.y + 0.5) * level.cell_size }
+          enemy.target = {
+            x: (next_cell.x + 0.5) * level.cell_size,
+            y: (next_cell.y + 0.5) * level.cell_size
+          }
         end
       end
     end
@@ -307,8 +321,8 @@ module Enemy
     end
 
     def see_player?(enemy, player, level)
-      enemy_pos  = { x: enemy.x.idiv(level.cell_size),  y: enemy.y.idiv(level.cell_size) }
-      player_pos = { x: player.x.idiv(level.cell_size), y: player.y.idiv(level.cell_size) }
+      enemy_pos = {x: enemy.x.idiv(level.cell_size), y: enemy.y.idiv(level.cell_size)}
+      player_pos = {x: player.x.idiv(level.cell_size), y: player.y.idiv(level.cell_size)}
 
       line_of_sight(level.grid, enemy_pos, player_pos)
     end

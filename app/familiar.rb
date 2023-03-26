@@ -12,7 +12,7 @@ module Familiar
         health: 3,
         dist_from_player: 60,
         angle: 0,
-        path: Sprite.for(:familiar),
+        path: Sprite.for(:familiar)
       }
       player.familiars << familiar
       familiar

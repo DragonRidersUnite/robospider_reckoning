@@ -18,7 +18,7 @@ module Sprite
     enemy_super: "sprites/enemy/super-sheet.png",
     enemy_king: "sprites/enemy/king-sheet.png",
     boss: "sprites/enemy/boss-sheet.png",
-    hud: "sprites/hud.png",
+    hud: "sprites/hud.png"
   }
 
   INFO = {
@@ -27,12 +27,20 @@ module Sprite
         loop: false,
         frames: 1,
         duration: 1,
-        x: 0, y: 0, w: 32, h: 96 },
+        x: 0,
+        y: 0,
+        w: 32,
+        h: 96
+      },
       flying: {
         loop: true,
         frames: 2,
         duration: 1,
-        x: 32, y: 0, w: 32, h: 96 },
+        x: 32,
+        y: 0,
+        w: 32,
+        h: 96
+      },
       w: 96,
       h: 96
     },
@@ -41,12 +49,20 @@ module Sprite
         loop: false,
         frames: 1,
         duration: 1,
-        x: 0, y: 0, w: 32, h: 96 },
+        x: 0,
+        y: 0,
+        w: 32,
+        h: 96
+      },
       flying: {
         loop: true,
         frames: 2,
         duration: 1,
-        x: 32, y: 0, w: 32, h: 96 },
+        x: 32,
+        y: 0,
+        w: 32,
+        h: 96
+      },
       w: 96,
       h: 96
     },
@@ -55,12 +71,20 @@ module Sprite
         loop: false,
         frames: 1,
         duration: 1,
-        x: 0, y: 0, w: 32, h: 96 },
+        x: 0,
+        y: 0,
+        w: 32,
+        h: 96
+      },
       flying: {
         loop: true,
         frames: 2,
         duration: 1,
-        x: 32, y: 0, w: 32, h: 96 },
+        x: 32,
+        y: 0,
+        w: 32,
+        h: 96
+      },
       w: 96,
       h: 96
     }
@@ -80,4 +104,3 @@ module Sprite
     end
   end
 end
-

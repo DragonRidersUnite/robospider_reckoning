@@ -6,9 +6,15 @@ module Artifact
       pos = spawn_location(args)
 
       if type == :door
-        wall = args.state.level.walls.select do |w|
-          w.x < pos.x && w.x + w.w > pos.x && w.y > pos.y
-        end.sort_by { |w| w.y }.first
+        wall = args
+          .state
+          .level
+          .walls
+          .select do |w|
+            w.x < pos.x && w.x + w.w > pos.x && w.y > pos.y
+          end
+          .sort_by { |w| w.y }
+          .first
         artifact = {
           x: pos.x - SIZE / 2,
           y: wall.y,
@@ -27,7 +33,6 @@ module Artifact
         }
         artifact if pos
       end
-
     end
 
     def spawn_location(args)
@@ -45,17 +50,18 @@ module Artifact
 
         pos = grid.pop
 
-        dist = [(pos.x-player.x).abs, (pos.y-player.y).abs].max
+        dist = [(pos.x - player.x).abs, (pos.y - player.y).abs].max
         if dist > min_dist
           pos = {
             x: (pos.x + random(0.4, 0.6)) * level.cell_size,
-            y: (pos.y + random(0.4, 0.6)) * level.cell_size,
+            y: (pos.y + random(0.4, 0.6)) * level.cell_size
           }
-          putz "Took #{attempts} attempts to spawn artifact." if debug?
+          putz("Took #{attempts} attempts to spawn artifact.") if debug?
           return pos
         end
+
         if grid.length == 0
-          putz "Could not spawn artifact. This is bad." if debug?
+          putz("Could not spawn artifact. This is bad.") if debug?
           return nil
         end
       end

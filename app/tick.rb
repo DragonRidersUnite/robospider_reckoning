@@ -1,4 +1,3 @@
-
 DEG2RAD = Math::PI / 180
 
 # Code that only gets run once on game start
@@ -77,10 +76,7 @@ end
 # checks if the passed in `rect` is outside of the `container`
 # `container` can be any rectangle-ish data structure
 def out_of_bounds?(container, rect)
-  rect.x > container.right ||
-    rect.x + rect.w < container.left ||
-    rect.y > container.top ||
-    rect.y + rect.h < container.bottom
+  rect.x > container.right || rect.x + rect.w < container.left || rect.y > container.top || rect.y + rect.h < container.bottom
 end
 
 def lerp(a, b, t)
@@ -101,11 +97,11 @@ end
 
 # The version of your game defined in `metadata/game_metadata.txt`
 def version
-  $gtk.args.cvars['game_metadata.version'].value
+  $gtk.args.cvars["game_metadata.version"].value
 end
 
 def title
-  $gtk.args.cvars['game_metadata.gametitle'].value
+  $gtk.args.cvars["game_metadata.gametitle"].value
 end
 
 # debug mode is what's running when you're making the game
@@ -172,18 +168,18 @@ def debug_label(args, x, y, text)
   return unless debug?
   return unless args.state.render_debug_details
 
-  args.outputs.debug << { x: x, y: y, text: text }.label!(WHITE)
+  args.outputs.debug << {x: x, y: y, text: text}.label!(WHITE)
 end
 
 def debug_border(args, x, y, w, h, color)
   return unless debug?
   return unless args.state.render_debug_details
 
-  args.outputs.debug << { x: x, y: y, w: w, h: h }.border!(color)
+  args.outputs.debug << {x: x, y: y, w: w, h: h}.border!(color)
 end
 
 # If you have a lot of debug statements together, helps reduce unneccessary calculations in production
-def debug_block &block
+def debug_block(&block)
   block.call if debug?
 end
 
@@ -214,5 +210,5 @@ end
 
 # different than background_color... use this to change the bg color!
 def draw_bg(args, color)
-  args.outputs.solids << { x: args.grid.left, y: args.grid.bottom, w: args.grid.w, h: args.grid.h }.merge(color)
+  args.outputs.solids << {x: args.grid.left, y: args.grid.bottom, w: args.grid.w, h: args.grid.h}.merge(color)
 end

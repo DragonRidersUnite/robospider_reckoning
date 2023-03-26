@@ -28,5 +28,6 @@ def exterminate_sounds(args)
   args.state.sounds.each do |key|
     args.audio[key[0]] = false
   end
+
   args.state.sounds = {}
 end

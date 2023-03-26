@@ -88,16 +88,12 @@ module LevelGeneration
     end
 
     def initialize_grid
-      Array.new(@size) { |x|
-        Array.new(@size) { |y|
-          { x: x, y: y, wall: true}
-        }
-      }
+      Array.new(@size) { |x| Array.new(@size) { |y| {x: x, y: y, wall: true} } }
     end
 
     def remove_wall_between(current_cell, next_cell)
-      x = (current_cell[:x] + next_cell[:x]).idiv 2
-      y = (current_cell[:y] + next_cell[:y]).idiv 2
+      x = (current_cell[:x] + next_cell[:x]).idiv(2)
+      y = (current_cell[:y] + next_cell[:y]).idiv(2)
       @grid[x][y][:wall] = false
     end
 

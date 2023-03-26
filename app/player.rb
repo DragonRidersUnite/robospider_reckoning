@@ -5,7 +5,7 @@ module Player
   H = 32
 
   class << self
-    # returns a new player data structure
+  # returns a new player data structure
     def create(args, x:, y:)
       legged_creature = LeggedCreature.create(args, x: x, y: y)
       p = {
@@ -15,15 +15,15 @@ module Player
         h: H,
         health: Difficulty.based(args, [12, 6, 4]),
         max_health: Difficulty.based(args, [12, 6, 4]),
-        speed: Difficulty.based(args, [3, 2, 1]),
+        speed: Difficulty.based(args, [4, 3, 2]),
         level: 1,
         path: Sprite.for(:player),
         mana: 10,
         max_mana: 20,
         spell: 0,
         spell_count: 1,
-        spell_cost: Difficulty.based(args, [[1, 2, 4, 6, 50],[1, 5, 10, 10, 100],[1, 10, 20, 25, 150]]),
-        spell_delay: Difficulty.based(args, [[10, 20, 40, 20, 140],[20, 30, 60, 30, 180],[25, 40, 70, 40, 200]]),
+        spell_cost: Difficulty.based(args, [[1, 2, 4, 6, 50], [1, 5, 10, 10, 100], [1, 10, 20, 25, 150]]),
+        spell_delay: Difficulty.based(args, [[10, 20, 40, 20, 140], [20, 30, 60, 30, 180], [25, 40, 70, 40, 200]]),
         spell_delay_counter: 0,
         bullets: [],
         bullet_offset: 30,
@@ -119,6 +119,7 @@ module Player
           end
         end
       end
+
       player.bullets.concat(temp)
       player.bullets.reject! { |b| b.dead }
 
@@ -133,18 +134,19 @@ module Player
         reset_color(player)
       end
       # tick for effects
-      player.effects.reject! { ParticleSystem.dead? _1 }
+      player.effects.reject! { ParticleSystem.dead?(_1) }
       player.effects.each { ParticleSystem.tick(args, _1) }
 
       player.mana += 1 if player.mana_regen && args.tick_count.mod_zero?(player.mana_rate)
 
       debug_block do
         position_on_screen = Camera.translate(args.state.camera, player)
-        x,y = *muzzle_position(player)
+        x, y = *muzzle_position(player)
         muzzle = Camera.translate(args.state.camera, {x: x, y: y})
         debug_border(args, position_on_screen.x, position_on_screen.y, player.w, player.h, WHITE)
         debug_border(args, muzzle.x, muzzle.y, 5, 5, WHITE)
-        ["x: #{player.x.to_sf}",
+        [
+          "x: #{player.x.to_sf}",
           "y: #{player.y.to_sf}",
           "dir: #{player.direction}",
           "angle: #{player.angle.to_sf}",
@@ -161,10 +163,10 @@ module Player
 
     def bullet(source, angle)
       x, y = *if source.bomb
-                [source.x + source.w / 2, source.y + source.h / 2]
-              else
-                muzzle_position(source)
-              end
+        [source.x + source.w / 2, source.y + source.h / 2]
+      else
+        muzzle_position(source)
+      end
 
       {
         x: x - BULLET_SIZE / 2,
@@ -188,9 +190,8 @@ module Player
       ]
     end
 
-
     def bomb(player, angle)
-      x, y = * muzzle_position(player)
+      x, y = *muzzle_position(player)
       {
         x: x - BULLET_SIZE / 2,
         y: y - BULLET_SIZE / 2,
@@ -233,7 +234,8 @@ module Player
   end
 
   SPELLCAST = {
-    0 => ->(args, player, firing) do # fire bullet
+    # fire bullet
+    0 => -> (args, player, firing) do
       player.spell_delay_counter += 1
       return unless firing && player.mana >= player.spell_cost[0]
 
@@ -258,7 +260,7 @@ module Player
         Cards.mock_reload(args.state.cards, player)
 
         Player.knockback(args, player, player.body_power, (180 + turret_angle), 2)
-        
+
         muzzle_position = muzzle_position(player)
         smoke = ParticleSystem.create(
           SmokeEffect,
@@ -274,7 +276,8 @@ module Player
         player.effects << smoke
       end
     end,
-    1 => ->(args, player, firing) do # spawn familiar
+    # spawn familiar
+    1 => -> (args, player, firing) do
       if firing && player.mana >= player.spell_cost[1] && player.familiars.length < player.familiar_limit
         player.spell_delay_counter += 1
         if player.spell_delay_counter >= player.spell_delay[1]
@@ -288,7 +291,8 @@ module Player
         player.spell_delay_counter = 0
       end
     end,
-    2 => ->(args, player, firing) do # heal damage
+    # heal damage
+    2 => -> (args, player, firing) do
       if firing && player.health < player.max_health && player.mana >= player.spell_cost[2]
         player.spell_delay_counter += 1
 
@@ -303,7 +307,8 @@ module Player
         player.spell_delay_counter = 0
       end
     end,
-    3 => ->(args, player, firing) do # spawn bomb
+    # spawn bomb
+    3 => -> (args, player, firing) do
       player.spell_delay_counter += 1
       return unless firing && player.mana >= player.spell_cost[3]
 
@@ -315,11 +320,13 @@ module Player
         Cards.mock_reload(args.state.cards, player)
       end
     end,
-    4 => ->(args, player, firing) do # joker card
+    # joker card
+    4 => -> (args, player, firing) do
       unless firing && player.mana >= player.spell_cost[4]
         player.spell_delay_counter = 0
         return
       end
+
       player.spell_delay_counter += 1
 
       if player.spell_delay_counter >= player.spell_delay[4]
@@ -333,7 +340,7 @@ module Player
 
   LEVEL_PROG = {
     2 => {
-      on_reach: ->(args, player) do
+      on_reach: -> (args, player) do
         player.max_mana += 10
         player.spell_count = 2
         player.familiar_limit = 3
@@ -343,7 +350,7 @@ module Player
       end
     },
     3 => {
-      on_reach: ->(args, player) do
+      on_reach: -> (args, player) do
         player.mana_chip_magnetic_dist *= 2
         player.health += 4
         player.max_health += 4
@@ -356,7 +363,7 @@ module Player
       end
     },
     4 => {
-      on_reach: ->(args, player) do
+      on_reach: -> (args, player) do
         player.fire_pattern = FP_TRI
         player.speed += 1
         player.max_mana += 10
@@ -368,7 +375,7 @@ module Player
       end
     },
     5 => {
-      on_reach: ->(args, player) do
+      on_reach: -> (args, player) do
         player.health += 10
         player.max_health += 10
         player.max_mana += 10
@@ -380,7 +387,7 @@ module Player
       end
     },
     8 => {
-      on_reach: ->(args, player) do
+      on_reach: -> (args, player) do
         player.health = 30
         player.max_health = 30
         player.max_mana = 100
@@ -391,13 +398,14 @@ module Player
       end
     },
     :default => {
-      on_reach: ->(args, player) do
+      on_reach: -> (args, player) do
         player.health += 2
         player.max_health += 2
         player.max_mana += 5
         player.familiar_limit += 1
         player.xp_needed *= 2
       end
-    } # post-game rewards for collecting further artifacts
+      # post-game rewards for collecting further artifacts
+    }
   }
 end

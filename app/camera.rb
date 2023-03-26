@@ -1,7 +1,7 @@
 module Camera
   class << self
     def build
-      { x: 0, y: 0, w: 1280, h: 720 }
+      {x: 0, y: 0, w: 1280, h: 720}
     end
 
     # Follows the target object with the camera
@@ -11,13 +11,16 @@ module Camera
     end
 
     def translate(camera, object)
-      return object.map do |o|
-        if sprite = o[:sprite]
-          translate(camera, sprite)
-        else
-          translate(camera, o)
+
+      if object.is_a?(Array)
+        return object.map do |o|
+          if sprite = o[:sprite]
+            translate(camera, sprite)
+          else
+            translate(camera, o)
+          end
         end
-      end if object.is_a?(Array)
+      end
 
       object.merge(
         x: object.x - camera.x,

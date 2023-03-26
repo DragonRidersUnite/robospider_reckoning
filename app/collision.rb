@@ -1,7 +1,7 @@
 module Collision
   class << self
-    # Executes the block for each intersections of the collections. If a
-    # collection isn't an array, it's put into one so it can properly loop.
+  # Executes the block for each intersections of the collections. If a
+  # collection isn't an array, it's put into one so it can properly loop.
     def detect(col1, col2)
       col1 = [col1] unless col1.is_a?(Array)
       col2 = [col2] unless col2.is_a?(Array)
@@ -26,18 +26,22 @@ module Collision
       collider_to_object_y = object_center_y - collider_center_y
       collider_to_object_slope = collider_to_object_y.abs / [collider_to_object_x.abs, 0.0001].max
       move_direction = if collider_to_object_x >= 0
-                         if collider_to_object_y >= 0 # top right
-                           collider_to_object_slope > collider_diagonal_slope ? :up : :right
-                         else # bottom right
-                           collider_to_object_slope > collider_diagonal_slope ? :down : :right
-                         end
-                       else
-                         if collider_to_object_y >= 0 # top left
-                           collider_to_object_slope > collider_diagonal_slope ? :up : :left
-                         else # bottom left
-                           collider_to_object_slope > collider_diagonal_slope ? :down : :left
-                         end
-                       end
+        # top right
+        if collider_to_object_y >= 0
+          collider_to_object_slope > collider_diagonal_slope ? :up : :right
+          # bottom right
+        else
+          collider_to_object_slope > collider_diagonal_slope ? :down : :right
+        end
+      else
+        # top left
+        if collider_to_object_y >= 0
+          collider_to_object_slope > collider_diagonal_slope ? :up : :left
+          # bottom left
+        else
+          collider_to_object_slope > collider_diagonal_slope ? :down : :left
+        end
+      end
 
       case move_direction
       when :up
@@ -45,16 +49,19 @@ module Collision
         if object.include?(:c_y)
           object[:c_y] = collider.top + object[:h] / 2
         end
+
       when :down
         object[:y] = collider.bottom - object[:h]
         if object.include?(:c_y)
           object[:c_y] = collider.bottom - object[:h] / 2
         end
+
       when :left
         object[:x] = collider.left - object[:w]
         if object.include?(:c_y)
           object[:c_x] = collider.left - object[:w] / 2
         end
+
       when :right
         object[:x] = collider.right
         if object.include?(:c_x)

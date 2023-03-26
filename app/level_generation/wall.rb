@@ -7,9 +7,9 @@ module LevelGeneration
 
       def determine_walls_calculation(grid)
         LongCalculation.define do
-          putz "Raw: #{grid.flatten.length}" if debug?
+          putz("Raw: #{grid.flatten.length}") if debug?
           all_walls = determine_vertical_walls(grid)
-          putz "After vertical trimming: #{all_walls.length}" if debug?
+          putz("After vertical trimming: #{all_walls.length}") if debug?
           remove_redundant_walls(all_walls)
         end
       end
@@ -22,12 +22,12 @@ module LevelGeneration
           horizontal_walls[wall[:x]] << wall
           largest = [largest, wall[:x]].max
         end
-        
+
         i = 0
         while largest > i
           prev_column = horizontal_walls[i] || []
-          new_column = horizontal_walls[i+1] || []
-        
+          new_column = horizontal_walls[i + 1] || []
+
           k1 = 0
           k2 = 0
 
@@ -53,14 +53,16 @@ module LevelGeneration
               end
             end
           end
+
           i += 1
         end
+
         result = []
         horizontal_walls.each do |column|
           result.concat(column[1])
         end
 
-        putz "After final trimming: #{result.length}" if debug?
+        putz("After final trimming: #{result.length}") if debug?
 
         return result
       end
@@ -73,7 +75,7 @@ module LevelGeneration
           current_column = []
           column.each_with_index do |cell, y|
             unless current_wall
-              current_wall = { x: x, y: y, w: 1, h: 1 } if cell[:wall]
+              current_wall = {x: x, y: y, w: 1, h: 1} if cell[:wall]
               next
             end
 

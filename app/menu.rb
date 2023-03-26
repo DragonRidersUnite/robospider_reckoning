@@ -1,14 +1,14 @@
 module Menu
   class << self
-    # Updates and renders a list of options that get passed through.
-    #
-    # +options+ data structure:
-    # [
-    #   {
-    #     text: "some string",
-    #     on_select: -> (args) { "do some stuff in this lambda" }
-    #   }
-    # ]
+  # Updates and renders a list of options that get passed through.
+  #
+  # +options+ data structure:
+  # [
+  #   {
+  #     text: "some string",
+  #     on_select: -> (args) { "do some stuff in this lambda" }
+  #   }
+  # ]
     def tick(args, state_key, options)
       args.state.send(state_key).current_option_i ||= 0
       args.state.send(state_key).hold_delay ||= 0
@@ -18,11 +18,12 @@ module Menu
 
       options.each.with_index do |option, i|
         text = case option.kind
-               when :toggle
-                 "#{text(option[:key])}: #{text_for_setting_val(option[:setting_val])}"
-               else
-                 text(option[:key])
-               end
+        when :toggle
+          "#{text(option[:key])}: #{text_for_setting_val(option[:setting_val])}"
+        else
+          text(option[:key])
+        end
+
         label = label(
           text,
           x: args.grid.w / 2,
@@ -33,12 +34,13 @@ module Menu
         label_size = args.gtk.calcstringbox(label.text, label.size_enum)
         labels << label
         if menu_state.current_option_i == i
-          args.outputs.solids << {
-            x: label.x - (label_size[0] / 1.4) - 24 + (Math.sin(args.tick_count / 8) * 4),
-            y: label.y - 22,
-            w: 16,
-            h: 16,
-          }.merge(WHITE)
+          args.outputs.solids <<
+            {
+              x: label.x - (label_size[0] / 1.4) - 24 + (Math.sin(args.tick_count / 8) * 4),
+              y: label.y - 22,
+              w: 16,
+              h: 16
+            }.merge(WHITE)
         end
       end
 
@@ -70,8 +72,9 @@ module Menu
           elsif index > options.length - 1
             index = 0
           end
+
           menu_state.current_option_i = index
-		  if menu_state.hold_delay == -1
+          if menu_state.hold_delay == -1
             menu_state.hold_delay = 20
           else
             menu_state.hold_delay = 6
