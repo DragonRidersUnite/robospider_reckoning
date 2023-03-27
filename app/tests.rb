@@ -106,7 +106,7 @@ end
 
 test(:game_setting_settings_for_save) do |args, assert|
   it "joins hash keys and values" do
-    assert.equal!(GameSetting.settings_for_save({fullscreen: true, sfx: false}), "fullscreen:true,sfx:false")
+    assert.equal!(GameSettings.settings_for_save({fullscreen: true, sfx: false}), "fullscreen:true,sfx:false")
   end
 end
 

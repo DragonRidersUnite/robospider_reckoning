@@ -2,7 +2,7 @@ DEG2RAD = Math::PI / 180
 
 # Code that only gets run once on game start
 def init(args)
-  GameSetting.load_settings(args)
+  GameSettings.load_settings(args)
   args.state.scene = :main_menu
 end
 

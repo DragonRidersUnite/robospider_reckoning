@@ -11,7 +11,7 @@ module Scene
           setting_val: a_s.settings.difficulty,
           on_select: -> (args) do
             unless a_s.paused.current_option_i
-              GameSetting.save_after(args) do |args|
+              GameSettings.save_after(args) do |args|
                 a_s.settings.difficulty = DIFFICULTY[(DIFFICULTY.index(a_s.settings.difficulty) + 1) % DIFFICULTY.length]
               end
             end
@@ -22,7 +22,7 @@ module Scene
           kind: :toggle,
           setting_val: a_s.settings.sfx,
           on_select: -> (args) do
-            GameSetting.save_after(args) do |args|
+            GameSettings.save_after(args) do |args|
               a_s.settings.sfx = !a_s.settings.sfx
             end
           end
@@ -41,7 +41,7 @@ module Scene
             kind: :toggle,
             setting_val: a_s.settings.fullscreen,
             on_select: -> (args) do
-              GameSetting.save_after(args) do |args|
+              GameSettings.save_after(args) do |args|
                 a_s.settings.fullscreen = !a_s.settings.fullscreen
                 args.gtk.set_window_fullscreen(a_s.settings.fullscreen)
               end
