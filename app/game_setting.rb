@@ -2,9 +2,9 @@
 # like fullscreen on/off, sfx on/off, etc.
 module GameSettings
   class << self
-  # returns a string of a hash of settings in the following format:
-  # key1=val1,key2=val2
-  # `settings` should be a hash of keys and vals to be saved
+    # returns a string of a hash of settings in the following format:
+    # key1:val1,key2:val2
+    # `settings` should be a hash of keys and vals to be saved
     def settings_for_save(settings)
       settings
         .map do |k, v|
