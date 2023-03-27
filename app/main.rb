@@ -12,7 +12,8 @@ CREDITS = [
   "HIRO-R-B",
   "Vlevo",
   "F-3r",
-  "Elwampa"
+  "Elwampa",
+  "leviongit"
 ].shuffle
 
 require "app/input.rb"
