@@ -5,50 +5,12 @@ module Scene
       a_s = args.state
 
       options = [
-        {
-          key: :difficulty,
-          kind: :toggle,
-          setting_val: a_s.settings.difficulty,
-          on_select: -> (args) do
-            unless a_s.paused.current_option_i
-              GameSettings.save_after(args) do |args|
-                a_s.settings.difficulty = DIFFICULTY[(DIFFICULTY.index(a_s.settings.difficulty) + 1) % DIFFICULTY.length]
-              end
-            end
-          end
-        },
-        {
-          key: :sfx,
-          kind: :toggle,
-          setting_val: a_s.settings.sfx,
-          on_select: -> (args) do
-            GameSettings.save_after(args) do |args|
-              a_s.settings.sfx = !a_s.settings.sfx
-            end
-          end
-        },
+        *GameSettings::SETTINGS.map { |s| s.merge(setting_val: a_s.settings[s[:key]]) },
         {
           key: :back,
           on_select: -> (args) { Scene.switch(args, :back) }
         }
       ]
-
-      if args.gtk.platform?(:desktop)
-        options.insert(
-          options.length - 1,
-          {
-            key: :fullscreen,
-            kind: :toggle,
-            setting_val: a_s.settings.fullscreen,
-            on_select: -> (args) do
-              GameSettings.save_after(args) do |args|
-                a_s.settings.fullscreen = !a_s.settings.fullscreen
-                args.gtk.set_window_fullscreen(a_s.settings.fullscreen)
-              end
-            end
-          }
-        )
-      end
 
       Menu.tick(args, :settings, options)
 

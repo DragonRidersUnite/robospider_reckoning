@@ -1,7 +1,55 @@
 # different than the Settings scene, this module contains methods for things
 # like fullscreen on/off, sfx on/off, etc.
 module GameSettings
+  SETTINGS = [
+    {
+      key: :difficulty,
+      default: :normal,
+      kind: :toggle,
+      on_select: -> (args) do
+        a_s = args.state
+        unless a_s.paused.current_option_i
+          GameSettings.save_after(args) do |args|
+            a_s.settings.difficulty = DIFFICULTY[(DIFFICULTY.index(a_s.settings.difficulty) + 1) % DIFFICULTY.length]
+          end
+        end
+      end
+    },
+    {
+      key: :sfx,
+      default: true,
+      kind: :toggle,
+      on_select: -> (args) do
+        GameSettings.save_after(args) do |args|
+          a_s = args.state
+          a_s.settings.sfx = !a_s.settings.sfx
+        end
+      end
+    },
+    # platform-dependant settings
+    *($gtk.platform?(:desktop) ? [
+      {
+        key: :fullscreen,
+        default: false,
+        kind: :toggle,
+        on_select: -> (args) do
+          GameSettings.save_after(args) do |args|
+            a_s = args.state
+            a_s.settings.fullscreen = !a_s.settings.fullscreen
+            args.gtk.set_window_fullscreen(a_s.settings.fullscreen)
+          end
+        end
+      }
+    ] : [])
+  ].map(&:freeze).freeze
+
   class << self
+    def defaults
+      SETTINGS
+        .map { |v| [v[:key], v[:default]] }
+        .to_h
+    end
+
     # returns a string of a hash of settings in the following format:
     # key1:val1,key2:val2
     # `settings` should be a hash of keys and vals to be saved
@@ -29,11 +77,7 @@ module GameSettings
     def load_settings(args)
       settings = args.gtk.read_file(settings_file)&.chomp
 
-      args.state.settings = {
-        sfx: true,
-        fullscreen: false,
-        difficulty: :normal
-      }
+      args.state.settings = defaults
 
       if settings
         settings.split(",").map { |s| s.split(":") }.to_h.each do |k, v|
