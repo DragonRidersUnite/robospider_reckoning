@@ -1,6 +1,6 @@
 # different than the Settings scene, this module contains methods for things
 # like fullscreen on/off, sfx on/off, etc.
-module GameSetting
+module GameSettings
   class << self
   # returns a string of a hash of settings in the following format:
   # key1=val1,key2=val2
@@ -19,7 +19,7 @@ module GameSetting
     end
 
     # useful when wanting to save settings after the code in the block is
-    # executed, ex: `GameSetting.save_after(args) { |args| args.state.settings.big_head_mode = true }
+    # executed, ex: `GameSettings.save_after(args) { |args| args.state.settings.big_head_mode = true }
     def save_after(args)
       yield(args)
       save_settings(args)
