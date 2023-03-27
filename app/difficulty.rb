@@ -7,7 +7,7 @@
 module Difficulty
   class << self
     def based(args, values_array)
-      values_array[DIFFICULTY.index(args.state.setting.difficulty)]
+      values_array[DIFFICULTY.index(args.state.settings.difficulty)]
     end
   end
 end
