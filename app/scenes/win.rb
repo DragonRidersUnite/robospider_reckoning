@@ -21,7 +21,7 @@ module Scene
         )
       labels <<
         label(
-          "#{text(:difficulty)}: #{text(args.state.setting.difficulty)}",
+          "#{text(:difficulty)}: #{text(args.state.settings.difficulty)}",
           x: args.grid.w / 2,
           y: args.grid.top - 420,
           size: SIZE_SM,

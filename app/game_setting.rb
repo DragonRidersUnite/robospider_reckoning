@@ -19,17 +19,17 @@ module GameSetting
     end
 
     # useful when wanting to save settings after the code in the block is
-    # executed, ex: `GameSetting.save_after(args) { |args| args.state.setting.big_head_mode = true }
+    # executed, ex: `GameSetting.save_after(args) { |args| args.state.settings.big_head_mode = true }
     def save_after(args)
       yield(args)
       save_settings(args)
     end
 
-    # loads settings from disk and puts them into `args.state.setting`
+    # loads settings from disk and puts them into `args.state.settings`
     def load_settings(args)
       settings = args.gtk.read_file(settings_file)&.chomp
 
-      args.state.setting = {
+      args.state.settings = {
         sfx: true,
         fullscreen: false,
         difficulty: :normal
@@ -45,18 +45,18 @@ module GameSetting
             v = v.to_sym
           end
 
-          args.state.setting[k.to_sym] = v
+          args.state.settings[k.to_sym] = v
         end
       end
 
-      args.gtk.set_window_fullscreen(args.state.setting.fullscreen)
+      args.gtk.set_window_fullscreen(args.state.settings.fullscreen)
     end
 
-    # saves settings from `args.state.setting` to disk
+    # saves settings from `args.state.settings` to disk
     def save_settings(args)
       args.gtk.write_file(
         settings_file,
-        settings_for_save(args.state.setting)
+        settings_for_save(args.state.settings)
       )
     end
   end
