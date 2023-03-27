@@ -29,6 +29,12 @@ module GameSetting
     def load_settings(args)
       settings = args.gtk.read_file(settings_file)&.chomp
 
+      args.state.setting = {
+        sfx: true,
+        fullscreen: false,
+        difficulty: :normal
+      }
+
       if settings
         settings.split(",").map { |s| s.split(":") }.to_h.each do |k, v|
           if v == "true"
@@ -41,22 +47,16 @@ module GameSetting
 
           args.state.setting[k.to_sym] = v
         end
-      else
-        args.state.setting.sfx = true
-        args.state.setting.fullscreen = false
-        args.state.setting.difficulty = :normal
       end
 
-      if args.state.setting.fullscreen
-        args.gtk.set_window_fullscreen(args.state.setting.fullscreen)
-      end
+      args.gtk.set_window_fullscreen(args.state.setting.fullscreen)
     end
 
     # saves settings from `args.state.setting` to disk
     def save_settings(args)
       args.gtk.write_file(
         settings_file,
-        settings_for_save(open_entity_to_hash(args.state.setting))
+        settings_for_save(args.state.setting)
       )
     end
   end
