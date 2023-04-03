@@ -42,8 +42,22 @@ module Scene
         Collision.move_out_of_collider(player, wall)
       end
 
-      Collision.detect(player.bullets, level[:walls]) do |bullet, _|
-        bullet.dead = true
+      Collision.detect(player.bullets, level[:walls]) do |bullet, wall|
+        #bullet.angle *= -1
+
+        #calculate where the bullet was prior to collision
+        vx,vy = vel_from_angle(bullet.angle, bullet.speed)
+        bx = bullet.x - vx
+        by = bullet.y - vy
+
+        #vertial wall hit
+        bullet.angle = 0 - bullet.angle if  by + bullet.h <= wall.y ||
+        by >= wall.y+ wall.h
+        #horizontal wall hit
+        bullet.angle = 180 - bullet.angle if bx + bullet.w <= wall.x ||
+        bx >= wall.x+ wall.w
+        #bullet.dead = true
+        #level[:walls].delete_at(level[:walls].index(wall))
       end
 
       unless a_s.enemies_pass_walls

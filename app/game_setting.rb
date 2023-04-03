@@ -4,7 +4,7 @@ module GameSettings
   SETTINGS = [
     {
       key: :difficulty,
-      default: :normal,
+      default: :easy,
       kind: :toggle,
       on_select: -> (args) do
         a_s = args.state

@@ -1,6 +1,6 @@
 module Player
   BULLET_SIZE = 10
-  BULLET_LIFE = 15
+  BULLET_LIFE = 150
   W = 32
   H = 32
 

@@ -53,7 +53,7 @@ module Cards
             card.x += random(-4 * p, 4 * p)
             card.y += random(-4 * p, 4 * p)
             card.angle += random(-2 * p, 2 * p)
-            play_extended_sound(args, :magic, p) if player.spell_delay[i] >= 30
+            play_extended_sound(args, :magic, p) if player.spell_delay[i] >= 15
           end
 
           if i == 1 && player.familiar_limit <= player.familiars.length
