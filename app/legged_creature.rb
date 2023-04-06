@@ -79,6 +79,11 @@ module LeggedCreature
       dx = lin_vel_vec[0]
       dy = lin_vel_vec[1]
       desired_th = Math.atan2(dy, dx)
+      if p.invertTurrDir
+        desired_th += Math::PI
+      end
+
+      $gtk.args.state.desired_th = desired_th
       dturret_th = 0
       dth = 0
       unless dx.zero? && dy.zero?

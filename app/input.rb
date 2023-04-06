@@ -2,6 +2,10 @@
 module Input
   PRIMARY_KEYS = [:j, :z, :space]
   SECONDARY_KEYS = [:k, :x, :backspace]
+  INVERT_KEYS = [:f]
+
+  NAV_LEFT_KEYS = [:h,:u,:c, :q]
+  NAV_RIGHT_KEYS = [:l,:i,:v, :e]
   PAUSE_KEYS = [:escape, :p]
 
   class << self
@@ -26,6 +30,11 @@ module Input
         inputs.controller_one.key_held&.b
     end
 
+    def invertTurret?(inputs)
+      inputs.controller_one.key_down.x ||
+        INVERT_KEYS.any? { |k| inputs.keyboard.key_down.send(k)}
+    end
+
     def movement?(inputs)
       {x: inputs.left_right, y: inputs.up_down}
     end
@@ -38,18 +47,15 @@ module Input
       inputs.controller_one.key_down.r1 ||
         inputs.controller_one.key_down.r2 ||
         inputs.controller_one.key_down.r3 ||
-        inputs.keyboard.key_down.l ||
-        inputs.keyboard.key_down.i ||
-        inputs.keyboard.key_down.v
+        NAV_RIGHT_KEYS.any? { |k| inputs.keyboard.key_down.send(k)  }
+
     end
 
     def nav_left?(inputs)
       inputs.controller_one.key_down.l1 ||
         inputs.controller_one.key_down.l2 ||
         inputs.controller_one.key_down.l3 ||
-        inputs.keyboard.key_down.h ||
-        inputs.keyboard.key_down.u ||
-        inputs.keyboard.key_down.c
+        NAV_LEFT_KEYS.any? { |k| inputs.keyboard.key_down.send(k)  }
     end
 
     def pause?(inputs)

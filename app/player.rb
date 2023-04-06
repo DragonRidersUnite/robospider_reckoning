@@ -47,7 +47,8 @@ module Player
         contemplation: 120,
         mana_regen: false,
         mana_rate: 250,
-        effects: []
+        effects: [],
+        invertTurrDir:false
       }.merge(WHITE).merge(legged_creature)
 
       p.define_singleton_method(:rush_speed) do
@@ -63,7 +64,9 @@ module Player
 
     def tick(args, player, camera)
       firing = player.firing = Input.fire?(args.inputs)
-
+      if Input.invertTurret?(args.inputs)
+        player.invertTurrDir = !player.invertTurrDir
+      end
       move = Input.movement?(args.inputs)
 
       unless firing
@@ -185,7 +188,7 @@ module Player
 
     def muzzle_position(player)
       [
-        player.x + player.w / 2 + Math.cos(player.turret_th) * player.bullet_offset,
+        player.x + player.w / 2 + Math.cos(player.turret_th) * player.bullet_offset ,
         player.y + player.h / 2 + Math.sin(player.turret_th) * player.bullet_offset
       ]
     end
