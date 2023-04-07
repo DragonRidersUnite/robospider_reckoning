@@ -3,10 +3,12 @@
 name = "exquisite-corps"
 # The game's title. This will show up in the tile bar of your executable.
 title = "Exquisite Corps"
-version = "0.0.0"
+version = "0.13"
 authors = ["Dragon Riders Community"]
 icon = "metadata/icon.png"
-compile_ruby = false
+compile_ruby = true
+highdpi = true
+hd = true
 
 [dragonruby]
 version = "4.4"
