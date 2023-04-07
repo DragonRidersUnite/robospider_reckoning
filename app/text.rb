@@ -5,6 +5,7 @@
 # Don't access via this constant! Use the `#text` method instead.
 TEXT = {
   back: "Back",
+  cant_change_difficulty_during_gameplay: "Difficulty can't be changed during gameplay.",
   controls_title: "Controls",
   controls_keyboard: "WASD/Arrows to move | J/Z/Space to confirm & shoot | Esc/P to pause",
   controls2_keyboard: "C+V, U+I, H+L, Q+E to swap cards, M to toggle minimap, F to toggle turret inversion",
