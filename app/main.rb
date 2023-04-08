@@ -1,4 +1,4 @@
-# EXQUISITE CORPS
+# ROBOSPIDER: RECKONING (F.K.A. EXQUISITE CORPS)
 # ~a collaborative jam of chaos~
 
 # add your name to this array!

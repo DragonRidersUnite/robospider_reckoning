@@ -1,7 +1,7 @@
 devid=dragonridersunite
 devtitle=Dragon Riders Community
-gameid=exquisite-corps
-gametitle=Exquisite Corps
+gameid=robospider-reckoning
+gametitle=RoboSpider: Reckoning
 version=1.0
 icon=metadata/icon.png
 compile_ruby=true

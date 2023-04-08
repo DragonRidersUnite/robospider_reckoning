@@ -1,4 +1,4 @@
-# Exquisite Corps
+# RoboSpider: Reckoning (Exquisite Corps)
 
 **A collaborative jam of chaos**
 
