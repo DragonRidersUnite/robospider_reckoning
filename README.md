@@ -19,8 +19,6 @@ The spirit of this project is to experiment, have fun, and be less precious abou
 
 Have fun! See you on the other side.
 
-[Discord Thread](https://discord.com/channels/608064116111966245/1051849160627847219)
-
 ## Developing
 
 The engine files are not included in this source repository so that people can use whatever operating system they want. Also, if we open source it when it's done, it's easier to not have to deal with that.
@@ -65,22 +63,6 @@ Tests for methods live in `app/tests.rb`. Run the tests with from within your en
 ```
 
 or just use `./run_tests` if you're on an OS with shell scripting (Linux/MacOS).
-
-## Weekly Hand-Off
-
-These are the steps for Brett at the end of each participant's week:
-
-1. Test the build
-2. Bump the version
-3. Commit & tag the bump
-4. Record progress video
-5. Upload to itch.io for private viewing
-6. Add next person to GitHub repo
-7. Add next person to private Discord thread
-8. Let them know they're up!
-9. Update the [spreadsheet](https://docs.google.com/spreadsheets/d/1mYuRJ8Y6dVQJDy_0MaMyJSEselNp7LXFXM0fKSjbJqw/edit)
-10. Add collaborator to itch.io
-11. Check in with the person on deck
 
 # Back Story
 
@@ -158,8 +140,3 @@ We'll have the power to build more mods, but not weapons, better ones, useful on
 So... is your choice Floid. you can join us, or end us. What will it be?
 
 Depending on what you choose, Exquisite Corps 2 starts with you being on the leading comitee of the Bug Freedom Movement, or a Captain of the Dark Corps.
-
-
-
-
-
