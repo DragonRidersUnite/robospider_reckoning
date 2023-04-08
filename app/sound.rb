@@ -1,14 +1,21 @@
+GAIN = 0.6
+
 def play_sfx(args, key)
   if args.state.settings.sfx
-    args.outputs.sounds << "sounds/#{key}.wav"
+    args.audio[key] = {
+      input: "sounds/#{key}.wav",
+      gain: GAIN,
+    }
   end
 end
+
 
 def play_extended_sound(args, key, vol)
   if args.state.settings.sfx
     args.audio[key] ||= {
       input: "sounds/#{key}.wav",
-      looping: true
+      looping: true,
+      gain: GAIN,
     }
     args.audio[key].gain = vol
     if vol > 0
