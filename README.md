@@ -64,7 +64,7 @@ Tests for methods live in `app/tests.rb`. Run the tests with from within your en
 
 or just use `./run_tests` if you're on an OS with shell scripting (Linux/MacOS).
 
-# Back Story
+# Backstory
 
 Intro:
 
