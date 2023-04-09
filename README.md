@@ -2,6 +2,8 @@
 
 **2D action game by the DragonRuby community that's the result of an exquisite corpse jam.**
 
+🎮 [Play the game](https://dragonridersunite.itch.io/robospider-reckoning)
+
 Built with DragonRuby Game Toolkit v4.0 Standard Edition.
 
 f.k.a. Exquisite Corps
