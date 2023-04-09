@@ -8,6 +8,8 @@ Built with DragonRuby Game Toolkit v4.0 Standard Edition.
 
 f.k.a. Exquisite Corps
 
+Contributors: Brett Chalupa, Jae Donley, Kevin Fischer, Ceph (a.k.a. Ferociousfeind), Kota, marc, Hiro, Vlevo, f-3r, Papa Crub, Elwampa, Levi, Magi
+
 ## Controls
 
 - Move: WASD / Arrow Keys / Gamepad
