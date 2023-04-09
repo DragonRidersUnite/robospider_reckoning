@@ -1,8 +1,10 @@
-# RoboSpider: Reckoning (Exquisite Corps)
+# RoboSpider: Reckoning
 
-**A collaborative jam of chaos**
+**2D action game by the DragonRuby community that's the result of an exquisite corpse jam.**
 
 Built with DragonRuby Game Toolkit v4.0 Standard Edition.
+
+f.k.a. Exquisite Corps
 
 ## Controls
 
