@@ -14,7 +14,8 @@ CREDITS = [
   "F-3r",
   "Elwampa",
   "leviongit",
-  "magion"
+  "magion",
+  "Papa Crub",
 ].shuffle
 
 require "app/input.rb"
